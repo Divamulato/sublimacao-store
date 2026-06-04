@@ -45,8 +45,10 @@ app.get("/produtos", async (req, res) => {
 /**
  * 🚀 START SERVER
  */
-app.listen(3001, () => {
-  console.log("🚀 Backend rodando em http://localhost:3001");
+const PORT = process.env.PORT || 3001;
+
+app.listen(PORT, () => {
+  console.log(`🚀 Backend rodando na porta ${PORT}`);
 });
 
 app.get("/", (req, res) => {
