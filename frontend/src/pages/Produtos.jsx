@@ -1,64 +1,137 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+
 import "./produtos.css";
 
 export default function Produtos() {
+
+  const navigate = useNavigate();
+
   const [produtos, setProdutos] = useState([]);
+  const [busca, setBusca] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+
     async function buscarProdutos() {
+
       try {
-        const res = await fetch("https://sublimacao-store.onrender.com/produtos");
+
+        const res = await fetch(
+          "https://sublimacao-store.onrender.com/produtos"
+        );
+
         const data = await res.json();
+
         setProdutos(data);
+
       } catch (error) {
-        console.log("Erro ao buscar produtos:", error);
+
+        console.log(error);
+
       } finally {
+
         setLoading(false);
+
       }
+
     }
 
     buscarProdutos();
+
   }, []);
 
+  const produtosFiltrados = produtos.filter((produto) =>
+    produto.nome.toLowerCase().includes(
+      busca.toLowerCase()
+    )
+  );
+
   return (
-    <div className="container">
-      <h1 className="titulo">🛍️ Nossos Produtos</h1>
+    <>
+      <Navbar />
 
-      {loading ? (
-        <p className="loading">Carregando produtos...</p>
-      ) : (
-        <div className="grid">
-          {produtos.map((p) => (
-            <div className="card" key={p.id}>
-              
-              <div className="image">
-                {p.imagem ? (
-                  <img src={p.imagem} alt={p.nome} />
-                ) : (
-                  <div className="placeholder">Sem imagem</div>
-                )}
-              </div>
+      <div className="paginaProdutos">
 
-              <div className="info">
-                <h3>{p.nome}</h3>
-                <p className="descricao">
-                  {p.descricao || "Sem descrição disponível"}
+        <button
+          className="btnVoltar"
+          onClick={() => navigate(-1)}
+        >
+          ← Voltar
+        </button>
+
+        <h1 className="tituloPagina">
+          🛍️ Nossos Produtos
+        </h1>
+
+        <input
+          type="text"
+          placeholder="Buscar produto..."
+          className="campoBusca"
+          value={busca}
+          onChange={(e) =>
+            setBusca(e.target.value)
+          }
+        />
+
+        {loading ? (
+          <p className="loading">
+            Carregando produtos...
+          </p>
+        ) : (
+          <div className="gridProdutos">
+
+            {produtosFiltrados.map((produto) => (
+
+              <div
+                className="cardProduto"
+                key={produto.id}
+              >
+
+                <div className="imagemProduto">
+
+                  {produto.imagem ? (
+                    <img
+                      src={produto.imagem}
+                      alt={produto.nome}
+                    />
+                  ) : (
+                    <div className="semImagem">
+                      Sem imagem
+                    </div>
+                  )}
+
+                </div>
+
+                <h3>
+                  {produto.nome}
+                </h3>
+
+                <p>
+                  {produto.descricao}
                 </p>
 
-                <div className="footer">
-                  <span className="preco">
-                    R$ {Number(p.preco).toFixed(2)}
-                  </span>
+                <span className="preco">
+                  R$ {Number(produto.preco).toFixed(2)}
+                </span>
 
-                  <button className="btn">Comprar</button>
-                </div>
+                <button className="btnComprar">
+                  Comprar
+                </button>
+
               </div>
 
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
+            ))}
+
+          </div>
+        )}
+
+      </div>
+
+      <Footer />
+    </>
   );
 }

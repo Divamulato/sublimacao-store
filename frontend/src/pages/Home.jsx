@@ -1,17 +1,54 @@
+import { Link } from "react-router-dom";
+
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+
+import "./home.css";
 
 export default function Home() {
+
   return (
     <>
       <Navbar />
 
-      <div>
-        <h1>Diva Sublimação</h1>
+      <section className="hero">
+
+        <h1>DIVA SUBLIMAÇÃO</h1>
 
         <p>
-          Canecas, camisetas, bonés, azulejos e muito mais.
+          Produtos personalizados com acabamento premium.
         </p>
-      </div>
+
+        <Link
+          to="/produtos"
+          className="btnHero"
+        >
+          Ver Produtos
+        </Link>
+
+      </section>
+
+      <section className="categorias">
+
+        <div className="categoria">
+          ☕ Canecas
+        </div>
+
+        <div className="categoria">
+          👕 Camisetas
+        </div>
+
+        <div className="categoria">
+          🖼️ Azulejos
+        </div>
+
+        <div className="categoria">
+          🎁 Personalizados
+        </div>
+
+      </section>
+
+      <Footer />
     </>
   );
 }

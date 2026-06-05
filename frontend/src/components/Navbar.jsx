@@ -1,17 +1,17 @@
-import { Link } from 'react-router-dom'
+import { Link } from "react-router-dom";
+import "./Navbar.css";
 
 export default function Navbar() {
   return (
-    <nav>
-      <h2>Diva Sublimação </h2>
+    <nav className="navbar">
+      <div className="logo">
+        DIVA SUBLIMAÇÃO
+      </div>
 
-      <div>
+      <div className="menu">
         <Link to="/">Home</Link>
-        {' | '}
         <Link to="/produtos">Produtos</Link>
-        {' | '}
-        <Link to="/login">Login</Link>
       </div>
     </nav>
-  )
+  );
 }
