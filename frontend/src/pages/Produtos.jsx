@@ -8,7 +8,7 @@ export default function Produtos() {
   useEffect(() => {
     async function buscarProdutos() {
       try {
-        const res = await fetch("http://localhost:3001/produtos");
+        const res = await fetch("https://sublimacao-store.onrender.com/produtos");
         const data = await res.json();
         setProdutos(data);
       } catch (error) {
