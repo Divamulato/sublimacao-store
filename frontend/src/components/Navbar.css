@@ -31,3 +31,34 @@
 .menu a:hover{
     color:#d4af37;
 }
+
+/* CELULAR */
+
+@media (max-width: 768px){
+
+    .navbar{
+
+        flex-direction:column;
+
+        gap:15px;
+
+        text-align:center;
+
+        padding:15px;
+    }
+
+    .logo{
+
+        font-size:1.1rem;
+    }
+
+    .menu{
+
+        gap:20px;
+
+        flex-wrap:wrap;
+
+        justify-content:center;
+    }
+
+}
