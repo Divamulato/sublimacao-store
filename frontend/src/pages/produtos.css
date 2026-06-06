@@ -155,3 +155,9 @@ body{
 
     font-weight:bold;
 }
+
+.cardProduto h3,
+.cardProduto p,
+.cardProduto span {
+  color: #111;
+}
