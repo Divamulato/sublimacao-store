@@ -1,5 +1,5 @@
 body{
-    background:#0f0f0f;
+    background:hsl(70, 96%, 45%);
 }
 
 .paginaProdutos{
@@ -159,5 +159,5 @@ body{
 .cardProduto h3,
 .cardProduto p,
 .cardProduto span {
-  color: #111;
+  color: #0be77c;
 }
