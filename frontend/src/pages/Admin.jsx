@@ -1,120 +1,125 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+const API = "https://sublimacao-store.onrender.com";
 
 export default function Admin() {
+  const [produtos, setProdutos] = useState([]);
 
   const [nome, setNome] = useState("");
   const [descricao, setDescricao] = useState("");
   const [preco, setPreco] = useState("");
 
-  async function cadastrarProduto(e) {
+  /* =========================
+     🔵 CARREGAR PRODUTOS
+  ========================= */
+  async function carregarProdutos() {
+    const res = await fetch(`${API}/produtos`);
+    const data = await res.json();
+    setProdutos(data);
+  }
 
+  useEffect(() => {
+    carregarProdutos();
+  }, []);
+
+  /* =========================
+     🟢 CADASTRAR
+  ========================= */
+  async function cadastrarProduto(e) {
     e.preventDefault();
 
-    if (!nome.trim()) {
-      alert("Informe o nome do produto");
-      return;
+    const payload = {
+      nome,
+      descricao,
+      preco: parseFloat(preco)
+    };
+
+    const res = await fetch(`${API}/produtos`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    if (res.ok) {
+      setNome("");
+      setDescricao("");
+      setPreco("");
+      carregarProdutos();
     }
+  }
 
-    if (!preco || isNaN(Number(preco))) {
-      alert("Informe um preço válido");
-      return;
-    }
+  /* =========================
+     🔴 DELETAR
+  ========================= */
+  async function deletarProduto(id) {
+    await fetch(`${API}/produtos/${id}`, {
+      method: "DELETE"
+    });
 
-    try {
+    carregarProdutos();
+  }
 
-      const payload = {
-        nome,
-        descricao,
-        preco: parseFloat(preco)
-      };
+  /* =========================
+     🟡 EDITAR (SIMPLIFICADO)
+  ========================= */
+  async function editarProduto(produto) {
+    const novoNome = prompt("Novo nome:", produto.nome);
+    const novoPreco = prompt("Novo preço:", produto.preco);
 
-      console.log("ENVIANDO:", payload);
+    if (!novoNome || !novoPreco) return;
 
-      const res = await fetch(
-        "https://sublimacao-store.onrender.com/produtos",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(payload)
-        }
-      );
+    await fetch(`${API}/produtos/${produto.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        nome: novoNome,
+        descricao: produto.descricao,
+        preco: Number(novoPreco),
+        imagem: produto.imagem
+      })
+    });
 
-      const data = await res.json();
-
-      console.log("RESPOSTA API:");
-      console.log(data);
-
-      if (res.ok) {
-
-        alert(
-          "Produto cadastrado com sucesso!"
-        );
-
-        setNome("");
-        setDescricao("");
-        setPreco("");
-
-      } else {
-
-        alert(
-          JSON.stringify(data, null, 2)
-        );
-
-      }
-
-    } catch (error) {
-
-      console.error(error);
-
-      alert(
-        "Erro ao cadastrar produto."
-      );
-
-    }
-
+    carregarProdutos();
   }
 
   return (
     <div style={{ padding: "40px" }}>
-
       <h1>Painel Admin</h1>
 
+      {/* FORM */}
       <form onSubmit={cadastrarProduto}>
-
-        <input
-          placeholder="Nome"
-          value={nome}
-          onChange={(e) => setNome(e.target.value)}
-        />
-
+        <input placeholder="Nome" value={nome} onChange={(e) => setNome(e.target.value)} />
         <br /><br />
 
-        <input
-          placeholder="Descrição"
-          value={descricao}
-          onChange={(e) => setDescricao(e.target.value)}
-        />
-
+        <input placeholder="Descrição" value={descricao} onChange={(e) => setDescricao(e.target.value)} />
         <br /><br />
 
-        <input
-          type="number"
-          step="0.01"
-          placeholder="Preço"
-          value={preco}
-          onChange={(e) => setPreco(e.target.value)}
-        />
-
+        <input type="number" placeholder="Preço" value={preco} onChange={(e) => setPreco(e.target.value)} />
         <br /><br />
 
-        <button type="submit">
-          Cadastrar Produto
-        </button>
-
+        <button type="submit">Cadastrar Produto</button>
       </form>
 
+      <hr />
+
+      {/* LISTA */}
+      <h2>Produtos</h2>
+
+      {produtos.map((p) => (
+        <div key={p.id} style={{ marginBottom: 20 }}>
+          <strong>{p.nome}</strong> - R$ {p.preco}
+
+          <br />
+
+          <button onClick={() => deletarProduto(p.id)}>
+            Deletar
+          </button>
+
+          <button onClick={() => editarProduto(p)} style={{ marginLeft: 10 }}>
+            Editar
+          </button>
+        </div>
+      ))}
     </div>
   );
 }
