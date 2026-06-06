@@ -1,3 +1,14 @@
+import express from "express";
+import cors from "cors";
+import { PrismaClient } from "@prisma/client";
+
+const app = express();
+const prisma = new PrismaClient();
+
+app.use(cors());
+app.use(express.json());
+
+// ROTA PRODUTOS
 app.post("/produtos", async (req, res) => {
   try {
     const { nome, descricao, preco, imagem } = req.body;
@@ -36,4 +47,10 @@ app.post("/produtos", async (req, res) => {
       code: error.code || null
     });
   }
+});
+
+// START SERVER
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Servidor rodando na porta ${PORT}`);
 });
