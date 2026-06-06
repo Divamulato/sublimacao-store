@@ -56,7 +56,9 @@ app.post("/produtos", async (req, res) => {
       data: {
         nome,
         descricao,
-        preco
+        preco,
+        estoque: 0,
+        imagem: null
       }
     });
 
