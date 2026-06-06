@@ -42,6 +42,38 @@ app.get("/produtos", async (req, res) => {
   }
 });
 
+app.post("/produtos", async (req, res) => {
+
+  try {
+
+    const {
+      nome,
+      descricao,
+      preco
+    } = req.body;
+
+    const produto = await prisma.produto.create({
+      data: {
+        nome,
+        descricao,
+        preco
+      }
+    });
+
+    res.status(201).json(produto);
+
+  } catch (error) {
+
+    console.error(error);
+
+    res.status(500).json({
+      error: "Erro ao criar produto"
+    });
+
+  }
+
+});
+
 /**
  * 🚀 START SERVER
  */
