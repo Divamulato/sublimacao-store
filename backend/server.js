@@ -22,6 +22,29 @@ app.get("/produtos", async (req, res) => {
 });
 
 /* =========================
+   🔵 BUSCAR PRODUTO POR ID (FALTAVA!)
+========================= */
+app.get("/produtos/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const produto = await prisma.produto.findUnique({
+      where: { id: Number(id) }
+    });
+
+    if (!produto) {
+      return res.status(404).json({ error: "Produto não encontrado" });
+    }
+
+    res.json(produto);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erro ao buscar produto" });
+  }
+});
+
+/* =========================
    🟢 CRIAR PRODUTO
 ========================= */
 app.post("/produtos", async (req, res) => {
@@ -72,6 +95,10 @@ app.put("/produtos/:id", async (req, res) => {
     const { id } = req.params;
     const { nome, descricao, preco, imagem } = req.body;
 
+    if (!id) {
+      return res.status(400).json({ error: "ID obrigatório" });
+    }
+
     const produto = await prisma.produto.update({
       where: { id: Number(id) },
       data: {
@@ -96,6 +123,10 @@ app.put("/produtos/:id", async (req, res) => {
 app.delete("/produtos/:id", async (req, res) => {
   try {
     const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({ error: "ID obrigatório" });
+    }
 
     await prisma.produto.delete({
       where: { id: Number(id) }
