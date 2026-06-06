@@ -64,16 +64,16 @@ app.post("/produtos", async (req, res) => {
 
   } catch (error) {
 
-    console.error(error);
+    console.error("ERRO PRISMA:", error);
 
     res.status(500).json({
-      error: "Erro ao criar produto"
+      error: error.message,
+      code: error.code || null
     });
 
   }
 
 });
-
 /**
  * 🚀 START SERVER
  */
