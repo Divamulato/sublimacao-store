@@ -1,40 +1,39 @@
 app.post("/produtos", async (req, res) => {
-
   try {
+    const { nome, descricao, preco, imagem } = req.body;
 
-    const {
-      nome,
-      descricao,
-      preco,
-      imagem
-    } = req.body;
-
-    if (!nome || preco === undefined || preco === null) {
+    if (!nome || nome.trim() === "" || preco === undefined || preco === null) {
       return res.status(400).json({
         error: "Nome e preço são obrigatórios"
       });
     }
 
+    const precoNumero = Number(preco);
+
+    if (isNaN(precoNumero) || precoNumero <= 0) {
+      return res.status(400).json({
+        error: "Preço inválido"
+      });
+    }
+
     const produto = await prisma.produto.create({
       data: {
-        nome,
+        nome: nome.trim(),
         descricao,
-        preco: Number(preco),
-        imagem: imagem || null
+        preco: precoNumero,
+        imagem: imagem ?? null
       }
     });
 
-    res.status(201).json(produto);
+    return res.status(201).json(produto);
 
   } catch (error) {
-
     console.error("ERRO PRISMA:", error);
 
-    res.status(500).json({
-      error: error.message,
+    return res.status(500).json({
+      error: "Erro interno ao criar produto",
+      details: error.message,
       code: error.code || null
     });
-
   }
-
 });
