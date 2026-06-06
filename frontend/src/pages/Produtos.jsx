@@ -26,6 +26,8 @@ export default function Produtos() {
 
         const data = await res.json();
 
+        console.log("PRODUTOS API:", data);
+
         setProdutos(data);
 
       } catch (error) {
@@ -44,10 +46,13 @@ export default function Produtos() {
 
   }, []);
 
+  /* =========================
+     🔥 FILTRO SEGURO
+  ========================= */
   const produtosFiltrados = produtos.filter((produto) =>
-    produto.nome.toLowerCase().includes(
-      busca.toLowerCase()
-    )
+    (produto?.nome ?? "")
+      .toLowerCase()
+      .includes(busca.toLowerCase())
   );
 
   return (
@@ -72,9 +77,7 @@ export default function Produtos() {
           placeholder="Buscar produto..."
           className="campoBusca"
           value={busca}
-          onChange={(e) =>
-            setBusca(e.target.value)
-          }
+          onChange={(e) => setBusca(e.target.value)}
         />
 
         {loading ? (
@@ -88,12 +91,12 @@ export default function Produtos() {
 
               <div
                 className="cardProduto"
-                key={produto.id}
+                key={produto?.id}
               >
 
                 <div className="imagemProduto">
 
-                  {produto.imagem ? (
+                  {produto?.imagem ? (
                     <img
                       src={produto.imagem}
                       alt={produto.nome}
@@ -107,15 +110,15 @@ export default function Produtos() {
                 </div>
 
                 <h3>
-                  {produto.nome}
+                  {produto?.nome ?? "Sem nome"}
                 </h3>
 
                 <p>
-                  {produto.descricao}
+                  {produto?.descricao ?? "Sem descrição"}
                 </p>
 
                 <span className="preco">
-                  R$ {Number(produto.preco).toFixed(2)}
+                  R$ {Number(produto?.preco || 0).toFixed(2)}
                 </span>
 
                 <button className="btnComprar">
