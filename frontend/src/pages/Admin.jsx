@@ -8,6 +8,7 @@ export default function Admin() {
   const [nome, setNome] = useState("");
   const [descricao, setDescricao] = useState("");
   const [preco, setPreco] = useState("");
+  const [imagem, setImagem] = useState("");
 
   /* =========================
      🔵 CARREGAR PRODUTOS
@@ -31,7 +32,8 @@ export default function Admin() {
     const payload = {
       nome,
       descricao,
-      preco: parseFloat(preco)
+      preco: parseFloat(preco),
+      imagem
     };
 
     const res = await fetch(`${API}/produtos`, {
@@ -44,6 +46,7 @@ export default function Admin() {
       setNome("");
       setDescricao("");
       setPreco("");
+      setImagem("");
       carregarProdutos();
     }
   }
@@ -60,11 +63,13 @@ export default function Admin() {
   }
 
   /* =========================
-     🟡 EDITAR (SIMPLIFICADO)
+     🟡 EDITAR
   ========================= */
   async function editarProduto(produto) {
     const novoNome = prompt("Novo nome:", produto.nome);
+    const novaDescricao = prompt("Nova descrição:", produto.descricao);
     const novoPreco = prompt("Novo preço:", produto.preco);
+    const novaImagem = prompt("Nova URL da imagem:", produto.imagem || "");
 
     if (!novoNome || !novoPreco) return;
 
@@ -73,9 +78,9 @@ export default function Admin() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         nome: novoNome,
-        descricao: produto.descricao,
+        descricao: novaDescricao,
         preco: Number(novoPreco),
-        imagem: produto.imagem
+        imagem: novaImagem
       })
     });
 
@@ -88,16 +93,38 @@ export default function Admin() {
 
       {/* FORM */}
       <form onSubmit={cadastrarProduto}>
-        <input placeholder="Nome" value={nome} onChange={(e) => setNome(e.target.value)} />
+        <input
+          placeholder="Nome"
+          value={nome}
+          onChange={(e) => setNome(e.target.value)}
+        />
         <br /><br />
 
-        <input placeholder="Descrição" value={descricao} onChange={(e) => setDescricao(e.target.value)} />
+        <input
+          placeholder="Descrição"
+          value={descricao}
+          onChange={(e) => setDescricao(e.target.value)}
+        />
         <br /><br />
 
-        <input type="number" placeholder="Preço" value={preco} onChange={(e) => setPreco(e.target.value)} />
+        <input
+          type="number"
+          placeholder="Preço"
+          value={preco}
+          onChange={(e) => setPreco(e.target.value)}
+        />
         <br /><br />
 
-        <button type="submit">Cadastrar Produto</button>
+        <input
+          placeholder="URL da imagem"
+          value={imagem}
+          onChange={(e) => setImagem(e.target.value)}
+        />
+        <br /><br />
+
+        <button type="submit">
+          Cadastrar Produto
+        </button>
       </form>
 
       <hr />
@@ -107,15 +134,37 @@ export default function Admin() {
 
       {produtos.map((p) => (
         <div key={p.id} style={{ marginBottom: 20 }}>
+
+          {p.imagem && (
+            <img
+              src={p.imagem}
+              alt={p.nome}
+              style={{
+                width: "120px",
+                height: "120px",
+                objectFit: "cover",
+                display: "block",
+                marginBottom: 10
+              }}
+            />
+          )}
+
           <strong>{p.nome}</strong> - R$ {p.preco}
 
           <br />
+
+          <small>{p.descricao}</small>
+
+          <br /><br />
 
           <button onClick={() => deletarProduto(p.id)}>
             Deletar
           </button>
 
-          <button onClick={() => editarProduto(p)} style={{ marginLeft: 10 }}>
+          <button
+            onClick={() => editarProduto(p)}
+            style={{ marginLeft: 10 }}
+          >
             Editar
           </button>
         </div>
