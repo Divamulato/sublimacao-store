@@ -24,6 +24,23 @@ export default function Admin() {
   }, []);
 
   /* =========================
+     🖼️ UPLOAD (BASE64)
+  ========================= */
+  const handleImageFile = (e) => {
+    const file = e.target.files[0];
+
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      setImagem(reader.result); // base64
+    };
+
+    reader.readAsDataURL(file);
+  };
+
+  /* =========================
      🟢 CADASTRAR
   ========================= */
   async function cadastrarProduto(e) {
@@ -69,7 +86,7 @@ export default function Admin() {
     const novoNome = prompt("Novo nome:", produto.nome);
     const novaDescricao = prompt("Nova descrição:", produto.descricao);
     const novoPreco = prompt("Novo preço:", produto.preco);
-    const novaImagem = prompt("Nova URL da imagem:", produto.imagem || "");
+    const novaImagem = prompt("Nova URL da imagem (ou base64):", produto.imagem || "");
 
     if (!novoNome || !novoPreco) return;
 
@@ -115,11 +132,22 @@ export default function Admin() {
         />
         <br /><br />
 
+        {/* URL manual */}
         <input
-          placeholder="URL da imagem"
+          placeholder="URL da imagem (opcional)"
           value={imagem}
           onChange={(e) => setImagem(e.target.value)}
         />
+
+        <br /><br />
+
+        {/* UPLOAD PC */}
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleImageFile}
+        />
+
         <br /><br />
 
         <button type="submit">
