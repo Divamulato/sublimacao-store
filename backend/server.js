@@ -8,7 +8,22 @@ const prisma = new PrismaClient();
 app.use(cors());
 app.use(express.json());
 
-// ROTA PRODUTOS
+/* =========================
+   🔵 LISTAR PRODUTOS
+========================= */
+app.get("/produtos", async (req, res) => {
+  try {
+    const produtos = await prisma.produto.findMany();
+    res.json(produtos);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erro ao buscar produtos" });
+  }
+});
+
+/* =========================
+   🟢 CRIAR PRODUTO
+========================= */
 app.post("/produtos", async (req, res) => {
   try {
     const { nome, descricao, preco, imagem } = req.body;
@@ -49,8 +64,56 @@ app.post("/produtos", async (req, res) => {
   }
 });
 
-// START SERVER
+/* =========================
+   🟡 ATUALIZAR PRODUTO
+========================= */
+app.put("/produtos/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { nome, descricao, preco, imagem } = req.body;
+
+    const produto = await prisma.produto.update({
+      where: { id: Number(id) },
+      data: {
+        nome,
+        descricao,
+        preco: Number(preco),
+        imagem
+      }
+    });
+
+    res.json(produto);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erro ao atualizar produto" });
+  }
+});
+
+/* =========================
+   🔴 DELETAR PRODUTO
+========================= */
+app.delete("/produtos/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    await prisma.produto.delete({
+      where: { id: Number(id) }
+    });
+
+    res.json({ message: "Produto deletado com sucesso" });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erro ao deletar produto" });
+  }
+});
+
+/* =========================
+   🚀 START SERVER
+========================= */
 const PORT = process.env.PORT || 3000;
+
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
