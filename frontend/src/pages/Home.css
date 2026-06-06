@@ -61,3 +61,220 @@
 
     font-size:1.2rem;
 }
+
+.destaques{
+
+    padding:60px 30px;
+
+    background:#111;
+
+    text-align:center;
+}
+
+.destaques h2{
+
+    color:#d4af37;
+
+    margin-bottom:40px;
+
+    font-size:2.2rem;
+
+    text-align:center;
+
+    line-height:1.3;
+
+    word-break:break-word;
+}
+
+.gridDestaques{
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fit,minmax(250px,1fr));
+
+    gap:25px;
+}
+
+.cardDestaque{
+
+    background:#1a1a1a;
+
+    border:1px solid #d4af37;
+
+    border-radius:15px;
+
+    overflow:hidden;
+
+    transition:.3s;
+}
+
+.cardDestaque:hover{
+
+    transform:translateY(-5px);
+}
+
+.cardDestaque img{
+
+    width:100%;
+
+    height:220px;
+
+    object-fit:cover;
+}
+
+.cardDestaque h3{
+
+    color:#d4af37;
+
+    padding:15px;
+}
+
+.cardDestaque span{
+
+    display:block;
+
+    padding-bottom:20px;
+
+    color:white;
+
+    font-weight:bold;
+}
+
+.btnVerTodos{
+
+    display:inline-block;
+
+    margin-top:40px;
+
+    background:#d4af37;
+
+    color:black;
+
+    padding:14px 30px;
+
+    border-radius:10px;
+
+    text-decoration:none;
+
+    font-weight:bold;
+}
+
+.destaques{
+
+    padding:60px 30px;
+
+    background:#111;
+
+    text-align:center;
+}
+
+.destaques h2{
+
+    color:#d4af37;
+
+    margin-bottom:40px;
+}
+
+.gridDestaques{
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fit,minmax(250px,1fr));
+
+    gap:25px;
+}
+
+.cardDestaque{
+
+    background:#1a1a1a;
+
+    border:1px solid #d4af37;
+
+    border-radius:15px;
+
+    overflow:hidden;
+
+    transition:.3s;
+}
+
+.cardDestaque:hover{
+
+    transform:translateY(-5px);
+}
+
+.cardDestaque img{
+
+    width:100%;
+
+    height:220px;
+
+    object-fit:cover;
+}
+
+.cardDestaque h3{
+
+    color:#d4af37;
+
+    padding:15px;
+}
+
+.cardDestaque span{
+
+    display:block;
+
+    padding-bottom:20px;
+
+    color:white;
+
+    font-weight:bold;
+}
+
+.semImagem{
+
+    height:220px;
+
+    display:flex;
+
+    justify-content:center;
+    align-items:center;
+
+    color:#999;
+}
+
+.btnVerTodos{
+
+    display:inline-block;
+
+    margin-top:40px;
+
+    background:#d4af37;
+
+    color:black;
+
+    padding:14px 30px;
+
+    border-radius:10px;
+
+    text-decoration:none;
+
+    font-weight:bold;
+}
+
+@media (max-width:768px){
+
+    .destaques h2{
+
+        font-size:1.8rem;
+    }
+
+}
+
+.tituloDestaques{
+    color:#d4af37;
+    font-size:2rem;
+    margin-bottom:40px;
+    font-weight:bold;
+    line-height:1.4;
+}
