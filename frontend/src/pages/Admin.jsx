@@ -8,7 +8,9 @@ export default function Admin() {
   const [nome, setNome] = useState("");
   const [descricao, setDescricao] = useState("");
   const [preco, setPreco] = useState("");
-  const [imagem, setImagem] = useState("");
+
+  const [imagemUrl, setImagemUrl] = useState("");
+  const [imagemBase64, setImagemBase64] = useState("");
 
   /* =========================
      🔵 CARREGAR PRODUTOS
@@ -31,10 +33,15 @@ export default function Admin() {
 
     if (!file) return;
 
+    if (file.size > 500000) {
+      alert("Escolha uma imagem menor que 500KB");
+      return;
+    }
+
     const reader = new FileReader();
 
     reader.onloadend = () => {
-      setImagem(reader.result); // base64
+      setImagemBase64(reader.result);
     };
 
     reader.readAsDataURL(file);
@@ -50,12 +57,14 @@ export default function Admin() {
       nome,
       descricao,
       preco: parseFloat(preco),
-      imagem
+      imagem: imagemBase64 || imagemUrl
     };
 
     const res = await fetch(`${API}/produtos`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify(payload)
     });
 
@@ -63,7 +72,9 @@ export default function Admin() {
       setNome("");
       setDescricao("");
       setPreco("");
-      setImagem("");
+      setImagemUrl("");
+      setImagemBase64("");
+
       carregarProdutos();
     }
   }
@@ -86,13 +97,18 @@ export default function Admin() {
     const novoNome = prompt("Novo nome:", produto.nome);
     const novaDescricao = prompt("Nova descrição:", produto.descricao);
     const novoPreco = prompt("Novo preço:", produto.preco);
-    const novaImagem = prompt("Nova URL da imagem (ou base64):", produto.imagem || "");
+    const novaImagem = prompt(
+      "Nova URL da imagem:",
+      produto.imagem || ""
+    );
 
     if (!novoNome || !novoPreco) return;
 
     await fetch(`${API}/produtos/${produto.id}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({
         nome: novoNome,
         descricao: novaDescricao,
@@ -108,13 +124,13 @@ export default function Admin() {
     <div style={{ padding: "40px" }}>
       <h1>Painel Admin</h1>
 
-      {/* FORM */}
       <form onSubmit={cadastrarProduto}>
         <input
           placeholder="Nome"
           value={nome}
           onChange={(e) => setNome(e.target.value)}
         />
+
         <br /><br />
 
         <input
@@ -122,6 +138,7 @@ export default function Admin() {
           value={descricao}
           onChange={(e) => setDescricao(e.target.value)}
         />
+
         <br /><br />
 
         <input
@@ -130,18 +147,17 @@ export default function Admin() {
           value={preco}
           onChange={(e) => setPreco(e.target.value)}
         />
+
         <br /><br />
 
-        {/* URL manual */}
         <input
           placeholder="URL da imagem (opcional)"
-          value={imagem}
-          onChange={(e) => setImagem(e.target.value)}
+          value={imagemUrl}
+          onChange={(e) => setImagemUrl(e.target.value)}
         />
 
         <br /><br />
 
-        {/* UPLOAD PC */}
         <input
           type="file"
           accept="image/*"
@@ -150,6 +166,20 @@ export default function Admin() {
 
         <br /><br />
 
+        {(imagemBase64 || imagemUrl) && (
+          <img
+            src={imagemBase64 || imagemUrl}
+            alt="Preview"
+            style={{
+              width: "150px",
+              height: "150px",
+              objectFit: "cover",
+              display: "block",
+              marginBottom: "15px"
+            }}
+          />
+        )}
+
         <button type="submit">
           Cadastrar Produto
         </button>
@@ -157,12 +187,10 @@ export default function Admin() {
 
       <hr />
 
-      {/* LISTA */}
       <h2>Produtos</h2>
 
       {produtos.map((p) => (
         <div key={p.id} style={{ marginBottom: 20 }}>
-
           {p.imagem && (
             <img
               src={p.imagem}
