@@ -52,6 +52,36 @@ export default function Produtos() {
       .includes(busca.toLowerCase())
   );
 
+  function adicionarAoCarrinho(produto) {
+
+    let carrinho =
+      JSON.parse(localStorage.getItem("carrinho")) || [];
+
+    const existente = carrinho.find(
+      item => item.id === produto.id
+    );
+
+    if (existente) {
+
+      existente.quantidade += 1;
+
+    } else {
+
+      carrinho.push({
+        ...produto,
+        quantidade: 1
+      });
+
+    }
+
+    localStorage.setItem(
+      "carrinho",
+      JSON.stringify(carrinho)
+    );
+
+    navigate("/carrinho");
+  }
+
   return (
     <>
       <Navbar />
@@ -93,82 +123,71 @@ export default function Produtos() {
         />
 
         {loading ? (
+
           <p className="loading">
             Carregando produtos...
           </p>
+
         ) : (
+
           <div className="gridProdutos">
 
             {produtosFiltrados.map((produto) => (
 
               <div
                 className="cardProduto"
-                key={produto?.id}
+                key={produto.id}
               >
 
                 <div className="imagemProduto">
 
-                  {produto?.imagem ? (
+                  {produto.imagem ? (
+
                     <img
                       src={produto.imagem}
                       alt={produto.nome}
                     />
+
                   ) : (
+
                     <div className="semImagem">
                       Sem imagem
                     </div>
+
                   )}
 
                 </div>
 
                 <h3>
-                  {produto?.nome ?? "Sem nome"}
+                  {produto.nome}
                 </h3>
 
                 <p>
-                  {produto?.descricao ?? "Sem descrição"}
+                  {produto.descricao}
                 </p>
 
                 <span className="preco">
-                  R$ {Number(produto?.preco || 0).toFixed(2)}
+                  R$ {Number(produto.preco).toFixed(2)}
                 </span>
 
-              onClick={() => {
+                <br />
+                <br />
 
-  let carrinho =
-    JSON.parse(localStorage.getItem("carrinho")) || [];
-
-  const existente = carrinho.find(
-    item => item.id === produto.id
-  );
-
-  if (existente) {
-
-    existente.quantidade += 1;
-
-  } else {
-
-    carrinho.push({
-      ...produto,
-      quantidade: 1
-    });
-
-  }
-
-  localStorage.setItem(
-    "carrinho",
-    JSON.stringify(carrinho)
-  );
-
-  navigate("/carrinho");
-
-}}
+                <button
+                  className="btnComprar"
+                  onClick={() =>
+                    adicionarAoCarrinho(produto)
+                  }
+                >
+                  Comprar
+                </button>
 
               </div>
 
             ))}
 
           </div>
+
         )}
 
       </div>
