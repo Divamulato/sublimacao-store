@@ -52,7 +52,7 @@ export default function Home() {
         </p>
 
         <Link
-          to="/produtos"
+          to="/rodutos"
           className="btnHero"
         >
           Ver Produtos
