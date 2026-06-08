@@ -31,45 +31,45 @@ export default function Carrinho() {
 
   }, []);
 
-  function salvarCarrinho(novoCarrinho) {
+ function salvarCarrinho(novoCarrinho) {
 
-    setItens(novoCarrinho);
+  localStorage.setItem(
+    "carrinho",
+    JSON.stringify(novoCarrinho)
+  );
 
-    localStorage.setItem(
-      "carrinho",
-      JSON.stringify(novoCarrinho)
-    );
-  }
+  setItens([...novoCarrinho]);
+}
 
-  function aumentar(id) {
+function aumentar(id) {
 
-    const novoCarrinho = itens.map(item =>
-      item.id === id
-        ? {
-            ...item,
-            quantidade: item.quantidade + 1
-          }
-        : item
-    );
+  const novoCarrinho = itens.map(item =>
+    item.id === id
+      ? {
+          ...item,
+          quantidade: item.quantidade + 1
+        }
+      : item
+  );
 
-    salvarCarrinho(novoCarrinho);
-  }
+  salvarCarrinho(novoCarrinho);
+}
 
   function diminuir(id) {
 
-    const novoCarrinho = itens
-      .map(item =>
-        item.id === id
-          ? {
-              ...item,
-              quantidade: item.quantidade - 1
-            }
-          : item
-      )
-      .filter(item => item.quantidade > 0);
+  const novoCarrinho = itens
+    .map(item =>
+      item.id === id
+        ? {
+            ...item,
+            quantidade: item.quantidade - 1
+          }
+        : item
+    )
+    .filter(item => item.quantidade > 0);
 
-    salvarCarrinho(novoCarrinho);
-  }
+  salvarCarrinho(novoCarrinho);
+}
 
   function remover(id) {
 
