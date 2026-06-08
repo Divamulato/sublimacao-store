@@ -1,4 +1,3 @@
-import Produto from "../pages/Produto";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 
