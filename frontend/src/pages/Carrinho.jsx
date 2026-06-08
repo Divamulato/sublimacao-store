@@ -172,6 +172,13 @@ function aumentar(id) {
                 Remover
               </button>
 
+               <button
+            className="btnVoltar"
+            onClick={() => navigate(-1)}
+          >
+            ← Voltar
+          </button>
+
             </div>
 
           ))}
