@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
+
 const API =
   "https://sublimacao-store.onrender.com";
 
@@ -37,38 +38,42 @@ export default function Produto() {
   if (!produto)
     return <h2>Carregando...</h2>;
 
-  function adicionarCarrinho() {
+ function adicionarCarrinho() {
 
-    let carrinho =
-      JSON.parse(
-        localStorage.getItem("carrinho")
-      ) || [];
+  const carrinho =
+    JSON.parse(
+      localStorage.getItem("carrinho")
+    ) || [];
 
-    const existe =
-      carrinho.find(
-        item => item.id === produto.id
-      );
+  const existe = carrinho.find(
+    item => item.id === produto.id
+  );
 
-    if (existe) {
+  if (existe) {
 
-      existe.quantidade += 1;
+    existe.quantidade += 1;
 
-    } else {
+  } else {
 
-      carrinho.push({
-        ...produto,
-        quantidade: 1
-      });
+    carrinho.push({
+      ...produto,
+      quantidade: 1
+    });
 
-    }
-
-    localStorage.setItem(
-      "carrinho",
-      JSON.stringify(carrinho)
-    );
-
-    navigate("/carrinho");
   }
+
+  localStorage.setItem(
+    "carrinho",
+    JSON.stringify(carrinho)
+  );
+
+  console.log(
+    "Carrinho atualizado:",
+    carrinho
+  );
+
+  navigate("/carrinho");
+}
 
   return (
     <div
