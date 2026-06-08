@@ -133,26 +133,36 @@ export default function Produtos() {
                   R$ {Number(produto?.preco || 0).toFixed(2)}
                 </span>
 
-               <button
-  className="btnComprar"
-  onClick={() => {
-    const carrinho =
-      JSON.parse(localStorage.getItem("carrinho")) || [];
+              onClick={() => {
 
-    carrinho.push(produto);
+  let carrinho =
+    JSON.parse(localStorage.getItem("carrinho")) || [];
 
-    localStorage.setItem(
-      "carrinho",
-      JSON.stringify(carrinho)
-    );
+  const existente = carrinho.find(
+    item => item.id === produto.id
+  );
 
-    alert("Produto adicionado ao carrinho!");
+  if (existente) {
 
-    navigate("/carrinho");
-  }}
->
-  Comprar
-</button>
+    existente.quantidade += 1;
+
+  } else {
+
+    carrinho.push({
+      ...produto,
+      quantidade: 1
+    });
+
+  }
+
+  localStorage.setItem(
+    "carrinho",
+    JSON.stringify(carrinho)
+  );
+
+  navigate("/carrinho");
+
+}}
 
               </div>
 
