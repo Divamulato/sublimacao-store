@@ -133,12 +133,26 @@ export default function Produtos() {
                   R$ {Number(produto?.preco || 0).toFixed(2)}
                 </span>
 
-                <button
-                  className="btnComprar"
-                  onClick={() => navigate("/carrinho")}
-                >
-                  Comprar
-                </button>
+               <button
+  className="btnComprar"
+  onClick={() => {
+    const carrinho =
+      JSON.parse(localStorage.getItem("carrinho")) || [];
+
+    carrinho.push(produto);
+
+    localStorage.setItem(
+      "carrinho",
+      JSON.stringify(carrinho)
+    );
+
+    alert("Produto adicionado ao carrinho!");
+
+    navigate("/carrinho");
+  }}
+>
+  Comprar
+</button>
 
               </div>
 
