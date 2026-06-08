@@ -1,9 +1,9 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import Home from '../pages/Home'
-import Produtos from '../pages/Produtos'
-
+import Home from "../pages/Home";
+import Produtos from "../pages/Produtos";
 import Admin from "../pages/Admin";
+import Carrinho from "../pages/Carrinho";
 
 export default function AppRoutes() {
   return (
@@ -14,15 +14,17 @@ export default function AppRoutes() {
           path="/"
           element={<Home />}
         />
-        <Route
-          path="/admin"
-          element={<Admin />}
-        />
+
         <Route
           path="/produtos"
           element={<Produtos />}
         />
-  
+
+        <Route
+          path="/carrinho"
+          element={<Carrinho />}
+        />
+
         <Route
           path="/admin"
           element={<Admin />}
@@ -30,7 +32,5 @@ export default function AppRoutes() {
 
       </Routes>
     </BrowserRouter>
-
-    
-  )
+  );
 }
