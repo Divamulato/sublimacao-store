@@ -1,6 +1,24 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Carrinho() {
+
+  const navigate = useNavigate();
+
+  <button
+  onClick={() => navigate(-1)}
+  style={{
+    padding: "10px 20px",
+    marginBottom: "20px",
+    border: "none",
+    borderRadius: "8px",
+    background: "#333",
+    color: "#fff",
+    cursor: "pointer"
+  }}
+>
+  ← Voltar
+</button>
 
   const [itens, setItens] = useState([]);
 
@@ -71,6 +89,8 @@ export default function Carrinho() {
 
   return (
     <div
+
+    
       style={{
         padding: "40px",
         background: "#fff",
