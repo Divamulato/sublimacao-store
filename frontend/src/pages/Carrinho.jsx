@@ -87,18 +87,32 @@ function aumentar(id) {
     0
   );
 
-  return (
-    <div
+ return (
+  <div
+    style={{
+      padding: "40px",
+      background: "#fff",
+      color: "#000",
+      minHeight: "100vh"
+    }}
+  >
 
-    
+    <button
+      onClick={() => navigate(-1)}
       style={{
-        padding: "40px",
-        background: "#fff",
-        color: "#000",
-        minHeight: "100vh"
+        padding: "10px 20px",
+        marginBottom: "20px",
+        border: "none",
+        borderRadius: "8px",
+        background: "#333",
+        color: "#fff",
+        cursor: "pointer"
       }}
     >
-      <h1>🛒 Carrinho</h1>
+      ← Voltar
+    </button>
+
+    <h1>🛒 Carrinho</h1>
 
       {itens.length === 0 ? (
 
@@ -172,12 +186,7 @@ function aumentar(id) {
                 Remover
               </button>
 
-               <button
-            className="btnVoltar"
-            onClick={() => navigate(-1)}
-          >
-            ← Voltar
-          </button>
+              
 
             </div>
 

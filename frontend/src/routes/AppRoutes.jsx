@@ -5,6 +5,7 @@ import Produtos from "../pages/Produtos";
 import Admin from "../pages/Admin";
 import Carrinho from "../pages/Carrinho";
 import ProdutoDetalhe from "../pages/ProdutoDetalhe";
+import Produto from "../pages/Produto";
 
 export default function AppRoutes() {
   return (
@@ -34,6 +35,10 @@ export default function AppRoutes() {
         <Route
           path="/produto/:id"
           element={<ProdutoDetalhe />}
+        />
+        <Route
+          path="/produto/:id"
+          element={<Produto />}
         />
 
       </Routes>

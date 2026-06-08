@@ -174,13 +174,13 @@ export default function Produtos() {
                 <br />
 
                 <button
-                  className="btnComprar"
-                  onClick={() =>
-                    adicionarAoCarrinho(produto)
-                  }
-                >
-                  Comprar
-                </button>
+  className="btnComprar"
+  onClick={() =>
+    navigate(`/produto/${produto.id}`)
+  }
+>
+  Ver Produto
+</button>
 
               </div>
 
