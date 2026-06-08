@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 const API =
@@ -7,6 +7,7 @@ const API =
 export default function Produto() {
 
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const [produto, setProduto] =
     useState(null);
@@ -40,9 +41,7 @@ export default function Produto() {
 
     let carrinho =
       JSON.parse(
-        localStorage.getItem(
-          "carrinho"
-        )
+        localStorage.getItem("carrinho")
       ) || [];
 
     const existe =
@@ -68,7 +67,7 @@ export default function Produto() {
       JSON.stringify(carrinho)
     );
 
-    alert("Produto adicionado!");
+    navigate("/carrinho");
   }
 
   return (
@@ -78,6 +77,21 @@ export default function Produto() {
         color: "#000"
       }}
     >
+
+      <button
+        onClick={() => navigate(-1)}
+        style={{
+          padding: "10px 20px",
+          marginBottom: "20px",
+          border: "none",
+          borderRadius: "8px",
+          background: "#333",
+          color: "#fff",
+          cursor: "pointer"
+        }}
+      >
+        ← Voltar
+      </button>
 
       <h1>{produto.nome}</h1>
 
@@ -93,19 +107,19 @@ export default function Produto() {
         />
       )}
 
-      <p>
-        {produto.descricao}
-      </p>
+      <p>{produto.descricao}</p>
 
       <h2>
-        R$
-        {Number(
-          produto.preco
-        ).toFixed(2)}
+        R$ {Number(produto.preco).toFixed(2)}
       </h2>
 
       <button
         onClick={adicionarCarrinho}
+        style={{
+          padding: "12px 25px",
+          fontSize: "16px",
+          cursor: "pointer"
+        }}
       >
         Adicionar ao Carrinho
       </button>
