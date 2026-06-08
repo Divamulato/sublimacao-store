@@ -161,3 +161,18 @@ body{
 .cardProduto span {
   color: #0be77c;
 }
+
+.btnCarrinho {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.btnCarrinho:hover {
+  opacity: 0.9;
+}
