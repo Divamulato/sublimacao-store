@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
-import "./Produtos.css";
+import "./produtos.css";
 
 export default function Produtos() {
 
