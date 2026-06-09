@@ -199,13 +199,14 @@ function aumentar(id) {
           </h2>
 
           <button
-            style={{
-              padding: "12px 25px",
-              fontSize: "18px"
-            }}
-          >
-            Finalizar Compra
-          </button>
+  onClick={() => navigate("/checkout")}
+  style={{
+    padding: "12px 25px",
+    fontSize: "18px"
+  }}
+>
+  Finalizar Compra
+</button>
         </>
       )}
 
