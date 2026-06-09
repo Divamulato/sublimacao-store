@@ -2,6 +2,9 @@ import { useNavigate } from "react-router-dom";
 
 export default function Pix() {
 
+    const chavePix =
+  "27828567820";
+
   const navigate = useNavigate();
 
   const carrinho =
@@ -28,6 +31,18 @@ export default function Pix() {
         ← Voltar
       </button>
 
+      <button
+  onClick={() => {
+    navigator.clipboard.writeText(
+      chavePix
+    );
+
+    alert("Chave PIX copiada!");
+  }}
+>
+  Copiar Chave PIX CPF
+</button>
+
       <h1>Pagamento PIX</h1>
 
       <h2>
@@ -37,9 +52,13 @@ export default function Pix() {
       <br />
 
       <img
-        src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=PIX"
+        src="/qrcode-pix.png"
         alt="QR Code PIX"
-      />
+        style={{
+    width: "250px"
+  }}
+/>
+      
 
       <br />
       <br />
