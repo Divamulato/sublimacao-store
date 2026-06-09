@@ -17,7 +17,7 @@ export default function Confirmacao() {
       ) || {};
 
     let mensagem =
-      `Olá, realizei o pagamento.%0A%0A`;
+      `Olá Diva, realizei o pagamento.%0A%0A`;
 
     mensagem +=
       `Nome: ${cliente.nome}%0A`;
@@ -35,7 +35,7 @@ export default function Confirmacao() {
     });
 
     window.open(
-      `https://wa.me/55SEUNUMERO?text=${mensagem}`,
+      `https://wa.me/5511984644381?text=${mensagem}`,
       "_blank"
     );
   }

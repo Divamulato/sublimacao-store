@@ -49,7 +49,7 @@ export default function Pix() {
       </strong>
 
       <p>
-        SUA_CHAVE_PIX_AQUI
+        27828567820
       </p>
 
       <button
