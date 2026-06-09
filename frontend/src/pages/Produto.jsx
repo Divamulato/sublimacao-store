@@ -13,6 +13,8 @@ export default function Produto() {
   const [produto, setProduto] =
     useState(null);
 
+    const [zoom, setZoom] = useState(false);
+
   useEffect(() => {
 
     async function carregar() {
@@ -100,18 +102,50 @@ export default function Produto() {
 
       <h1>{produto.nome}</h1>
 
-      {produto.imagem && (
+     {produto.imagem && (
+  <>
+    <img
+      src={produto.imagem}
+      alt={produto.nome}
+      onClick={() => setZoom(true)}
+      style={{
+        width: "400px",
+        maxWidth: "100%",
+        borderRadius: "10px",
+        cursor: "zoom-in"
+      }}
+    />
+
+    {zoom && (
+      <div
+        onClick={() => setZoom(false)}
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          background: "rgba(0,0,0,0.9)",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          zIndex: 9999,
+          cursor: "zoom-out"
+        }}
+      >
         <img
           src={produto.imagem}
           alt={produto.nome}
           style={{
-            width: "400px",
-            maxWidth: "100%",
-            borderRadius: "10px"
+            maxWidth: "90%",
+            maxHeight: "90%",
+            borderRadius: "12px"
           }}
         />
-      )}
-
+      </div>
+    )}
+  </>
+)}
       <p>{produto.descricao}</p>
 
       <h2>
