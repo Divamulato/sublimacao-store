@@ -6,6 +6,8 @@ import Admin from "../pages/Admin";
 import Carrinho from "../pages/Carrinho";
 import Produto from "../pages/Produto";
 import Checkout from "../pages/Checkout";
+import Pix from "../pages/Pix";
+import Confirmacao from "../pages/Confirmacao";
 
 export default function AppRoutes() {
   return (
@@ -40,6 +42,16 @@ export default function AppRoutes() {
         <Route
           path="/checkout"
           element={<Checkout />}
+        />
+
+        <Route
+          path="/pix"
+          element={<Pix />}
+        />
+
+        <Route
+          path="/confirmacao"
+          element={<Confirmacao />}
         />
 
       </Routes>
