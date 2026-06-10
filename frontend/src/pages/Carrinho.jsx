@@ -93,7 +93,7 @@ export default function Carrinho() {
 
      
 
-      navigate("/");
+     
     } catch (error) {
       console.error("ERRO CHECKOUT:", error);
       alert("Erro ao finalizar compra");

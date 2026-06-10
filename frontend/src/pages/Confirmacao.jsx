@@ -32,12 +32,18 @@ export default function Confirmacao() {
       mensagem +=
         `${item.nome} x${item.quantidade}%0A`;
 
+        
+
     });
 
     window.open(
       `https://wa.me/5511984644381?text=${mensagem}`,
       "_blank"
+
+      
     );
+
+    localStorage.removeItem("carrinho");
   }
 
   return (

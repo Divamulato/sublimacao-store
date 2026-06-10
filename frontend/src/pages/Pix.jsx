@@ -7,14 +7,16 @@ export default function Pix() {
 
   const navigate = useNavigate();
 
-  const carrinho =
-    JSON.parse(localStorage.getItem("carrinho")) || [];
+ const pedidoId = localStorage.getItem("pedidoId");
 
-  const total = carrinho.reduce(
-    (acc, item) =>
-      acc + Number(item.preco) * item.quantidade,
-    0
-  );
+const carrinho =
+  JSON.parse(localStorage.getItem("carrinho")) || [];
+
+const total = carrinho.reduce(
+  (acc, item) =>
+    acc + Number(item.preco) * item.quantidade,
+  0
+);
 
   return (
     <div

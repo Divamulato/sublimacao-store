@@ -54,7 +54,13 @@ export default function Checkout() {
       if (!res.ok) throw new Error(data?.error || "Erro ao criar pedido");
 
       // salva pedido
-      localStorage.setItem("pedidoId", data.id);
+      const pedidoId = data.id || data.pedido?.id;
+
+if (!pedidoId) {
+  throw new Error("Pedido não retornou ID");
+}
+
+localStorage.setItem("pedidoId", pedidoId);
       localStorage.setItem(
         "cliente",
         JSON.stringify({ nome, telefone, endereco, observacao })
