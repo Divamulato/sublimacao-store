@@ -7,10 +7,18 @@ import { v2 as cloudinary } from "cloudinary";
 // =========================
 // CLOUDINARY CONFIG
 // =========================
+if (
+  !process.env.CLOUDINARY_CLOUD_NAME ||
+  !process.env.CLOUDINARY_API_KEY ||
+  !process.env.CLOUDINARY_API_SECRET
+) {
+  console.error("❌ CLOUDINARY ENV NÃO DEFINIDA");
+}
+
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+  cloud_name: String(process.env.CLOUDINARY_CLOUD_NAME),
+  api_key: String(process.env.CLOUDINARY_API_KEY),
+  api_secret: String(process.env.CLOUDINARY_API_SECRET),
 });
 
 // =========================
@@ -38,39 +46,54 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 // =========================
 // UPLOAD IMAGEM (CLOUDINARY)
 // =========================
+
+console.log("FILE RECEBIDO:", {
+  hasFile: !!req.file,
+  mimetype: req.file?.mimetype,
+  size: req.file?.size,
+});
+
 app.post("/upload", upload.single("imagem"), async (req, res) => {
   try {
-    if (!req.file || !req.file.buffer) {
+    if (!req.file) {
       return res.status(400).json({ error: "Nenhuma imagem enviada" });
     }
 
-    const resultado = await new Promise((resolve, reject) => {
-      const stream = cloudinary.uploader.upload_stream(
-        { folder: "sublimacao-store" },
-        (error, result) => {
-          if (error) return reject(error);
-          resolve(result);
+    console.log("📦 FILE RECEBIDO:", {
+      name: req.file.originalname,
+      size: req.file.size,
+      type: req.file.mimetype,
+    });
+
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder: "sublimacao-store",
+        resource_type: "image",
+      },
+      (error, result) => {
+        if (error) {
+          console.error("🔥 CLOUDINARY ERROR:", error);
+
+          return res.status(500).json({
+            error: "Cloudinary falhou",
+            message: error.message,
+            code: error.code || null,
+          });
         }
-      );
 
-      stream.end(req.file.buffer);
-    });
+        return res.json({
+          url: result.secure_url,
+        });
+      }
+    );
 
-    if (!resultado || !resultado.secure_url) {
-      return res.status(500).json({
-        error: "Falha ao obter URL do Cloudinary",
-      });
-    }
-
-    return res.json({
-      url: resultado.secure_url,
-    });
+    uploadStream.end(req.file.buffer);
   } catch (error) {
-    console.error("UPLOAD ERROR:", error);
+    console.error("🔥 UPLOAD FATAL:", error);
 
     return res.status(500).json({
-      error: "Erro upload Cloudinary",
-      details: error.message,
+      error: "Erro interno no upload",
+      message: error.message,
     });
   }
 });
