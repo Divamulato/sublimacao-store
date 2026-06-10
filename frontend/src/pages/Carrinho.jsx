@@ -5,21 +5,6 @@ export default function Carrinho() {
 
   const navigate = useNavigate();
 
-  <button
-  onClick={() => navigate(-1)}
-  style={{
-    padding: "10px 20px",
-    marginBottom: "20px",
-    border: "none",
-    borderRadius: "8px",
-    background: "#333",
-    color: "#fff",
-    cursor: "pointer"
-  }}
->
-  ← Voltar
-</button>
-
   const [itens, setItens] = useState([]);
 
   useEffect(() => {
@@ -31,45 +16,45 @@ export default function Carrinho() {
 
   }, []);
 
- function salvarCarrinho(novoCarrinho) {
+  function salvarCarrinho(novoCarrinho) {
 
-  localStorage.setItem(
-    "carrinho",
-    JSON.stringify(novoCarrinho)
-  );
+    localStorage.setItem(
+      "carrinho",
+      JSON.stringify(novoCarrinho)
+    );
 
-  setItens([...novoCarrinho]);
-}
+    setItens([...novoCarrinho]);
+  }
 
-function aumentar(id) {
+  function aumentar(id) {
 
-  const novoCarrinho = itens.map(item =>
-    item.id === id
-      ? {
-          ...item,
-          quantidade: item.quantidade + 1
-        }
-      : item
-  );
-
-  salvarCarrinho(novoCarrinho);
-}
-
-  function diminuir(id) {
-
-  const novoCarrinho = itens
-    .map(item =>
+    const novoCarrinho = itens.map(item =>
       item.id === id
         ? {
             ...item,
-            quantidade: item.quantidade - 1
+            quantidade: item.quantidade + 1
           }
         : item
-    )
-    .filter(item => item.quantidade > 0);
+    );
 
-  salvarCarrinho(novoCarrinho);
-}
+    salvarCarrinho(novoCarrinho);
+  }
+
+  function diminuir(id) {
+
+    const novoCarrinho = itens
+      .map(item =>
+        item.id === id
+          ? {
+              ...item,
+              quantidade: item.quantidade - 1
+            }
+          : item
+      )
+      .filter(item => item.quantidade > 0);
+
+    salvarCarrinho(novoCarrinho);
+  }
 
   function remover(id) {
 
@@ -87,32 +72,32 @@ function aumentar(id) {
     0
   );
 
- return (
-  <div
-    style={{
-      padding: "40px",
-      background: "#fff",
-      color: "#000",
-      minHeight: "100vh"
-    }}
-  >
-
-    <button
-      onClick={() => navigate(-1)}
+  return (
+    <div
       style={{
-        padding: "10px 20px",
-        marginBottom: "20px",
-        border: "none",
-        borderRadius: "8px",
-        background: "#333",
-        color: "#fff",
-        cursor: "pointer"
+        padding: "40px",
+        background: "#fff",
+        color: "#000",
+        minHeight: "100vh"
       }}
     >
-      ← Voltar
-    </button>
 
-    <h1>🛒 Carrinho</h1>
+      <button
+        onClick={() => navigate(-1)}
+        style={{
+          padding: "10px 20px",
+          marginBottom: "20px",
+          border: "none",
+          borderRadius: "8px",
+          background: "#333",
+          color: "#fff",
+          cursor: "pointer"
+        }}
+      >
+        ← Voltar
+      </button>
+
+      <h1>🛒 Carrinho</h1>
 
       {itens.length === 0 ? (
 
@@ -133,16 +118,31 @@ function aumentar(id) {
               }}
             >
 
-              {item.imagem && (
-                <img
-                  src={item.imagem}
-                  alt={item.nome}
+              <img
+                src={
+                  item.fotoCliente
+                    ? item.fotoCliente
+                    : item.imagem
+                }
+                alt={item.nome}
+                style={{
+                  width: "120px",
+                  height: "120px",
+                  objectFit: "cover",
+                  borderRadius: "8px"
+                }}
+              />
+
+              {item.fotoCliente && (
+                <p
                   style={{
-                    width: "100px",
-                    height: "100px",
-                    objectFit: "cover"
+                    color: "green",
+                    fontWeight: "bold",
+                    marginTop: "8px"
                   }}
-                />
+                >
+                  ✓ Arte enviada pelo cliente
+                </p>
               )}
 
               <h3>{item.nome}</h3>
@@ -186,8 +186,6 @@ function aumentar(id) {
                 Remover
               </button>
 
-              
-
             </div>
 
           ))}
@@ -199,14 +197,15 @@ function aumentar(id) {
           </h2>
 
           <button
-  onClick={() => navigate("/checkout")}
-  style={{
-    padding: "12px 25px",
-    fontSize: "18px"
-  }}
->
-  Finalizar Compra
-</button>
+            onClick={() => navigate("/checkout")}
+            style={{
+              padding: "12px 25px",
+              fontSize: "18px"
+            }}
+          >
+            Finalizar Compra
+          </button>
+
         </>
       )}
 
