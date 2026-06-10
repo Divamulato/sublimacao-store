@@ -5,21 +5,21 @@ import multer from "multer";
 import { v2 as cloudinary } from "cloudinary";
 
 // =========================
-// CLOUDINARY CONFIG
+// CLOUDINARY CONFIG (SEGURO)
 // =========================
-if (
-  !process.env.CLOUDINARY_CLOUD_NAME ||
-  !process.env.CLOUDINARY_API_KEY ||
-  !process.env.CLOUDINARY_API_SECRET
-) {
-  console.error("❌ CLOUDINARY ENV NÃO DEFINIDA");
-}
+const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+const apiKey = process.env.CLOUDINARY_API_KEY;
+const apiSecret = process.env.CLOUDINARY_API_SECRET;
 
-cloudinary.config({
-  cloud_name: String(process.env.CLOUDINARY_CLOUD_NAME),
-  api_key: String(process.env.CLOUDINARY_API_KEY),
-  api_secret: String(process.env.CLOUDINARY_API_SECRET),
-});
+if (!cloudName || !apiKey || !apiSecret) {
+  console.error("❌ CLOUDINARY ENV NÃO DEFINIDA");
+} else {
+  cloudinary.config({
+    cloud_name: cloudName,
+    api_key: apiKey,
+    api_secret: apiSecret,
+  });
+}
 
 // =========================
 // MULTER CONFIG
@@ -29,7 +29,7 @@ const storage = multer.memoryStorage();
 const upload = multer({
   storage,
   limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB
+    fileSize: 10 * 1024 * 1024,
   },
 });
 
@@ -46,13 +46,6 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 // =========================
 // UPLOAD IMAGEM (CLOUDINARY)
 // =========================
-
-console.log("FILE RECEBIDO:", {
-  hasFile: !!req.file,
-  mimetype: req.file?.mimetype,
-  size: req.file?.size,
-});
-
 app.post("/upload", upload.single("imagem"), async (req, res) => {
   try {
     if (!req.file) {
@@ -77,7 +70,6 @@ app.post("/upload", upload.single("imagem"), async (req, res) => {
           return res.status(500).json({
             error: "Cloudinary falhou",
             message: error.message,
-            code: error.code || null,
           });
         }
 
