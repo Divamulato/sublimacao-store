@@ -24,16 +24,26 @@ export default function Produtos() {
           "https://sublimacao-store.onrender.com/produtos"
         );
 
-       const produtosFiltrados = Array.isArray(produtos)
-  ? produtos.filter((produto) =>
-      (produto?.nome ?? "")
-        .toLowerCase()
-        .includes(busca.toLowerCase())
-    )
-  : [];
+        const data = await res.json();
+
+        console.log("STATUS:", res.status);
+        console.log("DADOS:", data);
+        console.log("ARRAY:", Array.isArray(data));
+
+        setProdutos(
+          Array.isArray(data)
+            ? data
+            : []
+        );
+
       } catch (error) {
 
-        console.log(error);
+        console.error(
+          "Erro ao carregar produtos:",
+          error
+        );
+
+        setProdutos([]);
 
       } finally {
 
@@ -47,14 +57,13 @@ export default function Produtos() {
 
   }, []);
 
- const produtosFiltrados = Array.isArray(produtos)
-  ? produtos.filter((produto) =>
-      (produto?.nome ?? "")
-        .toLowerCase()
-        .includes(busca.toLowerCase())
-    )
-  : [];
-  
+  const produtosFiltrados = Array.isArray(produtos)
+    ? produtos.filter((produto) =>
+        (produto?.nome ?? "")
+          .toLowerCase()
+          .includes(busca.toLowerCase())
+      )
+    : [];
 
   function adicionarAoCarrinho(produto) {
 
@@ -178,13 +187,13 @@ export default function Produtos() {
                 <br />
 
                 <button
-  className="btnComprar"
-  onClick={() =>
-    navigate(`/produto/${produto.id}`)
-  }
->
-  Ver Produto
-</button>
+                  className="btnComprar"
+                  onClick={() =>
+                    navigate(`/produto/${produto.id}`)
+                  }
+                >
+                  Ver Produto
+                </button>
 
               </div>
 
