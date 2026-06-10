@@ -13,29 +13,21 @@ export default function Checkout() {
   async function continuar() {
     if (loading) return;
 
-    const carrinho =
-      JSON.parse(localStorage.getItem("carrinho")) || [];
+    const carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
 
-    console.log("🛒 CARRINHO:", carrinho);
-
-    if (!carrinho.length) {
+    if (carrinho.length === 0) {
       alert("Seu carrinho está vazio");
-      navigate("/carrinho");
-      return;
+      return navigate("/carrinho");
     }
 
     if (!nome || !telefone || !endereco) {
-      alert("Preencha nome, telefone e endereço");
-      return;
+      return alert("Preencha nome, telefone e endereço");
     }
 
     const total = carrinho.reduce(
-      (acc, item) =>
-        acc + Number(item.preco) * item.quantidade,
+      (acc, item) => acc + Number(item.preco) * item.quantidade,
       0
     );
-
-    console.log("💰 TOTAL:", total);
 
     setLoading(true);
 
@@ -44,9 +36,7 @@ export default function Checkout() {
         "https://sublimacao-store.onrender.com/pedidos",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             itens: carrinho,
             total,
@@ -61,42 +51,21 @@ export default function Checkout() {
 
       const data = await res.json();
 
-      console.log("📦 RESPOSTA BACKEND:", data);
+      if (!res.ok) throw new Error(data?.error || "Erro ao criar pedido");
 
-      if (!res.ok) {
-        throw new Error(data?.error || "Erro ao criar pedido");
-      }
-
-      if (!data?.id) {
-        console.error("⚠️ Pedido sem ID retornado:", data);
-        throw new Error("Pedido inválido");
-      }
-
-      // salva dados do cliente
+      // salva pedido
+      localStorage.setItem("pedidoId", data.id);
       localStorage.setItem(
         "cliente",
-        JSON.stringify({
-          nome,
-          telefone,
-          endereco,
-          observacao,
-        })
+        JSON.stringify({ nome, telefone, endereco, observacao })
       );
 
-      localStorage.setItem("pedidoId", String(data.id));
-
-      console.log("🚀 PEDIDO CRIADO COM ID:", data.id);
-
       // ⚠️ IMPORTANTE: NÃO limpar carrinho aqui
-      // carrinho só depois do pagamento confirmado
-
-      console.log("➡️ REDIRECIONANDO PARA PIX...");
-
-      navigate("/pix");
+      navigate("/pix", { replace: true });
 
     } catch (err) {
-      console.error("❌ ERRO CHECKOUT:", err);
-      alert("Erro ao criar pedido. Verifique console.");
+      console.error("ERRO CHECKOUT:", err);
+      alert("Erro ao criar pedido");
     }
 
     setLoading(false);
@@ -110,39 +79,19 @@ export default function Checkout() {
 
       <h1>Finalizar Pedido</h1>
 
-      <input
-        placeholder="Nome"
-        value={nome}
-        onChange={e => setNome(e.target.value)}
-      />
-
+      <input placeholder="Nome" value={nome} onChange={e => setNome(e.target.value)} />
       <br /><br />
 
-      <input
-        placeholder="WhatsApp"
-        value={telefone}
-        onChange={e => setTelefone(e.target.value)}
-      />
-
+      <input placeholder="WhatsApp" value={telefone} onChange={e => setTelefone(e.target.value)} />
       <br /><br />
 
-      <input
-        placeholder="Endereço"
-        value={endereco}
-        onChange={e => setEndereco(e.target.value)}
-      />
-
+      <input placeholder="Endereço" value={endereco} onChange={e => setEndereco(e.target.value)} />
       <br /><br />
 
-      <textarea
-        placeholder="Observações"
-        value={observacao}
-        onChange={e => setObservacao(e.target.value)}
-      />
-
+      <textarea placeholder="Observações" value={observacao} onChange={e => setObservacao(e.target.value)} />
       <br /><br />
 
-      <button onClick={continuar} disabled={loading}>
+      <button disabled={loading} onClick={continuar}>
         {loading ? "Criando pedido..." : "Continuar para PIX"}
       </button>
     </div>
