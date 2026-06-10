@@ -1,6 +1,23 @@
 import express from "express";
 import cors from "cors";
 import { PrismaClient } from "@prisma/client";
+import multer from "multer";
+import { v2 as cloudinary } from "cloudinary";
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+const storage = multer.memoryStorage();
+
+const upload = multer({
+  storage,
+  limits: {
+    fileSize: 10 * 1024 * 1024
+  }
+});
 
 const app = express();
 const prisma = new PrismaClient();
@@ -11,6 +28,55 @@ app.use(express.urlencoded({
   extended: true,
   limit: "10mb"
 }));
+
+app.post(
+  "/upload",
+  upload.single("imagem"),
+  async (req, res) => {
+
+    try {
+
+      if (!req.file) {
+        return res
+          .status(400)
+          .json({ error: "Nenhuma imagem enviada" });
+      }
+
+      const resultado =
+        await new Promise((resolve, reject) => {
+
+          cloudinary.uploader
+            .upload_stream(
+              {
+                folder: "sublimacao-store"
+              },
+              (error, result) => {
+
+                if (error) reject(error);
+                else resolve(result);
+
+              }
+            )
+            .end(req.file.buffer);
+
+        });
+
+      res.json({
+        url: resultado.secure_url
+      });
+
+    } catch (error) {
+
+      console.error(error);
+
+      res.status(500).json({
+        error: "Erro upload Cloudinary"
+      });
+
+    }
+
+  }
+);
 
 /* =========================
    🔵 LISTAR PRODUTOS
