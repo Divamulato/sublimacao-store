@@ -78,6 +78,13 @@ app.post(
   }
 );
 
+app.get("/ping", (req, res) => {
+  res.json({
+    status: "ok",
+    hora: new Date()
+  });
+});
+
 /* =========================
    🔵 LISTAR PRODUTOS
 ========================= */
