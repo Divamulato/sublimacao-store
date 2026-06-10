@@ -44,7 +44,7 @@ app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 // =========================
-// UPLOAD IMAGEM (CLOUDINARY)
+// UPLOAD IMAGEM (CLOUDINARY - ESTÁVEL)
 // =========================
 app.post("/upload", upload.single("imagem"), async (req, res) => {
   try {
@@ -58,33 +58,24 @@ app.post("/upload", upload.single("imagem"), async (req, res) => {
       type: req.file.mimetype,
     });
 
-    const uploadStream = cloudinary.uploader.upload_stream(
+    // 🔥 CONVERTE PARA BASE64 (MODO MAIS ESTÁVEL NO RENDER)
+    const base64 = req.file.buffer.toString("base64");
+
+    const result = await cloudinary.uploader.upload(
+      `data:${req.file.mimetype};base64,${base64}`,
       {
         folder: "sublimacao-store",
-        resource_type: "image",
-      },
-      (error, result) => {
-        if (error) {
-          console.error("🔥 CLOUDINARY ERROR:", error);
-
-          return res.status(500).json({
-            error: "Cloudinary falhou",
-            message: error.message,
-          });
-        }
-
-        return res.json({
-          url: result.secure_url,
-        });
       }
     );
 
-    uploadStream.end(req.file.buffer);
+    return res.json({
+      url: result.secure_url,
+    });
   } catch (error) {
-    console.error("🔥 UPLOAD FATAL:", error);
+    console.error("🔥 CLOUDINARY ERROR:", error);
 
     return res.status(500).json({
-      error: "Erro interno no upload",
+      error: "Falha no upload",
       message: error.message,
     });
   }
