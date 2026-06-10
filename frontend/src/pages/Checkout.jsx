@@ -11,25 +11,76 @@ export default function Checkout() {
   const [loading, setLoading] = useState(false);
 
   async function continuar() {
-    if (loading) return;
+  if (loading) return;
 
-    const carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
+  const carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
 
-    if (carrinho.length === 0) {
-      alert("Seu carrinho está vazio");
-      return navigate("/carrinho");
-    }
+  if (!carrinho.length) {
+    alert("Carrinho vazio");
+    return;
+  }
 
-    if (!nome || !telefone || !endereco) {
-      return alert("Preencha nome, telefone e endereço");
-    }
+  if (!nome || !telefone || !endereco) {
+    alert("Preencha todos os dados");
+    return;
+  }
 
-    const total = carrinho.reduce(
-      (acc, item) => acc + Number(item.preco) * item.quantidade,
-      0
+  const total = carrinho.reduce(
+    (acc, item) => acc + Number(item.preco) * item.quantidade,
+    0
+  );
+
+  setLoading(true);
+
+  try {
+    const res = await fetch(
+      "https://sublimacao-store.onrender.com/pedidos",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          itens: carrinho,
+          total,
+          cliente: nome,
+          telefone,
+          endereco,
+          observacao,
+          status: "pendente",
+        }),
+      }
     );
 
-    setLoading(true);
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data?.error || "Erro ao criar pedido");
+    }
+
+    const pedidoId = data.id || data.pedido?.id;
+
+    if (!pedidoId) {
+      throw new Error("Pedido sem ID");
+    }
+
+    localStorage.setItem("pedidoId", pedidoId);
+    localStorage.setItem(
+      "cliente",
+      JSON.stringify({ nome, telefone, endereco, observacao })
+    );
+
+    // ❌ NÃO limpar carrinho aqui
+    // ❌ NÃO alert aqui
+
+    console.log("INDO PARA PIX...");
+    navigate("/pix", { replace: true });
+
+  } catch (err) {
+    console.error("ERRO CHECKOUT:", err);
+    alert("Erro ao criar pedido");
+  }
+
+  setLoading(false);
+
 
     try {
       const res = await fetch(
