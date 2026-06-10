@@ -16,7 +16,9 @@ export default function Checkout() {
     const carrinho =
       JSON.parse(localStorage.getItem("carrinho")) || [];
 
-    if (carrinho.length === 0) {
+    console.log("🛒 CARRINHO:", carrinho);
+
+    if (!carrinho.length) {
       alert("Seu carrinho está vazio");
       navigate("/carrinho");
       return;
@@ -32,6 +34,8 @@ export default function Checkout() {
         acc + Number(item.preco) * item.quantidade,
       0
     );
+
+    console.log("💰 TOTAL:", total);
 
     setLoading(true);
 
@@ -57,29 +61,42 @@ export default function Checkout() {
 
       const data = await res.json();
 
+      console.log("📦 RESPOSTA BACKEND:", data);
+
       if (!res.ok) {
         throw new Error(data?.error || "Erro ao criar pedido");
       }
 
-      // salva dados
+      if (!data?.id) {
+        console.error("⚠️ Pedido sem ID retornado:", data);
+        throw new Error("Pedido inválido");
+      }
+
+      // salva dados do cliente
       localStorage.setItem(
         "cliente",
-        JSON.stringify({ nome, telefone, endereco, observacao })
+        JSON.stringify({
+          nome,
+          telefone,
+          endereco,
+          observacao,
+        })
       );
 
-      localStorage.setItem("pedidoId", data.id);
+      localStorage.setItem("pedidoId", String(data.id));
 
-      console.log("PEDIDO CRIADO:", data);
+      console.log("🚀 PEDIDO CRIADO COM ID:", data.id);
 
-      // ⚠️ NÃO limpar carrinho aqui
-      // 
+      // ⚠️ IMPORTANTE: NÃO limpar carrinho aqui
+      // carrinho só depois do pagamento confirmado
 
-      // navega só depois de tudo pronto
+      console.log("➡️ REDIRECIONANDO PARA PIX...");
+
       navigate("/pix");
 
     } catch (err) {
-      console.error("ERRO CHECKOUT:", err);
-      alert("Erro ao criar pedido");
+      console.error("❌ ERRO CHECKOUT:", err);
+      alert("Erro ao criar pedido. Verifique console.");
     }
 
     setLoading(false);
@@ -93,16 +110,36 @@ export default function Checkout() {
 
       <h1>Finalizar Pedido</h1>
 
-      <input placeholder="Nome" value={nome} onChange={e => setNome(e.target.value)} />
+      <input
+        placeholder="Nome"
+        value={nome}
+        onChange={e => setNome(e.target.value)}
+      />
+
       <br /><br />
 
-      <input placeholder="WhatsApp" value={telefone} onChange={e => setTelefone(e.target.value)} />
+      <input
+        placeholder="WhatsApp"
+        value={telefone}
+        onChange={e => setTelefone(e.target.value)}
+      />
+
       <br /><br />
 
-      <input placeholder="Endereço" value={endereco} onChange={e => setEndereco(e.target.value)} />
+      <input
+        placeholder="Endereço"
+        value={endereco}
+        onChange={e => setEndereco(e.target.value)}
+      />
+
       <br /><br />
 
-      <textarea placeholder="Observações" value={observacao} onChange={e => setObservacao(e.target.value)} />
+      <textarea
+        placeholder="Observações"
+        value={observacao}
+        onChange={e => setObservacao(e.target.value)}
+      />
+
       <br /><br />
 
       <button onClick={continuar} disabled={loading}>

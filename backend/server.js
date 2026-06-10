@@ -240,10 +240,6 @@ app.post("/pedidos", async (req, res) => {
       return res.status(400).json({ error: "Carrinho vazio" });
     }
 
-    if (!total || total <= 0) {
-      return res.status(400).json({ error: "Total inválido" });
-    }
-
     const pedido = await prisma.pedido.create({
       data: {
         itens,
@@ -258,7 +254,7 @@ app.post("/pedidos", async (req, res) => {
 
     return res.status(201).json({
       id: pedido.id,
-      pedido,
+      ...pedido
     });
 
   } catch (error) {
