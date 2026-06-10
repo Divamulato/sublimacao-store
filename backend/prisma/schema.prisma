@@ -23,4 +23,23 @@ model Produto {
   imagem    String?
   estoque   Int      @default(0)
   createdAt DateTime @default(now())
+  }
+  
+ model Pedido {
+  id         Int      @id @default(autoincrement())
+
+  // itens do carrinho (produtos + foto do cliente)
+  itens      Json
+
+  // total da compra
+  total      Float
+
+  // status do pedido (produção)
+  status     String   @default("pendente")
+
+  // identificação do cliente (simples por enquanto)
+  clienteId  String?  
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }

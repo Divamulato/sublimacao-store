@@ -229,3 +229,38 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
+
+app.post("/pedidos", async (req, res) => {
+  try {
+    const { itens, total } = req.body;
+
+    // validações básicas
+    if (!itens || itens.length === 0) {
+      return res.status(400).json({ error: "Carrinho vazio" });
+    }
+
+    if (!total || total <= 0) {
+      return res.status(400).json({ error: "Total inválido" });
+    }
+
+    const pedido = await prisma.pedido.create({
+      data: {
+        itens,
+        total,
+        status: "pendente",
+      },
+    });
+
+    return res.status(201).json({
+      message: "Pedido criado com sucesso",
+      pedido,
+    });
+  } catch (error) {
+    console.error("❌ ERRO PEDIDO:", error);
+
+    return res.status(500).json({
+      error: "Erro ao criar pedido",
+      message: error.message,
+    });
+  }
+});
