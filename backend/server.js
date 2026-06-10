@@ -11,6 +11,12 @@ const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
 const apiKey = process.env.CLOUDINARY_API_KEY;
 const apiSecret = process.env.CLOUDINARY_API_SECRET;
 
+console.log("🔥 CLOUDINARY CHECK:", {
+  cloud: cloudName,
+  key: apiKey ? "OK" : "MISSING",
+  secret: apiSecret ? "OK" : "MISSING",
+});
+
 if (!cloudName || !apiKey || !apiSecret) {
   console.error("❌ CLOUDINARY ENV NÃO DEFINIDA");
 } else {
@@ -44,21 +50,26 @@ app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 // =========================
-// UPLOAD IMAGEM (CLOUDINARY - ESTÁVEL)
+// UPLOAD IMAGEM (DEBUG TOTAL)
 // =========================
 app.post("/upload", upload.single("imagem"), async (req, res) => {
   try {
+    console.log("📦 FILE DEBUG:", {
+      exists: !!req.file,
+      size: req.file?.size,
+      type: req.file?.mimetype,
+    });
+
     if (!req.file) {
       return res.status(400).json({ error: "Nenhuma imagem enviada" });
     }
 
-    console.log("📦 FILE RECEBIDO:", {
-      name: req.file.originalname,
-      size: req.file.size,
-      type: req.file.mimetype,
-    });
+    if (!cloudName || !apiKey || !apiSecret) {
+      return res.status(500).json({
+        error: "Cloudinary não configurado",
+      });
+    }
 
-    // 🔥 CONVERTE PARA BASE64 (MODO MAIS ESTÁVEL NO RENDER)
     const base64 = req.file.buffer.toString("base64");
 
     const result = await cloudinary.uploader.upload(
@@ -72,11 +83,13 @@ app.post("/upload", upload.single("imagem"), async (req, res) => {
       url: result.secure_url,
     });
   } catch (error) {
-    console.error("🔥 CLOUDINARY ERROR:", error);
+    console.error("🔥 CLOUDINARY ERROR COMPLETO:", error);
 
     return res.status(500).json({
       error: "Falha no upload",
       message: error.message,
+      name: error.name,
+      stack: error.stack,
     });
   }
 });
