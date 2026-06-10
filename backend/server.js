@@ -232,7 +232,7 @@ app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
 
-aapp.post("/pedidos", async (req, res) => {
+app.post("/pedidos", async (req, res) => {
   try {
     const {
       itens,
