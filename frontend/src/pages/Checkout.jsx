@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function Checkout() {
-
   const navigate = useNavigate();
 
   const [nome, setNome] = useState("");
@@ -10,21 +9,78 @@ export default function Checkout() {
   const [endereco, setEndereco] = useState("");
   const [observacao, setObservacao] = useState("");
 
-  function continuar() {
+  const [loading, setLoading] = useState(false);
 
-    const dados = {
+  async function continuar() {
+    const carrinho =
+      JSON.parse(localStorage.getItem("carrinho")) || [];
+
+    if (carrinho.length === 0) {
+      alert("Carrinho vazio");
+      return;
+    }
+
+    const total = carrinho.reduce(
+      (acc, item) =>
+        acc + Number(item.preco) * item.quantidade,
+      0
+    );
+
+    const dadosCliente = {
       nome,
       telefone,
       endereco,
-      observacao
+      observacao,
     };
 
-    localStorage.setItem(
-      "cliente",
-      JSON.stringify(dados)
-    );
+    setLoading(true);
 
-    navigate("/pix");
+    try {
+      const res = await fetch(
+        "https://sublimacao-store.onrender.com/pedidos",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            itens: carrinho,
+            total,
+            cliente: nome,
+            endereco,
+            telefone,
+            observacao,
+          }),
+        }
+      );
+
+      if (!res.ok) {
+        throw new Error("Erro ao criar pedido");
+      }
+
+      const pedido = await res.json();
+
+      // salva dados para PIX
+      localStorage.setItem(
+        "cliente",
+        JSON.stringify(dadosCliente)
+      );
+
+      localStorage.setItem(
+        "pedidoId",
+        pedido.id
+      );
+
+      // opcional: limpar carrinho aqui ou depois do PIX
+      // localStorage.removeItem("carrinho");
+
+      navigate("/pix");
+    } catch (err) {
+      console.error(err);
+      alert("Erro ao criar pedido");
+    }
+
+    setLoading(false);
   }
 
   return (
@@ -33,33 +89,19 @@ export default function Checkout() {
         padding: "40px",
         maxWidth: "700px",
         margin: "0 auto",
-        color: "#000"
+        color: "#000",
       }}
     >
-
-      <button
-        onClick={() => navigate(-1)}
-        style={{
-          marginBottom: "20px"
-        }}
-      >
+      <button onClick={() => navigate(-1)}>
         ← Voltar
       </button>
 
       <h1>Finalizar Pedido</h1>
 
-      <br />
-
       <input
         placeholder="Nome"
         value={nome}
-        onChange={(e) =>
-          setNome(e.target.value)
-        }
-        style={{
-          width: "100%",
-          padding: "12px"
-        }}
+        onChange={(e) => setNome(e.target.value)}
       />
 
       <br /><br />
@@ -67,13 +109,7 @@ export default function Checkout() {
       <input
         placeholder="WhatsApp"
         value={telefone}
-        onChange={(e) =>
-          setTelefone(e.target.value)
-        }
-        style={{
-          width: "100%",
-          padding: "12px"
-        }}
+        onChange={(e) => setTelefone(e.target.value)}
       />
 
       <br /><br />
@@ -81,13 +117,7 @@ export default function Checkout() {
       <input
         placeholder="Endereço"
         value={endereco}
-        onChange={(e) =>
-          setEndereco(e.target.value)
-        }
-        style={{
-          width: "100%",
-          padding: "12px"
-        }}
+        onChange={(e) => setEndereco(e.target.value)}
       />
 
       <br /><br />
@@ -98,25 +128,22 @@ export default function Checkout() {
         onChange={(e) =>
           setObservacao(e.target.value)
         }
-        style={{
-          width: "100%",
-          height: "120px",
-          padding: "12px"
-        }}
       />
 
       <br /><br />
 
       <button
         onClick={continuar}
+        disabled={loading}
         style={{
           padding: "12px 25px",
-          fontSize: "18px"
+          fontSize: "18px",
         }}
       >
-        Continuar para PIX
+        {loading
+          ? "Criando pedido..."
+          : "Continuar para PIX"}
       </button>
-
     </div>
   );
 }

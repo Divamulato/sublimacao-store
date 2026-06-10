@@ -3,6 +3,8 @@ import cors from "cors";
 import { PrismaClient } from "@prisma/client";
 import multer from "multer";
 import { v2 as cloudinary } from "cloudinary";
+import dotenv from "dotenv";
+dotenv.config();
 
 // =========================
 // CLOUDINARY CONFIG (SEGURO)
@@ -263,4 +265,35 @@ app.post("/pedidos", async (req, res) => {
       message: error.message,
     });
   }
+
+  // =========================
+// CRIAR PEDIDO (CHECKOUT)
+// =========================
+app.post("/pedidos", async (req, res) => {
+  try {
+    const { itens, total, cliente } = req.body;
+
+    if (!itens || itens.length === 0) {
+      return res.status(400).json({ error: "Carrinho vazio" });
+    }
+
+    const pedido = await prisma.pedido.create({
+      data: {
+        itens,
+        total: Number(total),
+        cliente: cliente || null,
+        status: "pendente",
+      },
+    });
+
+    return res.status(201).json(pedido);
+  } catch (error) {
+    console.error("❌ ERRO PEDIDO:", error);
+
+    return res.status(500).json({
+      error: "Erro ao criar pedido",
+      message: error.message,
+    });
+  }
+});
 });

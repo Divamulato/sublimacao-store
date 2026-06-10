@@ -22,5 +22,18 @@ CREATE TABLE "Produto" (
     CONSTRAINT "Produto_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "Pedido" (
+    "id" SERIAL NOT NULL,
+    "total" DOUBLE PRECISION NOT NULL,
+    "status" TEXT NOT NULL DEFAULT 'pendente',
+    "itens" JSONB NOT NULL,
+    "cliente" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Pedido_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "Usuario_email_key" ON "Usuario"("email");

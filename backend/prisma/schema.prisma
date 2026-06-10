@@ -26,20 +26,13 @@ model Produto {
   }
   
  model Pedido {
-  id         Int      @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
+  total       Float
+  status      String   @default("pendente")
 
-  // itens do carrinho (produtos + foto do cliente)
-  itens      Json
+  itens       Json     // carrinho inteiro (simples e flexível)
+  cliente     String?  // depois podemos evoluir pra Usuario
 
-  // total da compra
-  total      Float
-
-  // status do pedido (produção)
-  status     String   @default("pendente")
-
-  // identificação do cliente (simples por enquanto)
-  clienteId  String?  
-
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
