@@ -2,9 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function Checkout() {
-
-  console.log("CHEGOU AQUI: PIX");
-  
   const navigate = useNavigate();
 
   const [nome, setNome] = useState("");
@@ -14,96 +11,71 @@ export default function Checkout() {
   const [loading, setLoading] = useState(false);
 
   async function continuar() {
-  if (loading) return;
+    if (loading) return;
 
-  const carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
+    const carrinho =
+      JSON.parse(localStorage.getItem("carrinho")) || [];
 
-  if (!carrinho.length) {
-    alert("Carrinho vazio");
-    return;
-  }
-
-  if (!nome || !telefone || !endereco) {
-    alert("Preencha todos os dados");
-    return;
-  }
-
-  const total = carrinho.reduce(
-    (acc, item) => acc + Number(item.preco) * item.quantidade,
-    0
-  );
-
-  setLoading(true);
-
-  try {
-    const res = await fetch(
-      "https://sublimacao-store.onrender.com/pedidos",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          itens: carrinho,
-          total,
-          cliente: nome,
-          telefone,
-          endereco,
-          observacao,
-          status: "pendente",
-        }),
-      }
-    );
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      throw new Error(data?.error || "Erro ao criar pedido");
+    if (!carrinho.length) {
+      alert("Seu carrinho está vazio");
+      navigate("/carrinho");
+      return;
     }
 
-    const pedidoId = data.id || data.pedido?.id;
-
-    if (!pedidoId) {
-      throw new Error("Pedido sem ID");
+    if (!nome || !telefone || !endereco) {
+      alert("Preencha todos os dados obrigatórios");
+      return;
     }
 
-    localStorage.setItem("pedidoId", pedidoId);
-    localStorage.setItem(
-      "cliente",
-      JSON.stringify({ nome, telefone, endereco, observacao })
-    );
-
-    // ❌ NÃO limpar carrinho aqui
-    // ❌ NÃO alert aqui
-
-    console.log("INDO PARA PIX...");
-    navigate("/pix", { replace: true });
-
-  } catch (err) {
-    console.error("ERRO CHECKOUT:", err);
-    alert("Erro ao criar pedido");
-  }
-
-  setLoading(false);
-
+    setLoading(true);
 
     try {
+      const total = carrinho.reduce(
+        (acc, item) =>
+          acc + Number(item.preco) * item.quantidade,
+        0
+      );
+
       const res = await fetch(
         "https://sublimacao-store.onrender.com/pedidos",
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({
             itens: carrinho,
             total,
             cliente: nome,
-            endereco,
             telefone,
+            endereco,
             observacao,
             status: "pendente",
           }),
         }
       );
 
-      frontend/src/pages/Checkout.jsx
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data?.error || "Erro ao criar pedido");
+      }
+
+      // salva dados do pedido
+      localStorage.setItem(
+        "cliente",
+        JSON.stringify({ nome, telefone, endereco, observacao })
+      );
+
+      localStorage.setItem("pedidoId", data.id);
+
+      console.log("PEDIDO CRIADO:", data);
+
+      // 🚨 IMPORTANTE: NÃO limpar carrinho aqui
+      // 🚨 NÃO redirecionar pra home
+
+      navigate("/pix");
+
     } catch (err) {
       console.error("ERRO CHECKOUT:", err);
       alert("Erro ao criar pedido");
@@ -132,7 +104,7 @@ export default function Checkout() {
       <textarea placeholder="Observações" value={observacao} onChange={e => setObservacao(e.target.value)} />
       <br /><br />
 
-      <button disabled={loading} onClick={continuar}>
+      <button onClick={continuar} disabled={loading}>
         {loading ? "Criando pedido..." : "Continuar para PIX"}
       </button>
     </div>
