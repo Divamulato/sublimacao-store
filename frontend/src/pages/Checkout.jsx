@@ -11,10 +11,12 @@ export default function Checkout() {
   const [loading, setLoading] = useState(false);
 
   async function continuar() {
+    if (loading) return;
+
     const carrinho =
       JSON.parse(localStorage.getItem("carrinho")) || [];
 
-    if (!carrinho.length) {
+    if (carrinho.length === 0) {
       alert("Seu carrinho está vazio");
       navigate("/carrinho");
       return;
@@ -59,86 +61,51 @@ export default function Checkout() {
         throw new Error(data?.error || "Erro ao criar pedido");
       }
 
-      // salva dados do pedido
-      localStorage.setItem("cliente", JSON.stringify({
-        nome,
-        telefone,
-        endereco,
-        observacao,
-      }));
+      // salva dados
+      localStorage.setItem(
+        "cliente",
+        JSON.stringify({ nome, telefone, endereco, observacao })
+      );
 
       localStorage.setItem("pedidoId", data.id);
 
       console.log("PEDIDO CRIADO:", data);
 
-      // 🔥 NÃO limpar carrinho aqui (IMPORTANTE)
-      // carrinho só será limpo no PIX ou pagamento aprovado
+      // ⚠️ NÃO limpar carrinho aqui
+      // localStorage.removeItem("carrinho");
 
+      // navega só depois de tudo pronto
       navigate("/pix");
 
     } catch (err) {
       console.error("ERRO CHECKOUT:", err);
-      alert("Erro ao criar pedido. Tente novamente.");
+      alert("Erro ao criar pedido");
     }
 
     setLoading(false);
   }
 
   return (
-    <div
-      style={{
-        padding: "40px",
-        maxWidth: "700px",
-        margin: "0 auto",
-        color: "#000",
-      }}
-    >
+    <div style={{ padding: 40, maxWidth: 700, margin: "0 auto" }}>
       <button onClick={() => navigate("/carrinho")}>
-        ← Voltar ao carrinho
+        ← Voltar
       </button>
 
       <h1>Finalizar Pedido</h1>
 
-      <input
-        placeholder="Nome"
-        value={nome}
-        onChange={(e) => setNome(e.target.value)}
-      />
-
+      <input placeholder="Nome" value={nome} onChange={e => setNome(e.target.value)} />
       <br /><br />
 
-      <input
-        placeholder="WhatsApp"
-        value={telefone}
-        onChange={(e) => setTelefone(e.target.value)}
-      />
-
+      <input placeholder="WhatsApp" value={telefone} onChange={e => setTelefone(e.target.value)} />
       <br /><br />
 
-      <input
-        placeholder="Endereço"
-        value={endereco}
-        onChange={(e) => setEndereco(e.target.value)}
-      />
-
+      <input placeholder="Endereço" value={endereco} onChange={e => setEndereco(e.target.value)} />
       <br /><br />
 
-      <textarea
-        placeholder="Observações"
-        value={observacao}
-        onChange={(e) => setObservacao(e.target.value)}
-      />
-
+      <textarea placeholder="Observações" value={observacao} onChange={e => setObservacao(e.target.value)} />
       <br /><br />
 
-      <button
-        onClick={continuar}
-        disabled={loading}
-        style={{
-          padding: "12px 25px",
-          fontSize: "18px",
-        }}
-      >
+      <button onClick={continuar} disabled={loading}>
         {loading ? "Criando pedido..." : "Continuar para PIX"}
       </button>
     </div>
