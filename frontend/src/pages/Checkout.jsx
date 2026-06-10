@@ -49,24 +49,14 @@ export default function Checkout() {
         }
       );
 
-      const data = await res.json();
+      frontend/src/pages/Checkout.jsx
+    } catch (err) {
+      console.error("ERRO CHECKOUT:", err);
+      alert("Erro ao criar pedido");
+    }
 
-if (!res.ok) {
-  throw new Error(data?.error || "Erro ao criar pedido");
-}
-
-// 🔥 NÃO pode ter alert de sucesso aqui
-
-const pedidoId = data.id || data.pedido?.id;
-
-if (!pedidoId) {
-  throw new Error("Pedido não retornou ID");
-}
-
-localStorage.setItem("pedidoId", pedidoId);
-
-// 🔥 AGORA SIM navega
-navigate("/pix");
+    setLoading(false);
+  }
 
   return (
     <div style={{ padding: 40, maxWidth: 700, margin: "0 auto" }}>
