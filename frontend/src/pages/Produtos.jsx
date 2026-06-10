@@ -24,12 +24,13 @@ export default function Produtos() {
           "https://sublimacao-store.onrender.com/produtos"
         );
 
-        const data = await res.json();
-
-        console.log("PRODUTOS API:", data);
-
-        setProdutos(data);
-
+       const produtosFiltrados = Array.isArray(produtos)
+  ? produtos.filter((produto) =>
+      (produto?.nome ?? "")
+        .toLowerCase()
+        .includes(busca.toLowerCase())
+    )
+  : [];
       } catch (error) {
 
         console.log(error);
@@ -46,11 +47,14 @@ export default function Produtos() {
 
   }, []);
 
-  const produtosFiltrados = produtos.filter((produto) =>
-    (produto?.nome ?? "")
-      .toLowerCase()
-      .includes(busca.toLowerCase())
-  );
+ const produtosFiltrados = Array.isArray(produtos)
+  ? produtos.filter((produto) =>
+      (produto?.nome ?? "")
+        .toLowerCase()
+        .includes(busca.toLowerCase())
+    )
+  : [];
+  
 
   function adicionarAoCarrinho(produto) {
 
