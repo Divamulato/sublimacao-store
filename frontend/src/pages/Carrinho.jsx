@@ -91,8 +91,7 @@ export default function Carrinho() {
 
       alert("Pedido realizado com sucesso!");
 
-      localStorage.removeItem("carrinho");
-      setItens([]);
+     
 
       navigate("/");
     } catch (error) {

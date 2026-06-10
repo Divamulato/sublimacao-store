@@ -72,7 +72,7 @@ export default function Checkout() {
       console.log("PEDIDO CRIADO:", data);
 
       // ⚠️ NÃO limpar carrinho aqui
-      // localStorage.removeItem("carrinho");
+      // 
 
       // navega só depois de tudo pronto
       navigate("/pix");
