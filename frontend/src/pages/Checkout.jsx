@@ -8,15 +8,20 @@ export default function Checkout() {
   const [telefone, setTelefone] = useState("");
   const [endereco, setEndereco] = useState("");
   const [observacao, setObservacao] = useState("");
-
   const [loading, setLoading] = useState(false);
 
   async function continuar() {
     const carrinho =
       JSON.parse(localStorage.getItem("carrinho")) || [];
 
-    if (carrinho.length === 0) {
-      alert("Carrinho vazio");
+    if (!carrinho.length) {
+      alert("Seu carrinho está vazio");
+      navigate("/carrinho");
+      return;
+    }
+
+    if (!nome || !telefone || !endereco) {
+      alert("Preencha nome, telefone e endereço");
       return;
     }
 
@@ -25,13 +30,6 @@ export default function Checkout() {
         acc + Number(item.preco) * item.quantidade,
       0
     );
-
-    const dadosCliente = {
-      nome,
-      telefone,
-      endereco,
-      observacao,
-    };
 
     setLoading(true);
 
@@ -50,34 +48,37 @@ export default function Checkout() {
             endereco,
             telefone,
             observacao,
+            status: "pendente",
           }),
         }
       );
 
+      const data = await res.json();
+
       if (!res.ok) {
-        throw new Error("Erro ao criar pedido");
+        throw new Error(data?.error || "Erro ao criar pedido");
       }
 
-      const pedido = await res.json();
+      // salva dados do pedido
+      localStorage.setItem("cliente", JSON.stringify({
+        nome,
+        telefone,
+        endereco,
+        observacao,
+      }));
 
-      // salva dados para PIX
-      localStorage.setItem(
-        "cliente",
-        JSON.stringify(dadosCliente)
-      );
+      localStorage.setItem("pedidoId", data.id);
 
-      localStorage.setItem(
-        "pedidoId",
-        pedido.id
-      );
+      console.log("PEDIDO CRIADO:", data);
 
-      // opcional: limpar carrinho aqui ou depois do PIX
-      // localStorage.removeItem("carrinho");
+      // 🔥 NÃO limpar carrinho aqui (IMPORTANTE)
+      // carrinho só será limpo no PIX ou pagamento aprovado
 
       navigate("/pix");
+
     } catch (err) {
-      console.error(err);
-      alert("Erro ao criar pedido");
+      console.error("ERRO CHECKOUT:", err);
+      alert("Erro ao criar pedido. Tente novamente.");
     }
 
     setLoading(false);
@@ -92,8 +93,8 @@ export default function Checkout() {
         color: "#000",
       }}
     >
-      <button onClick={() => navigate(-1)}>
-        ← Voltar
+      <button onClick={() => navigate("/carrinho")}>
+        ← Voltar ao carrinho
       </button>
 
       <h1>Finalizar Pedido</h1>
@@ -125,9 +126,7 @@ export default function Checkout() {
       <textarea
         placeholder="Observações"
         value={observacao}
-        onChange={(e) =>
-          setObservacao(e.target.value)
-        }
+        onChange={(e) => setObservacao(e.target.value)}
       />
 
       <br /><br />
@@ -140,9 +139,7 @@ export default function Checkout() {
           fontSize: "18px",
         }}
       >
-        {loading
-          ? "Criando pedido..."
-          : "Continuar para PIX"}
+        {loading ? "Criando pedido..." : "Continuar para PIX"}
       </button>
     </div>
   );
