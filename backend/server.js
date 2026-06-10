@@ -104,31 +104,32 @@ app.get("/produtos", async (req, res) => {
 app.get("/produtos/:id", async (req, res) => {
   try {
 
-    const produtos = await prisma.produto.findMany();
+    const { id } = req.params;
 
-    console.log(
-      "Produtos encontrados:",
-      produtos.length
-    );
+    const produto = await prisma.produto.findUnique({
+      where: {
+        id: Number(id)
+      }
+    });
 
-    res.json(produtos);
+    if (!produto) {
+      return res.status(404).json({
+        error: "Produto não encontrado"
+      });
+    }
+
+    res.json(produto);
 
   } catch (error) {
 
-    console.error(
-      "ERRO /produtos:",
-      error
-    );
+    console.error(error);
 
     res.status(500).json({
-      error: error.message,
-      code: error.code
+      error: "Erro ao buscar produto"
     });
 
   }
 });
-  
-
 
 /* =========================
    🟢 CRIAR PRODUTO
