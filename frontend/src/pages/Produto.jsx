@@ -1,6 +1,15 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
+const [arquivo, setArquivo] =
+  useState(null);
+
+const [enviando, setEnviando] =
+  useState(false);
+
+const [fotoCliente, setFotoCliente] =
+  useState("");
+
 
 const API =
   "https://sublimacao-store.onrender.com";
@@ -40,6 +49,52 @@ export default function Produto() {
   if (!produto)
     return <h2>Carregando...</h2>;
 
+  async function uploadImagem() {
+
+  if (!arquivo) return;
+
+  setEnviando(true);
+
+  const formData = new FormData();
+
+  formData.append(
+    "imagem",
+    arquivo
+  );
+
+  try {
+
+    const res =
+      await fetch(
+        "https://sublimacao-store.onrender.com/upload",
+        {
+          method: "POST",
+          body: formData
+        }
+      );
+
+    const data =
+      await res.json();
+
+    setFotoCliente(
+      data.url
+    );
+
+    alert(
+      "Imagem enviada com sucesso!"
+    );
+
+  } catch {
+
+    alert(
+      "Erro ao enviar imagem"
+    );
+
+  }
+
+  setEnviando(false);
+}
+
  function adicionarCarrinho() {
 
   const carrinho =
@@ -58,9 +113,10 @@ export default function Produto() {
   } else {
 
     carrinho.push({
-      ...produto,
-      quantidade: 1
-    });
+  ...produto,
+  quantidade: 1,
+  fotoCliente
+});
 
   }
 
@@ -84,6 +140,34 @@ export default function Produto() {
         color: "#000"
       }}
     >
+      <h3>
+  📷 Sua arte
+</h3>
+
+<input
+  type="file"
+  accept="image/*"
+  onChange={(e) =>
+    setArquivo(
+      e.target.files[0]
+    )
+  }
+/>
+
+<br />
+<br />
+
+<button
+  onClick={uploadImagem}
+>
+  {enviando
+    ? "Enviando..."
+    : "Enviar Foto"}
+</button>
+
+<br />
+<br />
+
 
       <button
         onClick={() => navigate(-1)}
