@@ -51,31 +51,22 @@ export default function Checkout() {
 
       const data = await res.json();
 
-      if (!res.ok) throw new Error(data?.error || "Erro ao criar pedido");
+if (!res.ok) {
+  throw new Error(data?.error || "Erro ao criar pedido");
+}
 
-      // salva pedido
-      const pedidoId = data.id || data.pedido?.id;
+// 🔥 NÃO pode ter alert de sucesso aqui
+
+const pedidoId = data.id || data.pedido?.id;
 
 if (!pedidoId) {
   throw new Error("Pedido não retornou ID");
 }
 
 localStorage.setItem("pedidoId", pedidoId);
-      localStorage.setItem(
-        "cliente",
-        JSON.stringify({ nome, telefone, endereco, observacao })
-      );
 
-      // ⚠️ IMPORTANTE: NÃO limpar carrinho aqui
-      navigate("/pix", { replace: true });
-
-    } catch (err) {
-      console.error("ERRO CHECKOUT:", err);
-      alert("Erro ao criar pedido");
-    }
-
-    setLoading(false);
-  }
+// 🔥 AGORA SIM navega
+navigate("/pix");
 
   return (
     <div style={{ padding: 40, maxWidth: 700, margin: "0 auto" }}>
