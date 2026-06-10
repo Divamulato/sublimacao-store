@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const API = "https://sublimacao-store.onrender.com";
-
 export default function Carrinho() {
   const navigate = useNavigate();
   const [itens, setItens] = useState([]);
@@ -52,53 +50,20 @@ export default function Carrinho() {
     salvarCarrinho(novoCarrinho);
   }
 
-  const total = itens.reduce(
-    (acc, item) =>
-      acc + Number(item.preco) * item.quantidade,
-    0
-  );
-
-  // 🔥 CHECKOUT REAL
-  async function finalizarCompra() {
+  function finalizarCompra() {
     if (itens.length === 0) {
       alert("Carrinho vazio");
       return;
     }
 
-    const total = itens.reduce(
-      (acc, item) =>
-        acc + Number(item.preco) * item.quantidade,
-      0
-    );
-
-    try {
-      const res = await fetch(`${API}/pedidos`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          itens,
-          total,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || "Erro ao finalizar compra");
-      }
-
-      alert("Pedido realizado com sucesso!");
-
-     
-
-     
-    } catch (error) {
-      console.error("ERRO CHECKOUT:", error);
-      alert("Erro ao finalizar compra");
-    }
+    navigate("/checkout");
   }
+
+  const total = itens.reduce(
+    (acc, item) =>
+      acc + Number(item.preco) * item.quantidade,
+    0
+  );
 
   return (
     <div
@@ -141,11 +106,7 @@ export default function Carrinho() {
               }}
             >
               <img
-                src={
-                  item.fotoCliente
-                    ? item.fotoCliente
-                    : item.imagem
-                }
+                src={item.fotoCliente || item.imagem}
                 alt={item.nome}
                 style={{
                   width: "120px",
@@ -154,12 +115,6 @@ export default function Carrinho() {
                   borderRadius: "8px",
                 }}
               />
-
-              {item.fotoCliente && (
-                <p style={{ color: "green", fontWeight: "bold" }}>
-                  ✓ Arte enviada pelo cliente
-                </p>
-              )}
 
               <h3>{item.nome}</h3>
 
@@ -197,7 +152,6 @@ export default function Carrinho() {
 
           <h2>Total: R$ {total.toFixed(2)}</h2>
 
-          {/* 🔥 NOVO BOTÃO REAL */}
           <button
             onClick={finalizarCompra}
             style={{
