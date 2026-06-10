@@ -2,6 +2,9 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function Checkout() {
+
+  console.log("CHEGOU AQUI: PIX");
+  
   const navigate = useNavigate();
 
   const [nome, setNome] = useState("");
