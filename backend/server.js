@@ -232,37 +232,30 @@ app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
 
-app.post("/pedidos", async (req, res) => {
+aapp.post("/pedidos", async (req, res) => {
   try {
-    const { itens, total, cliente, endereco, telefone, observacao } = req.body;
-
-    if (!itens || itens.length === 0) {
-      return res.status(400).json({ error: "Carrinho vazio" });
-    }
+    const {
+      itens,
+      total,
+      cliente
+    } = req.body;
 
     const pedido = await prisma.pedido.create({
       data: {
         itens,
         total: Number(total),
         cliente,
-        endereco,
-        telefone,
-        observacao,
         status: "pendente",
       },
     });
 
-    return res.status(201).json({
-      id: pedido.id,
-      ...pedido
-    });
+    return res.status(201).json(pedido);
 
   } catch (error) {
     console.error("❌ ERRO PEDIDO:", error);
 
     return res.status(500).json({
-      error: "Erro ao criar pedido",
-      message: error.message,
+      error: error.message,
     });
   }
 });
