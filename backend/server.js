@@ -259,3 +259,47 @@ app.post("/pedidos", async (req, res) => {
     });
   }
 });
+
+app.post("/visitas", async (req, res) => {
+  try {
+
+    const visita =
+      await prisma.visita.create({
+        data: {}
+      });
+
+    res.json(visita);
+
+  } catch (error) {
+
+    console.error(error);
+
+    res.status(500).json({
+      error: "Erro ao registrar visita"
+    });
+
+  }
+});
+
+app.get("/pedidos", async (req, res) => {
+  try {
+
+    const pedidos =
+      await prisma.pedido.findMany({
+        orderBy: {
+          createdAt: "desc"
+        }
+      });
+
+    res.json(pedidos);
+
+  } catch (error) {
+
+    console.error(error);
+
+    res.status(500).json({
+      error: "Erro ao buscar pedidos"
+    });
+
+  }
+});

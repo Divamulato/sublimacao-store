@@ -25,7 +25,10 @@ export default function Confirmacao() {
     mensagem +=
       `WhatsApp: ${cliente.telefone}%0A%0A`;
 
-    mensagem += "Pedido:%0A";
+    mensagem +=
+  `Pedido Nº ${pedidoId}%0A%0A`;
+
+    mensagem += "Itens:%0A";
 
     carrinho.forEach(item => {
 

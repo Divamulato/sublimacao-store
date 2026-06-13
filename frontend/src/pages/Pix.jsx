@@ -50,7 +50,9 @@ const total = carrinho.reduce(
       <h2>
         Total: R$ {total.toFixed(2)}
       </h2>
-
+      <h3>
+        Pedido Nº {pedidoId}
+      </h3>
       <br />
 
       <img
