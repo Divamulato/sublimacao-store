@@ -65,6 +65,12 @@ export default function Carrinho() {
     0
   );
 
+  const quantidadeItens = itens.reduce(
+    (acc, item) =>
+      acc + item.quantidade,
+    0
+  );
+
   return (
     <div
       style={{
@@ -91,6 +97,15 @@ export default function Carrinho() {
 
       <h1>🛒 Carrinho</h1>
 
+      <p
+        style={{
+          fontSize: "18px",
+          fontWeight: "bold",
+        }}
+      >
+        Itens no carrinho: {quantidadeItens}
+      </p>
+
       {itens.length === 0 ? (
         <p>Seu carrinho está vazio.</p>
       ) : (
@@ -116,6 +131,17 @@ export default function Carrinho() {
                 }}
               />
 
+              {item.fotoCliente && (
+                <p
+                  style={{
+                    color: "green",
+                    fontWeight: "bold",
+                  }}
+                >
+                  ✓ Arte enviada pelo cliente
+                </p>
+              )}
+
               <h3>{item.nome}</h3>
 
               <p>{item.descricao}</p>
@@ -124,7 +150,19 @@ export default function Carrinho() {
                 R$ {Number(item.preco).toFixed(2)}
               </strong>
 
-              <br />
+              <p>
+                Subtotal:
+                {" "}
+                <strong>
+                  R$
+                  {" "}
+                  {(
+                    Number(item.preco) *
+                    item.quantidade
+                  ).toFixed(2)}
+                </strong>
+              </p>
+
               <br />
 
               <button onClick={() => diminuir(item.id)}>
@@ -150,7 +188,13 @@ export default function Carrinho() {
 
           <hr />
 
-          <h2>Total: R$ {total.toFixed(2)}</h2>
+          <h2>
+            Itens: {quantidadeItens}
+          </h2>
+
+          <h2>
+            Total: R$ {total.toFixed(2)}
+          </h2>
 
           <button
             onClick={finalizarCompra}
