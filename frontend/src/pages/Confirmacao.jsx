@@ -16,6 +16,9 @@ export default function Confirmacao() {
         localStorage.getItem("cliente")
       ) || {};
 
+    const pedidoId =
+      localStorage.getItem("pedidoId");
+
     let mensagem =
       `Olá Diva, realizei o pagamento.%0A%0A`;
 
@@ -26,35 +29,36 @@ export default function Confirmacao() {
       `WhatsApp: ${cliente.telefone}%0A%0A`;
 
     mensagem +=
-  `Pedido Nº ${pedidoId}%0A%0A`;
+      `Pedido Nº ${pedidoId}%0A%0A`;
 
-    mensagem += "Itens:%0A";
+    mensagem +=
+      "Itens:%0A";
 
     carrinho.forEach(item => {
 
       mensagem +=
         `${item.nome} x${item.quantidade}%0A`;
 
-        
-
     });
 
-   window.open(
-  `https://wa.me/5511984644381?text=${mensagem}`,
-  "_blank"
-);
+    window.open(
+      `https://wa.me/5511984644381?text=${mensagem}`,
+      "_blank"
+    );
 
-setTimeout(() => {
-  alert(
-    "Pedido enviado com sucesso! Obrigado pela preferência."
-  );
+    setTimeout(() => {
 
-  localStorage.removeItem("carrinho");
-  localStorage.removeItem("cliente");
-  localStorage.removeItem("pedidoId");
+      alert(
+        "Pedido enviado com sucesso! Obrigado pela preferência."
+      );
 
-  navigate("/");
-}, 500);
+      localStorage.removeItem("carrinho");
+      localStorage.removeItem("cliente");
+      localStorage.removeItem("pedidoId");
+
+      navigate("/");
+
+    }, 500);
   }
 
   return (
