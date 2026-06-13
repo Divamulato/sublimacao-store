@@ -4,6 +4,7 @@ const API = "https://sublimacao-store.onrender.com";
 
 export default function Admin() {
   const [produtos, setProdutos] = useState([]);
+  const [pedidos, setPedidos] = useState([]);
 
   const [nome, setNome] = useState("");
   const [descricao, setDescricao] = useState("");
@@ -11,6 +12,12 @@ export default function Admin() {
 
   const [imagemUrl, setImagemUrl] = useState("");
   const [imagemBase64, setImagemBase64] = useState("");
+
+async function carregarPedidos() {
+  const res = await fetch(`${API}/pedidos`);
+  const data = await res.json();
+  setPedidos(data);
+}
 
   /* =========================
      🔵 CARREGAR PRODUTOS
@@ -22,9 +29,9 @@ export default function Admin() {
   }
 
   useEffect(() => {
-    carregarProdutos();
-  }, []);
-
+  carregarProdutos();
+  carregarPedidos();
+}, []);
   /* =========================
      🖼️ UPLOAD (BASE64)
   ========================= */
@@ -223,6 +230,62 @@ export default function Admin() {
           >
             Editar
           </button>
+
+          <hr />
+
+<h2>Pedidos</h2>
+
+{pedidos.length === 0 ? (
+  <p>Nenhum pedido encontrado.</p>
+) : (
+  pedidos.map((pedido) => (
+    <div
+      key={pedido.id}
+      style={{
+        border: "1px solid #ccc",
+        padding: "15px",
+        marginBottom: "15px",
+        borderRadius: "10px"
+      }}
+    >
+      <h3>
+        Pedido #{pedido.id}
+      </h3>
+
+      <p>
+        <strong>Cliente:</strong>{" "}
+        {pedido.cliente || "Não informado"}
+      </p>
+
+      <p>
+        <strong>Status:</strong>{" "}
+        {pedido.status}
+      </p>
+
+      <p>
+        <strong>Total:</strong> R${" "}
+        {Number(pedido.total).toFixed(2)}
+      </p>
+
+      <p>
+        <strong>Data:</strong>{" "}
+        {new Date(
+          pedido.createdAt
+        ).toLocaleString("pt-BR")}
+      </p>
+
+      <strong>Itens:</strong>
+
+      <ul>
+        {pedido.itens?.map((item, index) => (
+          <li key={index}>
+            {item.nome} x{item.quantidade}
+          </li>
+        ))}
+      </ul>
+    </div>
+  ))
+)}
         </div>
       ))}
     </div>
