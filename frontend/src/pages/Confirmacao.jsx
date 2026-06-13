@@ -36,14 +36,22 @@ export default function Confirmacao() {
 
     });
 
-    window.open(
-      `https://wa.me/5511984644381?text=${mensagem}`,
-      "_blank"
+   window.open(
+  `https://wa.me/5511984644381?text=${mensagem}`,
+  "_blank"
+);
 
-      
-    );
+setTimeout(() => {
+  alert(
+    "Pedido enviado com sucesso! Obrigado pela preferência."
+  );
 
-    localStorage.removeItem("carrinho");
+  localStorage.removeItem("carrinho");
+  localStorage.removeItem("cliente");
+  localStorage.removeItem("pedidoId");
+
+  navigate("/");
+}, 500);
   }
 
   return (
