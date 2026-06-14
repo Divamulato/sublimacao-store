@@ -5,6 +5,7 @@ const API = "https://sublimacao-store.onrender.com";
 export default function Admin() {
   const [produtos, setProdutos] = useState([]);
   const [pedidos, setPedidos] = useState([]);
+  const [visitas, setVisitas] = useState(0);
 
   const [nome, setNome] = useState("");
   const [descricao, setDescricao] = useState("");
@@ -13,29 +14,163 @@ export default function Admin() {
   const [imagemUrl, setImagemUrl] = useState("");
   const [imagemBase64, setImagemBase64] = useState("");
 
-async function carregarPedidos() {
-  const res = await fetch(`${API}/pedidos`);
-  const data = await res.json();
-  setPedidos(data);
-}
+  // =========================
+  // PRODUTOS
+  // =========================
 
-  /* =========================
-     🔵 CARREGAR PRODUTOS
-  ========================= */
   async function carregarProdutos() {
-    const res = await fetch(`${API}/produtos`);
-    const data = await res.json();
-    setProdutos(data);
+    try {
+      const res = await fetch(`${API}/produtos`);
+      const data = await res.json();
+      setProdutos(data);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
-  useEffect(() => {
-  carregarProdutos();
-  carregarPedidos();
-}, []);
-  /* =========================
-     🖼️ UPLOAD (BASE64)
-  ========================= */
-  const handleImageFile = (e) => {
+  async function cadastrarProduto(e) {
+    e.preventDefault();
+
+    const payload = {
+      nome,
+      descricao,
+      preco: parseFloat(preco),
+      imagem: imagemBase64 || imagemUrl,
+    };
+
+    const res = await fetch(`${API}/produtos`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (res.ok) {
+      setNome("");
+      setDescricao("");
+      setPreco("");
+      setImagemUrl("");
+      setImagemBase64("");
+
+      carregarProdutos();
+    }
+  }
+
+  async function deletarProduto(id) {
+    if (!window.confirm("Deseja excluir este produto?")) {
+      return;
+    }
+
+    await fetch(`${API}/produtos/${id}`, {
+      method: "DELETE",
+    });
+
+    carregarProdutos();
+  }
+
+  async function editarProduto(produto) {
+    const novoNome = prompt(
+      "Novo nome:",
+      produto.nome
+    );
+
+    const novaDescricao = prompt(
+      "Nova descrição:",
+      produto.descricao || ""
+    );
+
+    const novoPreco = prompt(
+      "Novo preço:",
+      produto.preco
+    );
+
+    const novaImagem = prompt(
+      "Nova imagem:",
+      produto.imagem || ""
+    );
+
+    if (!novoNome || !novoPreco) return;
+
+    await fetch(`${API}/produtos/${produto.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        nome: novoNome,
+        descricao: novaDescricao,
+        preco: Number(novoPreco),
+        imagem: novaImagem,
+      }),
+    });
+
+    carregarProdutos();
+  }
+
+  // =========================
+  // PEDIDOS
+  // =========================
+
+  async function carregarPedidos() {
+    try {
+      const res = await fetch(`${API}/pedidos`);
+      const data = await res.json();
+      setPedidos(data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function alterarStatus(id, status) {
+    await fetch(
+      `${API}/pedidos/${id}/status`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          status,
+        }),
+      }
+    );
+
+    carregarPedidos();
+  }
+
+  async function excluirPedido(id) {
+    if (!window.confirm("Excluir pedido?")) {
+      return;
+    }
+
+    await fetch(`${API}/pedidos/${id}`, {
+      method: "DELETE",
+    });
+
+    carregarPedidos();
+  }
+
+  // =========================
+  // VISITAS
+  // =========================
+
+  async function carregarVisitas() {
+    try {
+      const res = await fetch(`${API}/visitas`);
+      const data = await res.json();
+
+      setVisitas(data.total || 0);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  // =========================
+  // IMAGEM
+  // =========================
+
+  function handleImageFile(e) {
     const file = e.target.files[0];
 
     if (!file) return;
@@ -52,84 +187,73 @@ async function carregarPedidos() {
     };
 
     reader.readAsDataURL(file);
-  };
-
-  /* =========================
-     🟢 CADASTRAR
-  ========================= */
-  async function cadastrarProduto(e) {
-    e.preventDefault();
-
-    const payload = {
-      nome,
-      descricao,
-      preco: parseFloat(preco),
-      imagem: imagemBase64 || imagemUrl
-    };
-
-    const res = await fetch(`${API}/produtos`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(payload)
-    });
-
-    if (res.ok) {
-      setNome("");
-      setDescricao("");
-      setPreco("");
-      setImagemUrl("");
-      setImagemBase64("");
-
-      carregarProdutos();
-    }
   }
 
-  /* =========================
-     🔴 DELETAR
-  ========================= */
-  async function deletarProduto(id) {
-    await fetch(`${API}/produtos/${id}`, {
-      method: "DELETE"
-    });
+  // =========================
+  // INIT
+  // =========================
 
+  useEffect(() => {
     carregarProdutos();
-  }
+    carregarPedidos();
+    carregarVisitas();
+  }, []);
 
-  /* =========================
-     🟡 EDITAR
-  ========================= */
-  async function editarProduto(produto) {
-    const novoNome = prompt("Novo nome:", produto.nome);
-    const novaDescricao = prompt("Nova descrição:", produto.descricao);
-    const novoPreco = prompt("Novo preço:", produto.preco);
-    const novaImagem = prompt(
-      "Nova URL da imagem:",
-      produto.imagem || ""
-    );
+  const totalProdutos = produtos.length;
+  const totalPedidos = pedidos.length;
 
-    if (!novoNome || !novoPreco) return;
-
-    await fetch(`${API}/produtos/${produto.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        nome: novoNome,
-        descricao: novaDescricao,
-        preco: Number(novoPreco),
-        imagem: novaImagem
-      })
-    });
-
-    carregarProdutos();
-  }
-
-  return (
+    return (
     <div style={{ padding: "40px" }}>
       <h1>Painel Admin</h1>
+
+      <div
+        style={{
+          display: "flex",
+          gap: "20px",
+          marginBottom: "30px",
+          flexWrap: "wrap"
+        }}
+      >
+        <div
+          style={{
+            padding: "20px",
+            border: "1px solid #ddd",
+            borderRadius: "10px",
+            minWidth: "180px"
+          }}
+        >
+          <h3>Visitas</h3>
+          <h2>{visitas}</h2>
+        </div>
+
+        <div
+          style={{
+            padding: "20px",
+            border: "1px solid #ddd",
+            borderRadius: "10px",
+            minWidth: "180px"
+          }}
+        >
+          <h3>Pedidos</h3>
+          <h2>{totalPedidos}</h2>
+        </div>
+
+        <div
+          style={{
+            padding: "20px",
+            border: "1px solid #ddd",
+            borderRadius: "10px",
+            minWidth: "180px"
+          }}
+        >
+          <h3>Produtos</h3>
+          <h2>{totalProdutos}</h2>
+        </div>
+      </div>
+
+      <hr />
+
+      <h2>Cadastrar Produto</h2>
 
       <form onSubmit={cadastrarProduto}>
         <input
@@ -138,7 +262,8 @@ async function carregarPedidos() {
           onChange={(e) => setNome(e.target.value)}
         />
 
-        <br /><br />
+        <br />
+        <br />
 
         <input
           placeholder="Descrição"
@@ -146,7 +271,8 @@ async function carregarPedidos() {
           onChange={(e) => setDescricao(e.target.value)}
         />
 
-        <br /><br />
+        <br />
+        <br />
 
         <input
           type="number"
@@ -155,15 +281,17 @@ async function carregarPedidos() {
           onChange={(e) => setPreco(e.target.value)}
         />
 
-        <br /><br />
+        <br />
+        <br />
 
         <input
-          placeholder="URL da imagem (opcional)"
+          placeholder="URL da imagem"
           value={imagemUrl}
           onChange={(e) => setImagemUrl(e.target.value)}
         />
 
-        <br /><br />
+        <br />
+        <br />
 
         <input
           type="file"
@@ -171,7 +299,8 @@ async function carregarPedidos() {
           onChange={handleImageFile}
         />
 
-        <br /><br />
+        <br />
+        <br />
 
         {(imagemBase64 || imagemUrl) && (
           <img
@@ -181,7 +310,6 @@ async function carregarPedidos() {
               width: "150px",
               height: "150px",
               objectFit: "cover",
-              display: "block",
               marginBottom: "15px"
             }}
           />
@@ -197,7 +325,15 @@ async function carregarPedidos() {
       <h2>Produtos</h2>
 
       {produtos.map((p) => (
-        <div key={p.id} style={{ marginBottom: 20 }}>
+        <div
+          key={p.id}
+          style={{
+            border: "1px solid #ddd",
+            borderRadius: "10px",
+            padding: "15px",
+            marginBottom: "15px"
+          }}
+        >
           {p.imagem && (
             <img
               src={p.imagem}
@@ -206,88 +342,141 @@ async function carregarPedidos() {
                 width: "120px",
                 height: "120px",
                 objectFit: "cover",
-                display: "block",
-                marginBottom: 10
+                borderRadius: "8px"
               }}
             />
           )}
 
-          <strong>{p.nome}</strong> - R$ {p.preco}
+          <h3>{p.nome}</h3>
+
+          <p>{p.descricao}</p>
+
+          <strong>
+            R$ {Number(p.preco).toFixed(2)}
+          </strong>
 
           <br />
-
-          <small>{p.descricao}</small>
-
-          <br /><br />
-
-          <button onClick={() => deletarProduto(p.id)}>
-            Deletar
-          </button>
+          <br />
 
           <button
             onClick={() => editarProduto(p)}
-            style={{ marginLeft: 10 }}
           >
             Editar
           </button>
 
-          <hr />
-
-<h2>Pedidos</h2>
-
-{pedidos.length === 0 ? (
-  <p>Nenhum pedido encontrado.</p>
-) : (
-  pedidos.map((pedido) => (
-    <div
-      key={pedido.id}
-      style={{
-        border: "1px solid #ccc",
-        padding: "15px",
-        marginBottom: "15px",
-        borderRadius: "10px"
-      }}
-    >
-      <h3>
-        Pedido #{pedido.id}
-      </h3>
-
-      <p>
-        <strong>Cliente:</strong>{" "}
-        {pedido.cliente || "Não informado"}
-      </p>
-
-      <p>
-        <strong>Status:</strong>{" "}
-        {pedido.status}
-      </p>
-
-      <p>
-        <strong>Total:</strong> R${" "}
-        {Number(pedido.total).toFixed(2)}
-      </p>
-
-      <p>
-        <strong>Data:</strong>{" "}
-        {new Date(
-          pedido.createdAt
-        ).toLocaleString("pt-BR")}
-      </p>
-
-      <strong>Itens:</strong>
-
-      <ul>
-        {pedido.itens?.map((item, index) => (
-          <li key={index}>
-            {item.nome} x{item.quantidade}
-          </li>
-        ))}
-      </ul>
-    </div>
-  ))
-)}
+          <button
+            onClick={() => deletarProduto(p.id)}
+            style={{ marginLeft: "10px" }}
+          >
+            Excluir
+          </button>
         </div>
       ))}
+
+      <hr />
+
+      <h2>Pedidos</h2>
+
+      {pedidos.length === 0 ? (
+        <p>Nenhum pedido encontrado.</p>
+      ) : (
+        pedidos.map((pedido) => (
+          <div
+            key={pedido.id}
+            style={{
+              border: "1px solid #ccc",
+              borderRadius: "10px",
+              padding: "15px",
+              marginBottom: "15px"
+            }}
+          >
+            <h3>
+              Pedido #{pedido.id}
+            </h3>
+
+            <p>
+              <strong>Cliente:</strong>{" "}
+              {pedido.cliente ||
+                "Não informado"}
+            </p>
+
+            <p>
+              <strong>Status:</strong>{" "}
+              {pedido.status}
+            </p>
+
+            <p>
+              <strong>Total:</strong> R${" "}
+              {Number(pedido.total).toFixed(
+                2
+              )}
+            </p>
+
+            <p>
+              <strong>Data:</strong>{" "}
+              {new Date(
+                pedido.createdAt
+              ).toLocaleString("pt-BR")}
+            </p>
+
+            <strong>Itens:</strong>
+
+            <ul>
+              {pedido.itens?.map(
+                (item, index) => (
+                  <li key={index}>
+                    {item.nome} x
+                    {item.quantidade}
+                  </li>
+                )
+              )}
+            </ul>
+
+            <select
+              value={pedido.status}
+              onChange={(e) =>
+                alterarStatus(
+                  pedido.id,
+                  e.target.value
+                )
+              }
+            >
+              <option value="pendente">
+                Pendente
+              </option>
+
+              <option value="pago">
+                Pago
+              </option>
+
+              <option value="producao">
+                Produção
+              </option>
+
+              <option value="enviado">
+                Enviado
+              </option>
+
+              <option value="entregue">
+                Entregue
+              </option>
+            </select>
+
+            <button
+              onClick={() =>
+                excluirPedido(
+                  pedido.id
+                )
+              }
+              style={{
+                marginLeft: "10px"
+              }}
+            >
+              Excluir Pedido
+            </button>
+          </div>
+        ))
+      )}
     </div>
   );
 }

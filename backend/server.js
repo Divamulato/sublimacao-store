@@ -281,6 +281,26 @@ app.post("/visitas", async (req, res) => {
   }
 });
 
+app.get("/visitas", async (req, res) => {
+  try {
+
+    const total = await prisma.visita.count();
+
+    res.json({
+      total
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+    res.status(500).json({
+      error: "Erro ao buscar visitas"
+    });
+
+  }
+});
+
 app.get("/pedidos", async (req, res) => {
   try {
 
@@ -299,6 +319,58 @@ app.get("/pedidos", async (req, res) => {
 
     res.status(500).json({
       error: "Erro ao buscar pedidos"
+    });
+
+  }
+});
+
+app.delete("/pedidos/:id", async (req, res) => {
+  try {
+
+    await prisma.pedido.delete({
+      where: {
+        id: Number(req.params.id)
+      }
+    });
+
+    res.json({
+      sucesso: true
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+    res.status(500).json({
+      error: "Erro ao excluir pedido"
+    });
+
+  }
+});
+
+app.put("/pedidos/:id/status", async (req, res) => {
+  try {
+
+    const { status } = req.body;
+
+    const pedido =
+      await prisma.pedido.update({
+        where: {
+          id: Number(req.params.id)
+        },
+        data: {
+          status
+        }
+      });
+
+    res.json(pedido);
+
+  } catch (error) {
+
+    console.error(error);
+
+    res.status(500).json({
+      error: "Erro ao atualizar status"
     });
 
   }
