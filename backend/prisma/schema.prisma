@@ -27,11 +27,16 @@ model Produto {
   
  model Pedido {
   id          Int      @id @default(autoincrement())
+
   total       Float
   status      String   @default("pendente")
 
-  itens       Json     // carrinho inteiro (simples e flexível)
-  cliente     String?  // depois podemos evoluir pra Usuario
+  cliente     String?
+  telefone    String?
+  endereco    String?
+  observacao  String?
+
+  itens       Json
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
