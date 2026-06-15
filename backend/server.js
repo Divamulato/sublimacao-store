@@ -234,21 +234,27 @@ app.listen(PORT, () => {
 
 app.post("/pedidos", async (req, res) => {
   try {
-    const {
+   const {
+  itens,
+  total,
+  cliente,
+  telefone,
+  endereco,
+  observacao
+} = req.body;
+
+const pedido =
+  await prisma.pedido.create({
+    data: {
       itens,
-      total,
-      cliente
-    } = req.body;
-
-    const pedido = await prisma.pedido.create({
-      data: {
-        itens,
-        total: Number(total),
-        cliente,
-        status: "pendente",
-      },
-    });
-
+      total: Number(total),
+      cliente,
+      telefone,
+      endereco,
+      observacao,
+      status: "pendente",
+    },
+  });
     return res.status(201).json(pedido);
 
   } catch (error) {
