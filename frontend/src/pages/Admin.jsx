@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const API = "https://sublimacao-store.onrender.com";
 
 export default function Admin() {
+
+  const navigate = useNavigate();
   const [produtos, setProdutos] = useState([]);
   const [pedidos, setPedidos] = useState([]);
   const [visitas, setVisitas] = useState(0);
@@ -196,10 +199,22 @@ export default function Admin() {
   // =========================
 
   useEffect(() => {
-    carregarProdutos();
-    carregarPedidos();
-    carregarVisitas();
-  }, []);
+
+  const logado =
+    localStorage.getItem(
+      "adminLogado"
+    );
+
+  if (!logado) {
+    navigate("/admin-login");
+    return;
+  }
+
+  carregarProdutos();
+  carregarPedidos();
+  carregarVisitas();
+
+}, []);
 
   const totalProdutos = produtos.length;
   const totalPedidos = pedidos.length;
@@ -258,6 +273,20 @@ const ticketMedio =
     return (
     <div style={{ padding: "40px" }}>
       <h1>Painel Admin</h1>
+
+      <button
+  onClick={() => {
+
+    localStorage.removeItem(
+      "adminLogado"
+    );
+
+    navigate("/admin-login");
+
+  }}
+>
+  Sair
+</button>
 
       <div
   style={{
