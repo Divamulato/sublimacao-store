@@ -1,7 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-
-
 import Home from "../pages/Home";
 import Produtos from "../pages/Produtos";
 import ProdutoDetalhe from "../pages/ProdutoDetalhe";
@@ -18,8 +16,8 @@ export default function AppRoutes() {
       <Routes>
 
         <Route
-         path="/admin-login"
-         element={<AdminLogin />}
+          path="/admin-login"
+          element={<AdminLogin />}
         />
 
         <Route
@@ -34,17 +32,12 @@ export default function AppRoutes() {
 
         <Route
           path="/produto/:id"
-          element={<Produto />}
+          element={<ProdutoDetalhe />}
         />
 
         <Route
           path="/carrinho"
           element={<Carrinho />}
-        />
-
-        <Route
-          path="/admin"
-          element={<Admin />}
         />
 
         <Route
@@ -60,6 +53,11 @@ export default function AppRoutes() {
         <Route
           path="/confirmacao"
           element={<Confirmacao />}
+        />
+
+        <Route
+          path="/admin"
+          element={<Admin />}
         />
 
       </Routes>
