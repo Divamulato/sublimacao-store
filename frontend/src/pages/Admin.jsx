@@ -198,12 +198,14 @@ export default function Admin() {
   // INIT
   // =========================
 
- useEffect(() => {
+  useEffect(() => {
 
   const logado =
-    localStorage.getItem("adminLogado");
+    localStorage.getItem(
+      "adminLogado"
+    );
 
-  if (logado !== "true") {
+  if (!logado) {
     navigate("/admin-login");
     return;
   }
@@ -272,19 +274,7 @@ const ticketMedio =
     <div style={{ padding: "40px" }}>
       <h1>Painel Admin</h1>
 
-      <button
-  onClick={() => {
-
-    localStorage.removeItem(
-      "adminLogado"
-    );
-
-    navigate("/admin-login");
-
-  }}
->
-  Sair
-</button>
+      
 
       <div
   style={{
