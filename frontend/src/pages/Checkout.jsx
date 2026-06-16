@@ -1,14 +1,23 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function Checkout() {
+  const location = useLocation();
   const navigate = useNavigate();
+
+const produto = location.state?.produto;
 
   const [nome, setNome] = useState("");
   const [telefone, setTelefone] = useState("");
   const [endereco, setEndereco] = useState("");
   const [observacao, setObservacao] = useState("");
   const [loading, setLoading] = useState(false);
+
+  function finalizarCompra() {
+  // salvar pedido no backend ou localStorage
+
+  navigate("/pedidos");
+}
 
   async function continuar() {
     if (loading) return;
@@ -107,6 +116,8 @@ export default function Checkout() {
       <button onClick={continuar} disabled={loading}>
         {loading ? "Criando pedido..." : "Continuar para PIX"}
       </button>
+
+      
     </div>
   );
 }

@@ -9,6 +9,10 @@ import Pix from "../pages/Pix";
 import Confirmacao from "../pages/Confirmacao";
 import Admin from "../pages/Admin";
 import AdminLogin from "../pages/AdminLogin";
+import Preview from "../pages/Preview";
+import ProdutoDetalhe from "../pages/ProdutoDetalhe";
+import Pedidos from "../pages/Pedidos";
+
 
 export default function AppRoutes() {
   return (
@@ -40,10 +44,7 @@ export default function AppRoutes() {
           element={<Carrinho />}
         />
 
-        <Route
-          path="/checkout"
-          element={<Checkout />}
-        />
+        
 
         <Route
           path="/pix"
@@ -59,6 +60,10 @@ export default function AppRoutes() {
           path="/admin"
           element={<Admin />}
         />
+        <Route path="/produto/:id" element={<ProdutoDetalhe />} />
+        <Route path="/preview" element={<Preview />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/pedidos" element={<Pedidos />} />
 
       </Routes>
     </BrowserRouter>

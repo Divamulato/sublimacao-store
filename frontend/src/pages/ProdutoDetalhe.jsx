@@ -12,18 +12,12 @@ export default function ProdutoDetalhe() {
   useEffect(() => {
     async function carregar() {
       try {
-        const res = await fetch(
-          `${API}/produtos/${id}`
-        );
-
+        const res = await fetch(`${API}/produtos/${id}`);
         const data = await res.json();
 
         setProduto(data);
       } catch (error) {
-        console.error(
-          "Erro ao carregar produto:",
-          error
-        );
+        console.error("Erro ao carregar produto:", error);
       }
     }
 
@@ -31,33 +25,40 @@ export default function ProdutoDetalhe() {
   }, [id]);
 
   function adicionarAoCarrinho() {
-  let carrinho =
-    JSON.parse(localStorage.getItem("carrinho")) || [];
+    let carrinho =
+      JSON.parse(localStorage.getItem("carrinho")) || [];
 
-  const existente = carrinho.find(
-    item => item.id === produto.id
-  );
+    const existente = carrinho.find(
+      item => item.id === produto.id
+    );
 
-  if (existente) {
-    existente.quantidade += 1;
-  } else {
-    carrinho.push({
-      ...produto,
-      quantidade: 1
+    if (existente) {
+      existente.quantidade += 1;
+    } else {
+      carrinho.push({
+        ...produto,
+        quantidade: 1
+      });
+    }
+
+    localStorage.setItem(
+      "carrinho",
+      JSON.stringify(carrinho)
+    );
+
+    navigate("/carrinho", {
+      state: {
+        from: `/produto/${produto.id}`
+      }
     });
   }
 
-  localStorage.setItem(
-    "carrinho",
-    JSON.stringify(carrinho)
-  );
+  // 🔥 NOVO: IR PARA PREVIEW
+  function handlePreview(produto) {
+  navigate("/preview", { state: { produto } });
 
-  navigate("/carrinho", {
-  state: {
-    from: `/produto/${produto.id}`
+  
   }
-});
-}
 
   if (!produto) {
     return <h2>Carregando...</h2>;
@@ -89,14 +90,20 @@ export default function ProdutoDetalhe() {
       <p>{produto.descricao}</p>
 
       <h2>
-        R$ {Number(
-          produto.preco
-        ).toFixed(2)}
+        R$ {Number(produto.preco).toFixed(2)}
       </h2>
 
-     <button onClick={adicionarAoCarrinho}>
-  Adicionar ao Carrinho
+      {/* BOTÕES */}
+      <div style={{ display: "flex", gap: "10px" }}>
+        <button onClick={adicionarAoCarrinho}>
+          Adicionar ao Carrinho
+        </button>
+
+        {/* 🔥 NOVO BOTÃO */}
+       <button onClick={() => handlePreview(produto)}>
+  Ver Preview
 </button>
+      </div>
     </div>
   );
 }
