@@ -382,3 +382,20 @@ app.put("/pedidos/:id/status", async (req, res) => {
   }
 });
 
+app.delete("/visitas", async (req, res) => {
+  try {
+    await prisma.visita.deleteMany({});
+
+    res.json({
+      sucesso: true,
+      mensagem: "Visitas zeradas"
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      error: "Erro ao zerar visitas"
+    });
+  }
+});
+

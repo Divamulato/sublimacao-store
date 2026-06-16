@@ -10,8 +10,8 @@ export default function AdminLogin() {
   function entrar() {
 
     if (
-      usuario === "admin" &&
-      senha === "123456"
+      usuario === "Sergio" &&
+      senha === "Mirage@123"
     ) {
       localStorage.setItem(
         "adminLogado",

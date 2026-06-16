@@ -19,6 +19,32 @@ export default function Admin() {
   const [buscaCliente, setBuscaCliente] = useState("");
   const [filtroStatus, setFiltroStatus] = useState("todos");
 
+  async function zerarVisitas() {
+  const confirmar = window.confirm(
+    "Deseja zerar todas as visitas?"
+  );
+
+  if (!confirmar) return;
+
+  try {
+    await fetch(`${API}/visitas`, {
+      method: "DELETE"
+    });
+
+    setVisitas(0);
+
+    alert("Visitas zeradas!");
+  } catch (error) {
+    console.error(error);
+    alert("Erro ao zerar visitas");
+  }
+}
+
+function sairAdmin() {
+  localStorage.removeItem("adminLogado");
+
+  navigate("/admin-login");
+}
   // =========================
   // PRODUTOS
   // =========================
@@ -273,6 +299,17 @@ const ticketMedio =
     return (
     <div style={{ padding: "40px" }}>
       <h1>Painel Admin</h1>
+      <div
+  style={{
+    display: "flex",
+    gap: "10px",
+    marginBottom: "20px",
+  }}
+>
+  <button onClick={sairAdmin}>
+    Sair
+  </button>
+</div>
 
       
 
@@ -292,8 +329,20 @@ const ticketMedio =
       minWidth: "180px"
     }}
   >
-    <h3>Visitas</h3>
-    <h2>{visitas}</h2>
+   <h3>Visitas</h3>
+
+<h2>{visitas}</h2>
+
+<button
+  onClick={zerarVisitas}
+  style={{
+    marginTop: "10px",
+    padding: "6px 12px",
+    cursor: "pointer"
+  }}
+>
+  Zerar
+</button>
   </div>
 
   <div
