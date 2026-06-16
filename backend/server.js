@@ -382,20 +382,3 @@ app.put("/pedidos/:id/status", async (req, res) => {
   }
 });
 
-app.get("/visitas", async (req, res) => {
-  try {
-    const total =
-      await prisma.visita.count();
-
-    res.json({ total });
-
-  } catch (error) {
-
-    console.error(error);
-
-    res.status(500).json({
-      error: "Erro ao buscar visitas"
-    });
-
-  }
-});
