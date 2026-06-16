@@ -54,10 +54,12 @@ export default function ProdutoDetalhe() {
   }
 
   // 🔥 NOVO: IR PARA PREVIEW
-  function handlePreview(produto) {
-  navigate("/preview", { state: { produto } });
-
-  
+  function irParaPreview() {
+    navigate("/preview", {
+      state: {
+        produto
+      }
+    });
   }
 
   if (!produto) {
@@ -100,9 +102,9 @@ export default function ProdutoDetalhe() {
         </button>
 
         {/* 🔥 NOVO BOTÃO */}
-       <button onClick={() => handlePreview(produto)}>
-  Ver Preview
-</button>
+        <button onClick={irParaPreview}>
+          Ver Preview
+        </button>
       </div>
     </div>
   );
