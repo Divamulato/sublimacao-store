@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Home from "../pages/Home";
 import Produtos from "../pages/Produtos";
-import ProdutoDetalhe from "../pages/ProdutoDetalhe";
+import Produto from "../pages/Produto";
 import Carrinho from "../pages/Carrinho";
 import Checkout from "../pages/Checkout";
 import Pix from "../pages/Pix";
@@ -32,7 +32,7 @@ export default function AppRoutes() {
 
         <Route
           path="/produto/:id"
-          element={<ProdutoDetalhe />}
+          element={<Produto />}
         />
 
         <Route
