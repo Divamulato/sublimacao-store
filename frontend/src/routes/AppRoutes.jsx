@@ -1,18 +1,26 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 import Home from "../pages/Home";
 import Produtos from "../pages/Produtos";
-import Admin from "../pages/Admin";
+import ProdutoDetalhe from "../pages/ProdutoDetalhe";
 import Carrinho from "../pages/Carrinho";
-import Produto from "../pages/Produto";
 import Checkout from "../pages/Checkout";
 import Pix from "../pages/Pix";
 import Confirmacao from "../pages/Confirmacao";
+import Admin from "../pages/Admin";
+import AdminLogin from "../pages/AdminLogin";
 
 export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
+
+        <Route
+         path="/admin-login"
+         element={<AdminLogin />}
+        />
 
         <Route
           path="/"

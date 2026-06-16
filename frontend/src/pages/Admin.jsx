@@ -198,14 +198,12 @@ export default function Admin() {
   // INIT
   // =========================
 
-  useEffect(() => {
+ useEffect(() => {
 
   const logado =
-    localStorage.getItem(
-      "adminLogado"
-    );
+    localStorage.getItem("adminLogado");
 
-  if (!logado) {
+  if (logado !== "true") {
     navigate("/admin-login");
     return;
   }
