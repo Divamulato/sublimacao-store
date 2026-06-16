@@ -105,38 +105,37 @@ export default function Produto() {
   }
 
   function adicionarCarrinho() {
+  const carrinho =
+    JSON.parse(
+      localStorage.getItem("carrinho")
+    ) || [];
 
-    const carrinho =
-      JSON.parse(
-        localStorage.getItem("carrinho")
-      ) || [];
+  const existe = carrinho.find(
+    item => item.id === produto.id
+  );
 
-    const existe =
-      carrinho.find(
-        item => item.id === produto.id
-      );
-
-    if (existe) {
-
-      existe.quantidade += 1;
-
-    } else {
-
-      carrinho.push({
-        ...produto,
-        quantidade: 1,
-        fotoCliente
-      });
-
-    }
-
-    localStorage.setItem(
-      "carrinho",
-      JSON.stringify(carrinho)
-    );
-
-    navigate("/carrinho");
+  if (existe) {
+    existe.quantidade += 1;
+  } else {
+    carrinho.push({
+      ...produto,
+      quantidade: 1,
+      fotoCliente
+    });
   }
+
+  localStorage.setItem(
+    "carrinho",
+    JSON.stringify(carrinho)
+  );
+
+ localStorage.setItem(
+  "paginaAnterior",
+  "/produtos"
+);
+
+navigate("/carrinho");
+}
 
   if (!produto) {
     return <h2>Carregando...</h2>;

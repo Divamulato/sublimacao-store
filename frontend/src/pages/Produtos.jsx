@@ -87,12 +87,16 @@ export default function Produtos() {
 
     }
 
-    localStorage.setItem(
-      "carrinho",
-      JSON.stringify(carrinho)
-    );
+   localStorage.setItem(
+  "carrinho",
+  JSON.stringify(carrinho)
+);
 
-    navigate("/carrinho");
+navigate("/carrinho", {
+  state: {
+    from: "/produtos"
+  }
+});
   }
 
   return (
@@ -101,27 +105,34 @@ export default function Produtos() {
 
       <div className="paginaProdutos">
 
-        <div
-          style={{
-            display: "flex",
-            gap: "10px",
-            marginBottom: "20px"
-          }}
-        >
-          <button
-            className="btnVoltar"
-            onClick={() => navigate(-1)}
-          >
-            ← Voltar
-          </button>
+       <div
+  style={{
+    display: "flex",
+    gap: "10px",
+    marginBottom: "20px"
+  }}
+>
+  <button
+    className="btnVoltar"
+    onClick={() => navigate("/")}
+  >
+    ← Voltar
+  </button>
 
-          <button
-            className="btnCarrinho"
-            onClick={() => navigate("/carrinho")}
-          >
-            🛒 Carrinho
-          </button>
-        </div>
+ <button
+  className="btnCarrinho"
+  onClick={() => {
+   localStorage.setItem(
+  "paginaAnterior",
+  "/produtos"
+);
+
+navigate("/carrinho");
+  }}
+>
+  🛒 Carrinho
+</button>
+</div>
 
         <h1 className="tituloPagina">
           🛍️ Nossos Produtos
@@ -187,13 +198,25 @@ export default function Produtos() {
                 <br />
 
                 <button
-                  className="btnComprar"
-                  onClick={() =>
-                    navigate(`/produto/${produto.id}`)
-                  }
-                >
-                  Ver Produto
-                </button>
+  className="btnComprar"
+  onClick={() =>
+    navigate(`/produto/${produto.id}`)
+  }
+>
+  Ver Produto
+</button>
+
+<button
+  className="btnComprar"
+  style={{
+    marginTop: "10px"
+  }}
+  onClick={() =>
+    adicionarAoCarrinho(produto)
+  }
+>
+  🛒 Adicionar ao Carrinho
+</button>
 
               </div>
 
