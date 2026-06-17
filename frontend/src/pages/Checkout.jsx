@@ -14,6 +14,14 @@ export default function Checkout() {
   const [loading, setLoading] = useState(false);
 
   async function continuar() {
+
+    async function continuar() {
+  console.log("CHEGOU NA FUNÇÃO CONTINUAR");
+
+  if (loading) return;
+
+  // resto do código...
+}
     if (loading) return;
 
     const carrinho =
@@ -33,71 +41,117 @@ export default function Checkout() {
     setLoading(true);
 
     try {
-      const total = carrinho.reduce(
-        (acc, item) =>
-          acc + Number(item.preco) * item.quantidade,
-        0
-      );
+  console.log("=== CARRINHO ANTES DO PEDIDO ===");
+  console.log(carrinho);
 
-      const pedidoLocal = {
-        itens: carrinho,
-        total,
-        cliente: nome,
-        telefone,
-        endereco,
-        observacao,
-        status: "pendente",
-        data: new Date().toISOString()
-      };
+  carrinho.forEach((item, index) => {
+    console.log(`ITEM ${index}:`, item);
+    console.log(
+      `ITEM ${index} - imagem existe?`,
+      !!item.imagem
+    );
+    console.log(
+      `ITEM ${index} - tamanho da imagem:`,
+      item.imagem?.length
+    );
+    console.log(
+      `ITEM ${index} - início da imagem:`,
+      item.imagem?.substring(0, 100)
+    );
+  });
 
-      const res = await fetch(
-        "https://sublimacao-store.onrender.com/pedidos",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(pedidoLocal),
-        }
-      );
+  const total = carrinho.reduce(
+    (acc, item) =>
+      acc + Number(item.preco) * item.quantidade,
+    0
+  );
 
-      const data = await res.json();
+  const pedidoLocal = {
+    itens: carrinho,
+    total,
+    cliente: nome,
+    telefone,
+    endereco,
+    observacao,
+    status: "pendente",
+    data: new Date().toISOString()
+  };
 
-      if (!res.ok) {
-        throw new Error(data?.error || "Erro ao criar pedido");
-      }
+  console.log("=== PEDIDO LOCAL ===");
+  console.log(pedidoLocal);
 
-      // salva cliente localmente
-      localStorage.setItem(
-        "cliente",
-        JSON.stringify({ nome, telefone, endereco, observacao })
-      );
+  console.log(
+    "TAMANHO DO JSON DO PEDIDO:",
+    JSON.stringify(pedidoLocal).length
+  );
 
-      localStorage.setItem("pedidoId", data.id);
-
-      // 🔥 IMPORTANTE: salvar também para página /pedidos funcionar
-      let pedidos =
-        JSON.parse(localStorage.getItem("pedidos")) || [];
-
-      pedidos.push({
-        id: data.id,
-        ...pedidoLocal
-      });
-
-      localStorage.setItem("pedidos", JSON.stringify(pedidos));
-
-      console.log("PEDIDO CRIADO:", data);
-
-      // limpar carrinho após sucesso
-      localStorage.removeItem("carrinho");
-
-      // ir para pagamento PIX
-      navigate("/pix");
-
-    } catch (err) {
-      console.error("ERRO CHECKOUT:", err);
-      alert("Erro ao criar pedido");
+  const res = await fetch(
+    "https://sublimacao-store.onrender.com/pedidos",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(pedidoLocal),
     }
+  );
+
+  const data = await res.json();
+
+  console.log("=== RESPOSTA DA API ===");
+  console.log(data);
+
+  if (!res.ok) {
+    throw new Error(data?.error || "Erro ao criar pedido");
+  }
+
+  localStorage.setItem(
+    "cliente",
+    JSON.stringify({
+      nome,
+      telefone,
+      endereco,
+      observacao
+    })
+  );
+
+  localStorage.setItem("pedidoId", data.id);
+
+  let pedidos =
+    JSON.parse(localStorage.getItem("pedidos")) || [];
+
+  pedidos.push({
+    id: data.id,
+    ...pedidoLocal
+  });
+
+  console.log(
+    "TAMANHO DO JSON DOS PEDIDOS:",
+    JSON.stringify(pedidos).length
+  );
+
+  localStorage.setItem(
+    "pedidos",
+    JSON.stringify(pedidos)
+  );
+
+  console.log(
+    "=== PEDIDOS SALVOS NO LOCALSTORAGE ==="
+  );
+  console.log(
+    JSON.parse(localStorage.getItem("pedidos"))
+  );
+
+  console.log("PEDIDO CRIADO:", data);
+
+  localStorage.removeItem("carrinho");
+
+  navigate("/pix");
+
+} catch (err) {
+  console.error("ERRO CHECKOUT:", err);
+  alert("Erro ao criar pedido");
+}
 
     setLoading(false);
   }

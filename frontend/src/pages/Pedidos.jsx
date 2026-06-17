@@ -4,7 +4,11 @@ export default function Pedidos() {
   const [pedidos, setPedidos] = useState([]);
 
   useEffect(() => {
-    const dados = JSON.parse(localStorage.getItem("pedidos")) || [];
+    const dados =
+      JSON.parse(localStorage.getItem("pedidos")) || [];
+
+    console.log("PEDIDOS:", dados);
+
     setPedidos(dados);
   }, []);
 
@@ -21,25 +25,103 @@ export default function Pedidos() {
           key={index}
           style={{
             border: "1px solid #ccc",
-            marginBottom: 20,
-            padding: 20
+            borderRadius: 10,
+            padding: 20,
+            marginBottom: 20
           }}
         >
-          <h3>{pedido.nome}</h3>
-
-          {pedido.imagem && (
-            <img
-              src={pedido.imagem}
-              alt={pedido.nome}
-              style={{ width: 150 }}
-            />
-          )}
-
-          <p>Quantidade: {pedido.quantidade}</p>
+          <h3>Pedido #{pedido.id}</h3>
 
           <p>
-            Total: R$ {Number(pedido.preco * pedido.quantidade).toFixed(2)}
+            <strong>Cliente:</strong>{" "}
+            {pedido.cliente}
           </p>
+
+          <p>
+            <strong>Status:</strong>{" "}
+            {pedido.status}
+          </p>
+
+          <p>
+            <strong>Total:</strong> R${" "}
+            {Number(pedido.total).toFixed(2)}
+          </p>
+
+          <p>
+            <strong>Data:</strong>{" "}
+            {new Date(
+              pedido.data
+            ).toLocaleString()}
+          </p>
+
+          <hr />
+
+          <h4>Itens:</h4>
+
+          {pedido.itens?.map((item, i) => (
+            <div
+              key={i}
+              style={{
+                marginBottom: 25,
+                padding: 15,
+                border: "1px solid #eee",
+                borderRadius: 8
+              }}
+            >
+              <h3>{item.nome}</h3>
+
+              <p>
+                Quantidade: {item.quantidade}
+              </p>
+
+              <p>
+                Preço: R${" "}
+                {Number(item.preco).toFixed(2)}
+              </p>
+
+              {/* FOTO DO PRODUTO */}
+              {item.imagem && (
+                <>
+                  <p>
+                    <strong>Produto:</strong>
+                  </p>
+
+                  <img
+                    src={item.imagem}
+                    alt={item.nome}
+                    style={{
+                      width: 150,
+                      borderRadius: 8,
+                      display: "block",
+                      marginBottom: 15
+                    }}
+                  />
+                </>
+              )}
+
+              {/* FOTO ENVIADA PELO CLIENTE */}
+              {item.fotoCliente && (
+                <>
+                  <p>
+                    <strong>
+                      Arte enviada:
+                    </strong>
+                  </p>
+
+                  <img
+                    src={item.fotoCliente}
+                    alt="Arte do cliente"
+                    style={{
+                      width: 200,
+                      borderRadius: 8,
+                      border:
+                        "2px solid #ddd"
+                    }}
+                  />
+                </>
+              )}
+            </div>
+          ))}
         </div>
       ))}
     </div>

@@ -630,10 +630,11 @@ const ticketMedio =
             <ul>
               {pedido.itens?.map(
                 (item, index) => (
-                  <li key={index}>
-                    {item.nome} x
-                    {item.quantidade}
-                  </li>
+                <li key={index}>
+  <pre>
+    {JSON.stringify(item, null, 2)}
+  </pre>
+</li>
                 )
               )}
             </ul>
