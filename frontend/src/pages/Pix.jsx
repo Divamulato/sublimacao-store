@@ -1,4 +1,6 @@
+import qrCodePix from "../assets/qrcode-pix.png";
 import { useNavigate } from "react-router-dom";
+
 
 export default function Pix() {
   const navigate = useNavigate();
@@ -68,13 +70,13 @@ export default function Pix() {
       <br />
 
       <img
-        src="/qrcode-pix.png"
-        alt="QR Code PIX"
-        style={{
-          width: 250,
-          borderRadius: 10
-        }}
-      />
+  src={qrCodePix}
+  alt="QR Code PIX"
+  style={{
+    width: 250,
+    borderRadius: 10
+  }}
+/>
 
       <br />
       <br />
