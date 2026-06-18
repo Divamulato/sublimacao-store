@@ -98,28 +98,40 @@ export default function Pedidos() {
                   />
                 </>
               )}
+              console.log(
+  "fotoCliente:",
+  item.fotoCliente
+);
+
+console.log(
+  "tamanho:",
+  item.fotoCliente?.length
+);
 
               {/* FOTO ENVIADA PELO CLIENTE */}
-              {item.fotoCliente && (
-                <>
-                  <p>
-                    <strong>
-                      Arte enviada:
-                    </strong>
-                  </p>
-
-                  <img
-                    src={item.fotoCliente}
-                    alt="Arte do cliente"
-                    style={{
-                      width: 200,
-                      borderRadius: 8,
-                      border:
-                        "2px solid #ddd"
-                    }}
-                  />
-                </>
-              )}
+             {item.fotoCliente && (
+  <img
+    src={item.fotoCliente}
+    alt="Arte do cliente"
+    style={{
+      width: 200,
+      border: "3px solid red",
+      borderRadius: 10
+    }}
+    onLoad={() =>
+      console.log(
+        "IMAGEM CARREGOU:",
+        item.fotoCliente
+      )
+    }
+    onError={() =>
+      console.log(
+        "ERRO AO CARREGAR:",
+        item.fotoCliente
+      )
+    }
+  />
+)}
             </div>
           ))}
         </div>

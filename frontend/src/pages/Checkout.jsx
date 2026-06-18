@@ -13,19 +13,16 @@ export default function Checkout() {
   const [observacao, setObservacao] = useState("");
   const [loading, setLoading] = useState(false);
 
-  async function continuar() {
-
-    async function continuar() {
+ async function continuar() {
   console.log("CHEGOU NA FUNÇÃO CONTINUAR");
 
   if (loading) return;
 
-  // resto do código...
-}
-    if (loading) return;
+  const carrinho =
+    JSON.parse(localStorage.getItem("carrinho")) || [];
 
-    const carrinho =
-      JSON.parse(localStorage.getItem("carrinho")) || [];
+  // resto do código...
+
 
     if (!carrinho.length) {
       alert("Seu carrinho está vazio");
