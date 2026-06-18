@@ -3,51 +3,61 @@ import { useNavigate } from "react-router-dom";
 export default function Pix() {
   const navigate = useNavigate();
 
-  const chavePix = "27828567820";
+  const chavePix =
+    "00020126400014br.gov.bcb.pix0111278285678200203Pix5204000053039865802BR5921SERGIO_FERREIRA_GRACA6009SAO_PAULO62120508Sublimao630408DE";
 
   const pedido =
     JSON.parse(
-      localStorage.getItem("pedidoAtual")
+      localStorage.getItem(
+        "pedidoAtual"
+      )
     ) || {};
 
-  const pedidoId = pedido.id;
-  const total = Number(pedido.total) || 0;
+  const pedidoId =
+    pedido.id || "-";
 
-  function copiarChave() {
+  const total =
+    Number(pedido.total) || 0;
+
+  function copiarPix() {
     navigator.clipboard.writeText(
       chavePix
     );
 
-    alert("Chave PIX copiada!");
+    alert(
+      "PIX copiado com sucesso!"
+    );
   }
 
   return (
     <div
       style={{
-        padding: "40px",
+        padding: 40,
         textAlign: "center",
         color: "#000"
       }}
     >
       <button
-        onClick={() => navigate(-1)}
+        onClick={() =>
+          navigate(-1)
+        }
       >
         ← Voltar
       </button>
 
       <button
-        onClick={copiarChave}
+        onClick={copiarPix}
         style={{
           marginLeft: 10
         }}
       >
-        Copiar Chave PIX CPF
+        Copiar PIX
       </button>
 
       <h1>Pagamento PIX</h1>
 
       <h2>
-        Total: R${" "}
+        Total: R$
         {total.toFixed(2)}
       </h2>
 
@@ -70,26 +80,33 @@ export default function Pix() {
       <br />
 
       <strong>
-        Chave PIX:
+        PIX Copia e Cola:
       </strong>
-
-      <p>{chavePix}</p>
 
       <p
         style={{
-          maxWidth: 500,
-          margin: "20px auto"
+          wordBreak:
+            "break-all",
+          maxWidth: 600,
+          margin:
+            "20px auto"
         }}
       >
-        Escaneie o QR Code ou copie
-        a chave PIX acima e realize
-        o pagamento referente ao
-        pedido.
+        {chavePix}
+      </p>
+
+      <p>
+        Escaneie o QR Code
+        ou copie o código PIX
+        acima e realize o
+        pagamento.
       </p>
 
       <button
         onClick={() =>
-          navigate("/confirmacao")
+          navigate(
+            "/confirmacao"
+          )
         }
       >
         Já Realizei o Pagamento
