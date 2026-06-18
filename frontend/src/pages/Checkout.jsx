@@ -199,3 +199,10 @@ export default function Checkout() {
     </div>
   );
 }
+localStorage.setItem(
+  "pedidoAtual",
+  JSON.stringify({
+    id: data.id,
+    total
+  })
+);

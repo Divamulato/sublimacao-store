@@ -1,22 +1,25 @@
 import { useNavigate } from "react-router-dom";
 
 export default function Pix() {
-
-    const chavePix =
-  "27828567820";
-
   const navigate = useNavigate();
 
- const pedidoId = localStorage.getItem("pedidoId");
+  const chavePix = "27828567820";
 
-const carrinho =
-  JSON.parse(localStorage.getItem("carrinho")) || [];
+  const pedido =
+    JSON.parse(
+      localStorage.getItem("pedidoAtual")
+    ) || {};
 
-const total = carrinho.reduce(
-  (acc, item) =>
-    acc + Number(item.preco) * item.quantidade,
-  0
-);
+  const pedidoId = pedido.id;
+  const total = Number(pedido.total) || 0;
+
+  function copiarChave() {
+    navigator.clipboard.writeText(
+      chavePix
+    );
+
+    alert("Chave PIX copiada!");
+  }
 
   return (
     <div
@@ -26,7 +29,6 @@ const total = carrinho.reduce(
         color: "#000"
       }}
     >
-
       <button
         onClick={() => navigate(-1)}
       >
@@ -34,35 +36,35 @@ const total = carrinho.reduce(
       </button>
 
       <button
-  onClick={() => {
-    navigator.clipboard.writeText(
-      chavePix
-    );
-
-    alert("Chave PIX copiada!");
-  }}
->
-  Copiar Chave PIX CPF
-</button>
+        onClick={copiarChave}
+        style={{
+          marginLeft: 10
+        }}
+      >
+        Copiar Chave PIX CPF
+      </button>
 
       <h1>Pagamento PIX</h1>
 
       <h2>
-        Total: R$ {total.toFixed(2)}
+        Total: R${" "}
+        {total.toFixed(2)}
       </h2>
+
       <h3>
         Pedido Nº {pedidoId}
       </h3>
+
       <br />
 
       <img
         src="/qrcode-pix.png"
         alt="QR Code PIX"
         style={{
-    width: "250px"
-  }}
-/>
-      
+          width: 250,
+          borderRadius: 10
+        }}
+      />
 
       <br />
       <br />
@@ -71,8 +73,18 @@ const total = carrinho.reduce(
         Chave PIX:
       </strong>
 
-      <p>
-        27828567820
+      <p>{chavePix}</p>
+
+      <p
+        style={{
+          maxWidth: 500,
+          margin: "20px auto"
+        }}
+      >
+        Escaneie o QR Code ou copie
+        a chave PIX acima e realize
+        o pagamento referente ao
+        pedido.
       </p>
 
       <button
@@ -82,7 +94,6 @@ const total = carrinho.reduce(
       >
         Já Realizei o Pagamento
       </button>
-
     </div>
   );
 }
