@@ -627,17 +627,77 @@ const ticketMedio =
 
             <strong>Itens:</strong>
 
-            <ul>
-              {pedido.itens?.map(
-                (item, index) => (
-                <li key={index}>
-  <pre>
-    {JSON.stringify(item, null, 2)}
-  </pre>
-</li>
-                )
-              )}
-            </ul>
+           <ul>
+  {pedido.itens?.map((item, index) => (
+    <li
+      key={index}
+      style={{
+        marginBottom: 20,
+        listStyle: "none"
+      }}
+    >
+      <h4>{item.nome}</h4>
+
+      <p>
+        Quantidade: {item.quantidade}
+      </p>
+
+      <p>
+        Preço: R$ {Number(item.preco).toFixed(2)}
+      </p>
+
+      {/* Produto */}
+      {item.imagem && (
+        <>
+          <p><strong>Produto:</strong></p>
+
+          <img
+            src={item.imagem}
+            alt={item.nome}
+            style={{
+              width: 150,
+              borderRadius: 8,
+              display: "block",
+              marginBottom: 15
+            }}
+          />
+        </>
+      )}
+
+      {/* Arte enviada */}
+      {item.fotoCliente && (
+        <>
+          <p>
+            <strong>Arte enviada pelo cliente:</strong>
+          </p>
+
+          <img
+            src={item.fotoCliente}
+            alt="Arte do cliente"
+            style={{
+              width: 220,
+              borderRadius: 8,
+              border: "2px solid #ccc",
+              display: "block"
+            }}
+            onLoad={() =>
+              console.log(
+                "Imagem carregou:",
+                item.fotoCliente
+              )
+            }
+            onError={() =>
+              console.log(
+                "Erro ao carregar:",
+                item.fotoCliente
+              )
+            }
+          />
+        </>
+      )}
+    </li>
+  ))}
+</ul>
 
             <select
               value={pedido.status}
