@@ -54,13 +54,17 @@ export default function ProdutoDetalhe() {
   }
 
   // 🔥 NOVO: IR PARA PREVIEW
-  function irParaPreview() {
-    navigate("/preview", {
-      state: {
-        produto
-      }
-    });
-  }
+ function irParaPreview() {
+  navigate("/preview", {
+    state: {
+      produto,
+      fotoCliente:
+        produto.fotoCliente ||
+        localStorage.getItem("fotoCliente") ||
+        null
+    }
+  });
+}
 
   if (!produto) {
     return <h2>Carregando...</h2>;
@@ -95,17 +99,15 @@ export default function ProdutoDetalhe() {
         R$ {Number(produto.preco).toFixed(2)}
       </h2>
 
-      {/* BOTÕES */}
-      <div style={{ display: "flex", gap: "10px" }}>
-        <button onClick={adicionarAoCarrinho}>
-          Adicionar ao Carrinho
-        </button>
+     <div style={{ display: "flex", gap: "10px" }}>
+  <button onClick={adicionarAoCarrinho}>
+    Adicionar ao Carrinho
+  </button>
 
-        {/* 🔥 NOVO BOTÃO */}
-        <button onClick={irParaPreview}>
-          Ver Preview
-        </button>
-      </div>
+  <button onClick={irParaPreview}>
+    Personalizar Produto
+  </button>
+</div>
     </div>
   );
 }

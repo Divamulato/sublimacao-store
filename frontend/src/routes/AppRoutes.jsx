@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
 import Home from "../pages/Home";
 import Produtos from "../pages/Produtos";
@@ -13,59 +13,21 @@ import Preview from "../pages/Preview";
 import ProdutoDetalhe from "../pages/ProdutoDetalhe";
 import Pedidos from "../pages/Pedidos";
 
-
 export default function AppRoutes() {
   return (
-    <BrowserRouter>
-      <Routes>
-
-        <Route
-          path="/admin-login"
-          element={<AdminLogin />}
-        />
-
-        <Route
-          path="/"
-          element={<Home />}
-        />
-
-        <Route
-          path="/produtos"
-          element={<Produtos />}
-        />
-
-        <Route
-          path="/produto/:id"
-          element={<Produto />}
-        />
-
-        <Route
-          path="/carrinho"
-          element={<Carrinho />}
-        />
-
-        
-
-        <Route
-          path="/pix"
-          element={<Pix />}
-        />
-
-        <Route
-          path="/confirmacao"
-          element={<Confirmacao />}
-        />
-
-        <Route
-          path="/admin"
-          element={<Admin />}
-        />
-        <Route path="/produto/:id" element={<ProdutoDetalhe />} />
-        <Route path="/preview" element={<Preview />} />
-        <Route path="/checkout" element={<Checkout />} />
-        <Route path="/pedidos" element={<Pedidos />} />
-
-      </Routes>
-    </BrowserRouter>
+    <Routes>
+      <Route path="/admin-login" element={<AdminLogin />} />
+      <Route path="/" element={<Home />} />
+      <Route path="/produtos" element={<Produtos />} />
+      <Route path="/produto/:id" element={<Produto />} />
+      <Route path="/carrinho" element={<Carrinho />} />
+      <Route path="/pix" element={<Pix />} />
+      <Route path="/confirmacao" element={<Confirmacao />} />
+      <Route path="/admin" element={<Admin />} />
+      <Route path="/preview" element={<Preview />} />
+      <Route path="/checkout" element={<Checkout />} />
+      <Route path="/pedidos" element={<Pedidos />} />
+    
+    </Routes>
   );
 }

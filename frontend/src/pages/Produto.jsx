@@ -1,62 +1,53 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
-const API =
-  "https://sublimacao-store.onrender.com";
+const API = "https://sublimacao-store.onrender.com";
 
 export default function Produto() {
-
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const [arquivo, setArquivo] =
-    useState(null);
+  const [arquivo, setArquivo] = useState(null);
+  const [enviando, setEnviando] = useState(false);
+  const [fotoCliente, setFotoCliente] = useState("");
+  const [produto, setProduto] = useState(null);
+  const [zoom, setZoom] = useState(false);
 
-  const [enviando, setEnviando] =
-    useState(false);
-
-  const [fotoCliente, setFotoCliente] =
-    useState("");
-
-  const [produto, setProduto] =
-    useState(null);
-
-  const [zoom, setZoom] =
-    useState(false);
+  // 👇 NOVO: preview em tempo real (antes do upload)
+  const [previewLocal, setPreviewLocal] = useState("");
 
   useEffect(() => {
-
     async function carregar() {
-
       try {
+        const res = await fetch(`${API}/produtos`);
+        const data = await res.json();
 
-        const res =
-          await fetch(`${API}/produtos`);
-
-        const data =
-          await res.json();
-
-        const encontrado =
-          data.find(
-            p => p.id === Number(id)
-          );
+        const encontrado = data.find(
+          (p) => p.id === Number(id)
+        );
 
         setProduto(encontrado);
-
       } catch (error) {
-
         console.log(error);
-
       }
-
     }
 
     carregar();
-
   }, [id]);
 
-  async function uploadImagem() {
+  // 👇 NOVO: quando escolhe arquivo já aparece na hora
+  function handleArquivo(e) {
+    const file = e.target.files[0];
 
+    setArquivo(file);
+
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setPreviewLocal(url);
+    }
+  }
+
+  async function uploadImagem() {
     if (!arquivo) {
       alert("Selecione uma imagem.");
       return;
@@ -65,185 +56,149 @@ export default function Produto() {
     setEnviando(true);
 
     const formData = new FormData();
-
-    formData.append(
-      "imagem",
-      arquivo
-    );
+    formData.append("imagem", arquivo);
 
     try {
+      const res = await fetch(
+        "https://sublimacao-store.onrender.com/upload",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
-      const res =
-        await fetch(
-          "https://sublimacao-store.onrender.com/upload",
-          {
-            method: "POST",
-            body: formData
-          }
-        );
-
-      const data =
-        await res.json();
+      const data = await res.json();
 
       setFotoCliente(data.url);
 
-      alert(
-        "Imagem enviada com sucesso!"
-      );
-
+      alert("Imagem enviada com sucesso!");
     } catch (error) {
-
       console.log(error);
-
-      alert(
-        "Erro ao enviar imagem"
-      );
-
+      alert("Erro ao enviar imagem");
     }
 
     setEnviando(false);
   }
 
   function adicionarCarrinho() {
-  const carrinho =
-    JSON.parse(
-      localStorage.getItem("carrinho")
-    ) || [];
+    const carrinho =
+      JSON.parse(localStorage.getItem("carrinho")) || [];
 
-  const existe = carrinho.find(
-    item => item.id === produto.id
-  );
+    const existe = carrinho.find(
+      (item) => item.id === produto.id
+    );
 
-  if (existe) {
-    existe.quantidade += 1;
-  } else {
-    carrinho.push({
-      ...produto,
-      quantidade: 1,
-      fotoCliente
-    });
+    if (existe) {
+      existe.quantidade += 1;
+    } else {
+      carrinho.push({
+        ...produto,
+        quantidade: 1,
+        fotoCliente,
+      });
+    }
+
+    localStorage.setItem(
+      "carrinho",
+      JSON.stringify(carrinho)
+    );
+
+    localStorage.setItem("paginaAnterior", "/produtos");
+
+    navigate("/carrinho");
   }
-
-  localStorage.setItem(
-    "carrinho",
-    JSON.stringify(carrinho)
-  );
-
- localStorage.setItem(
-  "paginaAnterior",
-  "/produtos"
-);
-
-navigate("/carrinho");
-}
 
   if (!produto) {
     return <h2>Carregando...</h2>;
   }
 
   return (
-    <div
-      style={{
-        padding: "40px",
-        color: "#000"
-      }}
-    >
-
-      <button
-        onClick={() => navigate(-1)}
-        style={{
-          padding: "10px 20px",
-          marginBottom: "20px",
-          border: "none",
-          borderRadius: "8px",
-          background: "#333",
-          color: "#fff",
-          cursor: "pointer"
-        }}
-      >
-        ← Voltar
-      </button>
+    <div style={{ padding: "40px", color: "#000" }}>
+      <button onClick={() => navigate(-1)}>← Voltar</button>
 
       <h1>{produto.nome}</h1>
 
+      {/* ================= UPLOAD ================= */}
       <h3>📷 Sua arte</h3>
 
       <input
         type="file"
         accept="image/*"
-        onChange={(e) =>
-          setArquivo(
-            e.target.files[0]
-          )
-        }
+        onChange={handleArquivo}
       />
 
       <br />
       <br />
 
-      <button
-        onClick={uploadImagem}
-      >
-        {enviando
-          ? "Enviando..."
-          : "Enviar Foto"}
+      <button onClick={uploadImagem}>
+        {enviando ? "Enviando..." : "Enviar Foto"}
       </button>
 
       <br />
       <br />
 
-      {fotoCliente && (
-        <>
-          <p>
-            ✅ Arte enviada
-          </p>
+      {/* ================= PREVIEW EM TEMPO REAL ================= */}
+      <h3>☕ Preview da Caneca</h3>
 
-          <img
-            src={fotoCliente}
-            alt="Arte Cliente"
-            style={{
-              width: "200px",
-              borderRadius: "10px",
-              marginBottom: "20px"
-            }}
-          />
-        </>
-      )}
-
+<div
+  style={{
+    width: 350,
+    height: 350,
+    marginTop: 20,
+    position: "relative",
+    backgroundImage: "url(/caneca-branca.png)",
+    backgroundSize: "contain",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center",
+    backgroundColor: "#fff",
+    borderRadius: "12px",
+  }}
+>
+  {(previewLocal || fotoCliente) && (
+    <img
+      src={previewLocal || fotoCliente}
+      alt="preview"
+      style={{
+        position: "absolute",
+        top: "30%",
+        left: "25%",
+        width: "50%",
+        height: "40%",
+        objectFit: "contain",
+      }}
+    />
+  )}
+</div>
+      {/* ================= PRODUTO ================= */}
       {produto.imagem && (
         <>
           <img
             src={produto.imagem}
             alt={produto.nome}
-            onClick={() =>
-              setZoom(true)
-            }
+            onClick={() => setZoom(true)}
             style={{
               width: "400px",
               maxWidth: "100%",
               borderRadius: "10px",
-              cursor: "zoom-in"
+              cursor: "zoom-in",
             }}
           />
 
           {zoom && (
             <div
-              onClick={() =>
-                setZoom(false)
-              }
+              onClick={() => setZoom(false)}
               style={{
                 position: "fixed",
                 top: 0,
                 left: 0,
                 width: "100%",
                 height: "100%",
-                background:
-                  "rgba(0,0,0,0.9)",
+                background: "rgba(0,0,0,0.9)",
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
                 zIndex: 9999,
-                cursor: "zoom-out"
+                cursor: "zoom-out",
               }}
             >
               <img
@@ -252,7 +207,7 @@ navigate("/carrinho");
                 style={{
                   maxWidth: "90%",
                   maxHeight: "90%",
-                  borderRadius: "12px"
+                  borderRadius: "12px",
                 }}
               />
             </div>
@@ -260,27 +215,13 @@ navigate("/carrinho");
         </>
       )}
 
-      <p>
-        {produto.descricao}
-      </p>
+      <p>{produto.descricao}</p>
 
-      <h2>
-        R$ {Number(
-          produto.preco
-        ).toFixed(2)}
-      </h2>
+      <h2>R$ {Number(produto.preco).toFixed(2)}</h2>
 
-      <button
-        onClick={adicionarCarrinho}
-        style={{
-          padding: "12px 25px",
-          fontSize: "16px",
-          cursor: "pointer"
-        }}
-      >
+      <button onClick={adicionarCarrinho}>
         Adicionar ao Carrinho
       </button>
-
     </div>
   );
 }
