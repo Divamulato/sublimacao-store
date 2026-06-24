@@ -129,3 +129,44 @@
   width: 55%;
   border-radius: 12px;
 }
+
+@media (max-width: 768px) {
+
+  /* container geral */
+  .previewContainer {
+    width: 100%;
+  }
+
+  /* CANECA */
+  .mockup {
+    width: 100%;
+    height: auto;
+  }
+
+  /* ARTE RESPONSIVA (ESSENCIAL) */
+  .arteContainer {
+    width: 35vw;     /* antes era fixo em px */
+    height: 35vw;
+
+    top: 38%;        /* ajustado para mobile */
+    left: 50%;
+
+    transform-origin: center;
+  }
+
+  /* garante imagem encaixando melhor */
+  .arteCliente {
+    object-fit: contain;
+  }
+
+  /* editor vira coluna no celular */
+  .editorPanel {
+    grid-template-columns: 1fr;
+  }
+
+  .rodapePreview {
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+  }
+}
