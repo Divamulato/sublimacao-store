@@ -145,18 +145,18 @@ export default function Produto() {
     <div
       style={{
         width: "50px",
-        maxWidth: "200%",
+        maxWidth: "60%",
         position: "relative",
-        marginTop: "20px",
+        marginTop: "10px",
       }}
     >
-    <img
+   <img
   src="/mockups/caneca-branca.png"
   alt="Caneca"
   onLoad={() => console.log("CANECA OK")}
   onError={() => console.log("ERRO CANECA")}
   style={{
-    width: "450px",
+    width: "300px",
     display: "block"
   }}
 />
@@ -166,10 +166,10 @@ export default function Produto() {
           alt="Arte"
           style={{
             position: "absolute",
-            top: "100px",
-            left: "190px",
-            width: "130px",
-            height: "130px",
+            top: "60px",
+            left: "120px",
+            width: "100px",
+            height: "100px",
             objectFit: "cover",
             borderRadius: "50px",
           }}
