@@ -1,102 +1,129 @@
+/* Página inteira */
 .previewPage {
-  min-height: 100vh;
   padding: 40px;
-  text-align: center;
+  min-height: 100vh;
   background: #f5f5f5;
+  color: #222;
 }
 
+/* Título */
+.previewPage h1 {
+  margin-bottom: 10px;
+}
+
+.previewPage p {
+  margin-bottom: 30px;
+  color: #666;
+}
+
+/* Layout em duas colunas */
+.previewLayout {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+/* Lado esquerdo */
+.previewLeft {
+  width: 320px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Imagem enviada pelo cliente */
+.previewLeft img {
+  width: 100%;
+  border-radius: 12px;
+  margin-top: 15px;
+  margin-bottom: 20px;
+}
+
+/* Botões */
+.previewLeft button {
+  width: 100%;
+  padding: 14px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 10px;
+  background: #111;
+  color: #fff;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.previewLeft button:hover {
+  opacity: 0.9;
+}
+
+/* Lado direito */
+.previewRight {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Container da caneca */
 .previewContainer {
   position: relative;
-  width: 650px;
-  height: 650px;
-  margin: 40px auto;
-  perspective: 1200px;
+  width: 500px;
+  max-width: 100%;
 }
 
-/* CANECA */
+/* Imagem da caneca */
 .mockup {
+  width: 100%;
+  display: block;
+}
+
+/* Área imprimível da caneca */
+.arteContainer {
   position: absolute;
-  inset: 0;
+
+  /* AJUSTADO PARA SUA IMAGEM */
+  width: 240px;
+  height: 260px;
+
+  top: 80px;
+  left: 170px;
+
+  overflow: hidden;
+
+  border-radius: 4px;
+}
+
+/* Arte do cliente */
+.arteCliente {
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  z-index: 5;
-}
-
-/* ARTE (CORRIGIDA) */
-.arteCliente {
-  position: absolute;
-
-  /* 📍 melhor alinhamento na área real da caneca */
-  top: 34%;
-  left: 27%;
-
-  width: 46%;
-  height: 30%;
-
   object-fit: cover;
-
-  border-radius: 14px;
-
-  /* 🔥 perspectiva leve REALISTA (não exagerada) */
-  transform:
-    perspective(1200px)
-    rotateY(-4deg)
-    scale(1.02);
-
-  /* 🔥 mistura mais natural com a caneca */
-  mix-blend-mode: multiply;
-  opacity: 0.96;
-
-  filter:
-    contrast(1.08)
-    saturate(1.1)
-    brightness(0.98);
-
-  z-index: 3;
 }
 
-/* SOMBRA (mais suave e realista) */
+/* Sombra opcional */
 .sombraArte {
   position: absolute;
-
-  top: 34%;
-  left: 27%;
-
-  width: 46%;
-  height: 30%;
-
-  border-radius: 14px;
-
-  background: radial-gradient(
-    ellipse at center,
-    rgba(0,0,0,0.12),
-    transparent 70%
-  );
-
-  z-index: 2;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.06);
+  pointer-events: none;
 }
 
-/* BRILHO (reduzido e mais realista) */
+/* Reflexo opcional */
 .reflexoArte {
   position: absolute;
-
-  top: 34%;
-  left: 27%;
-
-  width: 46%;
-  height: 30%;
-
-  border-radius: 14px;
-
+  inset: 0;
   background: linear-gradient(
     90deg,
-    transparent,
-    rgba(255,255,255,0.18),
-    transparent
+    rgba(255,255,255,0.2),
+    transparent 40%
   );
-
-  z-index: 4;
-
   pointer-events: none;
+}
+
+/* Preço */
+.previewRight h3 {
+  margin-top: 25px;
+  font-size: 24px;
 }

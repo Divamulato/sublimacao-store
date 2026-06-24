@@ -59,13 +59,10 @@ export default function ProdutoDetalhe() {
     state: {
       produto,
       fotoCliente:
-        produto.fotoCliente ||
-        localStorage.getItem("fotoCliente") ||
-        null
+        previewLocal || fotoCliente
     }
   });
 }
-
   if (!produto) {
     return <h2>Carregando...</h2>;
   }
@@ -107,6 +104,13 @@ export default function ProdutoDetalhe() {
   <button onClick={irParaPreview}>
     Personalizar Produto
   </button>
+
+  <button
+  onClick={irParaPreview}
+  disabled={!previewLocal && !fotoCliente}
+>
+  Ver Preview
+</button>
 </div>
     </div>
   );

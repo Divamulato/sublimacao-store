@@ -13,9 +13,7 @@ export default function Preview() {
       <div style={{ padding: 40 }}>
         <h2>Produto não encontrado</h2>
 
-        <button
-          onClick={() => navigate("/produtos")}
-        >
+        <button onClick={() => navigate("/produtos")}>
           Voltar aos Produtos
         </button>
       </div>
@@ -26,65 +24,83 @@ export default function Preview() {
     navigate("/checkout", {
       state: {
         produto,
-        fotoCliente
-      }
+        fotoCliente,
+      },
     });
   }
 
   return (
     <div className="previewPage">
       <h1>Personalize sua Caneca</h1>
+      <p>Confira como sua arte ficará no produto.</p>
 
-      <p>
-        Confira como sua arte ficará no
-        produto.
-      </p>
+      {/* LAYOUT PROFISSIONAL */}
+      <div className="previewLayout">
 
-      <div className="previewContainer">
-        {fotoCliente && (
-          <>
+        {/* COLUNA ESQUERDA - CONTROLES */}
+        <div className="previewLeft">
+
+          <h2>Sua arte</h2>
+
+          {/* AQUI ENTRA SEU UPLOAD (ou preview da imagem enviada) */}
+          {fotoCliente ? (
             <img
               src={fotoCliente}
-              alt="Arte"
-              className="arteCliente"
+              alt="Upload"
+              style={{
+                width: "100%",
+                borderRadius: 8,
+                marginBottom: 15
+              }}
+            />
+          ) : (
+            <p style={{ color: "#ff6600" }}>
+              Nenhuma arte enviada.
+            </p>
+          )}
+
+          <button onClick={() => navigate(-1)}>
+            Alterar Foto
+          </button>
+
+          <button onClick={irParaCheckout}>
+            Adicionar ao Carrinho
+          </button>
+
+        </div>
+
+        {/* COLUNA DIREITA - PREVIEW MOCKUP */}
+        <div className="previewRight">
+
+          <div className="previewContainer">
+
+            <img
+              src="/mockups/caneca-branca.png"
+              alt="Caneca"
+              className="mockup"
             />
 
-            <div className="sombraArte" />
+            {fotoCliente && (
+              <div className="arteContainer">
+                <img
+                  src={fotoCliente}
+                  alt="Arte do cliente"
+                  className="arteCliente"
+                />
 
-            <div className="reflexoArte" />
-          </>
-        )}
+                <div className="sombraArte" />
+                <div className="reflexoArte" />
+              </div>
+            )}
 
-        <img
-          src="/mockups/caneca-branca.png"
-          alt="Caneca"
-          className="mockup"
-        />
-      </div>
+          </div>
 
-      {!fotoCliente && (
-        <p style={{ color: "#ff6600" }}>
-          Nenhuma arte enviada.
-        </p>
-      )}
+          <h3>
+            Valor: R$ {Number(produto.preco).toFixed(2)}
+          </h3>
 
-      <h3>
-        Valor: R$
-        {Number(produto.preco).toFixed(2)}
-      </h3>
+        </div>
 
-      <div className="previewButtons">
-        <button
-          onClick={() => navigate(-1)}
-        >
-          Alterar Foto
-        </button>
-
-        <button
-          onClick={irParaCheckout}
-        >
-          Adicionar ao Carrinho
-        </button>
       </div>
     </div>
   );

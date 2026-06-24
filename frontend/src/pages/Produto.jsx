@@ -113,115 +113,124 @@ export default function Produto() {
   }
 
   return (
-    <div style={{ padding: "40px", color: "#000" }}>
-      <button onClick={() => navigate(-1)}>← Voltar</button>
+  <div style={{ padding: "40px", color: "#000" }}>
+    <button onClick={() => navigate(-1)}>
+      ← Voltar
+    </button>
 
-      <h1>{produto.nome}</h1>
+    <h1>{produto.nome}</h1>
 
-      {/* ================= UPLOAD ================= */}
-      <h3>📷 Sua arte</h3>
+    {/* UPLOAD */}
+    <h3>📷 Sua arte</h3>
 
-      <input
-        type="file"
-        accept="image/*"
-        onChange={handleArquivo}
-      />
-
-      <br />
-      <br />
-
-      <button onClick={uploadImagem}>
-        {enviando ? "Enviando..." : "Enviar Foto"}
-      </button>
-
-      <br />
-      <br />
-
-      {/* ================= PREVIEW EM TEMPO REAL ================= */}
-      <h3>☕ Preview da Caneca</h3>
-
-<div
-  style={{
-    width: 350,
-    height: 350,
-    marginTop: 20,
-    position: "relative",
-    backgroundImage: "url(/caneca-branca.png)",
-    backgroundSize: "contain",
-    backgroundRepeat: "no-repeat",
-    backgroundPosition: "center",
-    backgroundColor: "#fff",
-    borderRadius: "12px",
-  }}
->
-  {(previewLocal || fotoCliente) && (
-    <img
-      src={previewLocal || fotoCliente}
-      alt="preview"
-      style={{
-        position: "absolute",
-        top: "30%",
-        left: "25%",
-        width: "50%",
-        height: "40%",
-        objectFit: "contain",
-      }}
+    <input
+      type="file"
+      accept="image/*"
+      onChange={handleArquivo}
     />
-  )}
-</div>
-      {/* ================= PRODUTO ================= */}
-      {produto.imagem && (
-        <>
-          <img
-            src={produto.imagem}
-            alt={produto.nome}
-            onClick={() => setZoom(true)}
-            style={{
-              width: "400px",
-              maxWidth: "100%",
-              borderRadius: "10px",
-              cursor: "zoom-in",
-            }}
-          />
 
-          {zoom && (
-            <div
-              onClick={() => setZoom(false)}
-              style={{
-                position: "fixed",
-                top: 0,
-                left: 0,
-                width: "100%",
-                height: "100%",
-                background: "rgba(0,0,0,0.9)",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                zIndex: 9999,
-                cursor: "zoom-out",
-              }}
-            >
-              <img
-                src={produto.imagem}
-                alt={produto.nome}
-                style={{
-                  maxWidth: "90%",
-                  maxHeight: "90%",
-                  borderRadius: "12px",
-                }}
-              />
-            </div>
-          )}
-        </>
+    <br />
+    <br />
+
+    <button onClick={uploadImagem}>
+      {enviando ? "Enviando..." : "Enviar Foto"}
+    </button>
+
+    <br />
+    <br />
+
+    {/* PREVIEW */}
+    <h3>☕ Preview da Caneca</h3>
+
+    <div
+      style={{
+        width: "50px",
+        maxWidth: "200%",
+        position: "relative",
+        marginTop: "20px",
+      }}
+    >
+    <img
+  src="/mockups/caneca-branca.png"
+  alt="Caneca"
+  onLoad={() => console.log("CANECA OK")}
+  onError={() => console.log("ERRO CANECA")}
+  style={{
+    width: "450px",
+    display: "block"
+  }}
+/>
+      {(previewLocal || fotoCliente) && (
+        <img
+          src={previewLocal || fotoCliente}
+          alt="Arte"
+          style={{
+            position: "absolute",
+            top: "100px",
+            left: "190px",
+            width: "130px",
+            height: "130px",
+            objectFit: "cover",
+            borderRadius: "50px",
+          }}
+        />
       )}
-
-      <p>{produto.descricao}</p>
-
-      <h2>R$ {Number(produto.preco).toFixed(2)}</h2>
-
-      <button onClick={adicionarCarrinho}>
-        Adicionar ao Carrinho
-      </button>
     </div>
-  );
-}
+
+    <br />
+
+    {/* PRODUTO */}
+    {produto.imagem && (
+      <img
+        src={produto.imagem}
+        alt={produto.nome}
+        onClick={() => setZoom(true)}
+        style={{
+          width: "400px",
+          maxWidth: "100%",
+          borderRadius: "10px",
+          cursor: "zoom-in",
+        }}
+      />
+    )}
+
+    {zoom && (
+      <div
+        onClick={() => setZoom(false)}
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          background: "rgba(0,0,0,0.9)",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          zIndex: 9999,
+          cursor: "zoom-out",
+        }}
+      >
+        <img
+          src={produto.imagem}
+          alt={produto.nome}
+          style={{
+            maxWidth: "90%",
+            maxHeight: "90%",
+            borderRadius: "12px",
+          }}
+        />
+      </div>
+    )}
+
+    <p>{produto.descricao}</p>
+
+    <h2>
+      R$ {Number(produto.preco).toFixed(2)}
+    </h2>
+
+    <button onClick={adicionarCarrinho}>
+      Adicionar ao Carrinho
+    </button>
+  </div>
+)};
