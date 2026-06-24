@@ -1,4 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
+import { useState } from "react";
 import "./Preview.css";
 
 export default function Preview() {
@@ -8,100 +9,201 @@ export default function Preview() {
   const produto = location.state?.produto;
   const fotoCliente = location.state?.fotoCliente;
 
+  const [x, setX] = useState(0);
+  const [y, setY] = useState(0);
+  const [zoom, setZoom] = useState(100);
+
   if (!produto) {
     return (
       <div style={{ padding: 40 }}>
         <h2>Produto não encontrado</h2>
 
-        <button onClick={() => navigate("/produtos")}>
-          Voltar aos Produtos
+        <button
+          onClick={() =>
+            navigate("/produtos")
+          }
+        >
+          Voltar
         </button>
       </div>
     );
   }
 
-  function irParaCheckout() {
-    navigate("/checkout", {
-      state: {
-        produto,
-        fotoCliente,
-      },
+  function adicionarCarrinho() {
+    const carrinho =
+      JSON.parse(
+        localStorage.getItem("carrinho")
+      ) || [];
+
+    carrinho.push({
+      ...produto,
+      quantidade: 1,
+      fotoCliente,
+      arteX: x,
+      arteY: y,
+      arteZoom: zoom,
     });
+
+    localStorage.setItem(
+      "carrinho",
+      JSON.stringify(carrinho)
+    );
+
+    navigate("/carrinho");
   }
 
   return (
     <div className="previewPage">
-      <h1>Personalize sua Caneca</h1>
-      <p>Confira como sua arte ficará no produto.</p>
 
-      {/* LAYOUT PROFISSIONAL */}
-      <div className="previewLayout">
+      <button
+        className="btnVoltar"
+        onClick={() => navigate(-1)}
+      >
+        ← Voltar
+      </button>
 
-        {/* COLUNA ESQUERDA - CONTROLES */}
-        <div className="previewLeft">
+      <h1>{produto.nome}</h1>
 
-          <h2>Sua arte</h2>
+      <p>
+        Personalize sua caneca com sua arte
+      </p>
 
-          {/* AQUI ENTRA SEU UPLOAD (ou preview da imagem enviada) */}
-          {fotoCliente ? (
-            <img
-              src={fotoCliente}
-              alt="Upload"
+      <div className="previewCard">
+
+        <div className="previewContainer">
+
+          <img
+            src="/mockups/caneca-branca.png"
+            alt="Caneca"
+            className="mockup"
+          />
+
+          {fotoCliente && (
+            <div
+              className="arteContainer"
               style={{
-                width: "100%",
-                borderRadius: 8,
-                marginBottom: 15
+                transform: `
+                  translate(${x}px, ${y}px)
+                  scale(${zoom / 100})
+                `,
               }}
-            />
-          ) : (
-            <p style={{ color: "#ff6600" }}>
-              Nenhuma arte enviada.
-            </p>
+            >
+              <img
+                src={fotoCliente}
+                alt="Arte"
+                className="arteCliente"
+              />
+            </div>
           )}
 
-          <button onClick={() => navigate(-1)}>
-            Alterar Foto
+        </div>
+
+        <div className="editorPanel">
+
+          <div className="editorBox">
+            <h3>Sua arte</h3>
+
+            <img
+              src={fotoCliente}
+              alt=""
+              className="miniArte"
+            />
+          </div>
+
+          <div className="editorBox">
+            <h3>Posição da arte</h3>
+
+            <div className="setas">
+
+              <button
+                onClick={() =>
+                  setY(y - 10)
+                }
+              >
+                ↑
+              </button>
+
+              <button
+                onClick={() =>
+                  setX(x - 10)
+                }
+              >
+                ←
+              </button>
+
+              <button
+                onClick={() =>
+                  setX(x + 10)
+                }
+              >
+                →
+              </button>
+
+              <button
+                onClick={() =>
+                  setY(y + 10)
+                }
+              >
+                ↓
+              </button>
+
+            </div>
+          </div>
+
+          <div className="editorBox">
+            <h3>Tamanho</h3>
+
+            <input
+              type="range"
+              min="50"
+              max="150"
+              value={zoom}
+              onChange={(e) =>
+                setZoom(
+                  Number(e.target.value)
+                )
+              }
+            />
+
+            <span>{zoom}%</span>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div className="rodapePreview">
+
+        <h2>
+          R$
+          {Number(
+            produto.preco
+          ).toFixed(2)}
+        </h2>
+
+        <div>
+
+          <button
+            onClick={() =>
+              navigate(-1)
+            }
+          >
+            Alterar Arte
           </button>
 
-          <button onClick={irParaCheckout}>
+          <button
+            className="btnComprar"
+            onClick={
+              adicionarCarrinho
+            }
+          >
             Adicionar ao Carrinho
           </button>
 
         </div>
 
-        {/* COLUNA DIREITA - PREVIEW MOCKUP */}
-        <div className="previewRight">
-
-          <div className="previewContainer">
-
-            <img
-              src="/mockups/caneca-branca.png"
-              alt="Caneca"
-              className="mockup"
-            />
-
-            {fotoCliente && (
-              <div className="arteContainer">
-                <img
-                  src={fotoCliente}
-                  alt="Arte do cliente"
-                  className="arteCliente"
-                />
-
-                <div className="sombraArte" />
-                <div className="reflexoArte" />
-              </div>
-            )}
-
-          </div>
-
-          <h3>
-            Valor: R$ {Number(produto.preco).toFixed(2)}
-          </h3>
-
-        </div>
-
       </div>
+
     </div>
   );
 }

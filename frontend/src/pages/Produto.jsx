@@ -9,12 +9,8 @@ export default function Produto() {
 
   const [arquivo, setArquivo] = useState(null);
   const [enviando, setEnviando] = useState(false);
-  const [fotoCliente, setFotoCliente] = useState("");
   const [produto, setProduto] = useState(null);
   const [zoom, setZoom] = useState(false);
-
-  // 👇 NOVO: preview em tempo real (antes do upload)
-  const [previewLocal, setPreviewLocal] = useState("");
 
   useEffect(() => {
     async function carregar() {
@@ -35,16 +31,9 @@ export default function Produto() {
     carregar();
   }, [id]);
 
-  // 👇 NOVO: quando escolhe arquivo já aparece na hora
   function handleArquivo(e) {
     const file = e.target.files[0];
-
     setArquivo(file);
-
-    if (file) {
-      const url = URL.createObjectURL(file);
-      setPreviewLocal(url);
-    }
   }
 
   async function uploadImagem() {
@@ -60,7 +49,7 @@ export default function Produto() {
 
     try {
       const res = await fetch(
-        "https://sublimacao-store.onrender.com/upload",
+        `${API}/upload`,
         {
           method: "POST",
           body: formData,
@@ -69,12 +58,15 @@ export default function Produto() {
 
       const data = await res.json();
 
-      setFotoCliente(data.url);
-
-      alert("Imagem enviada com sucesso!");
+      navigate("/preview", {
+        state: {
+          produto,
+          fotoCliente: data.url,
+        },
+      });
     } catch (error) {
       console.log(error);
-      alert("Erro ao enviar imagem");
+      alert("Erro ao enviar imagem.");
     }
 
     setEnviando(false);
@@ -82,7 +74,9 @@ export default function Produto() {
 
   function adicionarCarrinho() {
     const carrinho =
-      JSON.parse(localStorage.getItem("carrinho")) || [];
+      JSON.parse(
+        localStorage.getItem("carrinho")
+      ) || [];
 
     const existe = carrinho.find(
       (item) => item.id === produto.id
@@ -94,7 +88,6 @@ export default function Produto() {
       carrinho.push({
         ...produto,
         quantidade: 1,
-        fotoCliente,
       });
     }
 
@@ -102,8 +95,6 @@ export default function Produto() {
       "carrinho",
       JSON.stringify(carrinho)
     );
-
-    localStorage.setItem("paginaAnterior", "/produtos");
 
     navigate("/carrinho");
   }
@@ -113,124 +104,116 @@ export default function Produto() {
   }
 
   return (
-  <div style={{ padding: "40px", color: "#000" }}>
-    <button onClick={() => navigate(-1)}>
-      ← Voltar
-    </button>
-
-    <h1>{produto.nome}</h1>
-
-    {/* UPLOAD */}
-    <h3>📷 Sua arte</h3>
-
-    <input
-      type="file"
-      accept="image/*"
-      onChange={handleArquivo}
-    />
-
-    <br />
-    <br />
-
-    <button onClick={uploadImagem}>
-      {enviando ? "Enviando..." : "Enviar Foto"}
-    </button>
-
-    <br />
-    <br />
-
-    {/* PREVIEW */}
-    <h3>☕ Preview da Caneca</h3>
-
     <div
       style={{
-        width: "50px",
-        maxWidth: "60%",
-        position: "relative",
-        marginTop: "10px",
+        padding: "40px",
+        color: "#000",
+        maxWidth: "900px",
+        margin: "0 auto",
       }}
     >
-   <img
-  src="/mockups/caneca-branca.png"
-  alt="Caneca"
-  onLoad={() => console.log("CANECA OK")}
-  onError={() => console.log("ERRO CANECA")}
-  style={{
-    width: "300px",
-    display: "block"
-  }}
-/>
-      {(previewLocal || fotoCliente) && (
-        <img
-          src={previewLocal || fotoCliente}
-          alt="Arte"
-          style={{
-            position: "absolute",
-            top: "60px",
-            left: "120px",
-            width: "100px",
-            height: "100px",
-            objectFit: "cover",
-            borderRadius: "50px",
-          }}
-        />
+      <button
+        onClick={() => navigate(-1)}
+      >
+        ← Voltar
+      </button>
+
+      <h1>{produto.nome}</h1>
+
+      {produto.imagem && (
+        <>
+          <img
+            src={produto.imagem}
+            alt={produto.nome}
+            onClick={() => setZoom(true)}
+            style={{
+              width: "400px",
+              maxWidth: "100%",
+              borderRadius: "12px",
+              cursor: "zoom-in",
+              marginBottom: "20px",
+            }}
+          />
+
+          {zoom && (
+            <div
+              onClick={() =>
+                setZoom(false)
+              }
+              style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                background:
+                  "rgba(0,0,0,0.9)",
+                display: "flex",
+                justifyContent:
+                  "center",
+                alignItems: "center",
+                zIndex: 9999,
+                cursor: "zoom-out",
+              }}
+            >
+              <img
+                src={produto.imagem}
+                alt={produto.nome}
+                style={{
+                  maxWidth: "90%",
+                  maxHeight: "90%",
+                  borderRadius: "12px",
+                }}
+              />
+            </div>
+          )}
+        </>
       )}
-    </div>
 
-    <br />
+      <p>{produto.descricao}</p>
 
-    {/* PRODUTO */}
-    {produto.imagem && (
-      <img
-        src={produto.imagem}
-        alt={produto.nome}
-        onClick={() => setZoom(true)}
+      <h2>
+        R$
+        {" "}
+        {Number(
+          produto.preco
+        ).toFixed(2)}
+      </h2>
+
+      <hr
         style={{
-          width: "400px",
-          maxWidth: "100%",
-          borderRadius: "10px",
-          cursor: "zoom-in",
+          margin: "30px 0",
         }}
       />
-    )}
 
-    {zoom && (
-      <div
-        onClick={() => setZoom(false)}
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          background: "rgba(0,0,0,0.9)",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          zIndex: 9999,
-          cursor: "zoom-out",
-        }}
+      <h3>📷 Envie sua arte</h3>
+
+      <input
+        type="file"
+        accept="image/*"
+        onChange={handleArquivo}
+      />
+
+      <br />
+      <br />
+
+      <button
+        onClick={uploadImagem}
+        disabled={enviando}
       >
-        <img
-          src={produto.imagem}
-          alt={produto.nome}
-          style={{
-            maxWidth: "90%",
-            maxHeight: "90%",
-            borderRadius: "12px",
-          }}
-        />
-      </div>
-    )}
+        {enviando
+          ? "Enviando..."
+          : "Personalizar Produto"}
+      </button>
 
-    <p>{produto.descricao}</p>
+      <br />
+      <br />
 
-    <h2>
-      R$ {Number(produto.preco).toFixed(2)}
-    </h2>
-
-    <button onClick={adicionarCarrinho}>
-      Adicionar ao Carrinho
-    </button>
-  </div>
-)};
+      <button
+        onClick={adicionarCarrinho}
+      >
+        Adicionar ao Carrinho
+      </button>
+    </div>
+  );
+}
