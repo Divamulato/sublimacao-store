@@ -74,7 +74,7 @@ export default function Home() {
       <Navbar />
 
       <section className="hero">
-        <h1>DIVA SUBLIMAÇÃO</h1>
+        <h1>DIVA ATELIER DE SUBLIMAÇÃO</h1>
 
         <p>
           Produtos personalizados com acabamento premium.
