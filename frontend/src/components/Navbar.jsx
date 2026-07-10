@@ -5,7 +5,7 @@ export default function Navbar() {
   return (
     <nav className="navbar">
       <div className="logo">
-        DIVA SUBLIMAÇÃO
+         DIVA ATELIER DE SUBLIMAÇÃO
       </div>
 
       <div className="menu">
