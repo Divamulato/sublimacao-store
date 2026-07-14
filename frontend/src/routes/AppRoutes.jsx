@@ -27,6 +27,7 @@ export default function AppRoutes() {
       <Route path="/preview" element={<Preview />} />
       <Route path="/checkout" element={<Checkout />} />
       <Route path="/pedidos" element={<Pedidos />} />
+      <Route path="/cadastro" element={<Cadastro />} />
     
     </Routes>
   );

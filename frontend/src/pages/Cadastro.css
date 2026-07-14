@@ -1,0 +1,117 @@
+.cadastro-page{
+
+    min-height:100vh;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    padding:40px 20px;
+
+    background:#f6f6f8;
+
+}
+
+.cadastro-card{
+
+    width:100%;
+
+    max-width:500px;
+
+    background:white;
+
+    padding:40px;
+
+    border-radius:18px;
+
+    box-shadow:0 10px 30px rgba(0,0,0,.08);
+
+}
+
+.cadastro-card h1{
+
+    text-align:center;
+
+    color:#d81b60;
+
+    margin-bottom:10px;
+
+}
+
+.cadastro-card p{
+
+    text-align:center;
+
+    color:#666;
+
+    margin-bottom:35px;
+
+}
+
+.cadastro-card form{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:18px;
+
+}
+
+.cadastro-card label{
+
+    font-weight:600;
+
+    color:#444;
+
+}
+
+.cadastro-card input{
+
+    padding:14px;
+
+    border-radius:10px;
+
+    border:1px solid #ddd;
+
+    font-size:16px;
+
+}
+
+.cadastro-card input:focus{
+
+    outline:none;
+
+    border-color:#d81b60;
+
+}
+
+.cadastro-card button{
+
+    margin-top:10px;
+
+    padding:16px;
+
+    background:#d81b60;
+
+    color:white;
+
+    border:none;
+
+    border-radius:10px;
+
+    font-size:17px;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+.cadastro-card button:hover{
+
+    background:#b9154f;
+
+}
