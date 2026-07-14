@@ -8,11 +8,11 @@ datasource db {
 }
 
 model Usuario {
-  id        Int      @id @default(autoincrement())
-  nome      String
-  email     String   @unique
-  senha     String
-  createdAt DateTime @default(now())
+  id         Int      @id @default(autoincrement())
+  nome       String
+  email      String   @unique
+  telefone   String
+  createdAt  DateTime @default(now())
 }
 
 model Produto {
@@ -46,3 +46,4 @@ model Visita {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
 }
+

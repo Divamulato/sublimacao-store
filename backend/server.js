@@ -226,11 +226,6 @@ app.delete("/produtos/:id", async (req, res) => {
 // =========================
 // START SERVER
 // =========================
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
-});
 
 app.post("/pedidos", async (req, res) => {
   try {
@@ -399,3 +394,51 @@ app.delete("/visitas", async (req, res) => {
   }
 });
 
+app.post("/usuarios", async (req, res) => {
+  try {
+    const { nome, email, telefone } = req.body;
+
+    if (!nome || !email || !telefone) {
+      return res.status(400).json({
+        error: "Nome, e-mail e telefone são obrigatórios.",
+      });
+    }
+
+    const usuarioExistente = await prisma.usuario.findUnique({
+      where: {
+        email,
+      },
+    });
+
+    if (usuarioExistente) {
+      return res.status(400).json({
+        error: "Este e-mail já está cadastrado.",
+      });
+    }
+
+    const usuario = await prisma.usuario.create({
+      data: {
+        nome,
+        email,
+        telefone,
+      },
+    });
+
+    return res.status(201).json(usuario);
+  } catch (error) {
+    console.error("ERRO AO CADASTRAR USUÁRIO:", error);
+
+    return res.status(500).json({
+      error: "Erro ao cadastrar usuário.",
+    });
+  }
+});
+
+// =========================
+// START SERVER
+// =========================
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Servidor rodando na porta ${PORT}`);
+});
