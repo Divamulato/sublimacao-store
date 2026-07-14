@@ -12,6 +12,7 @@ import AdminLogin from "../pages/AdminLogin";
 import Preview from "../pages/Preview";
 import ProdutoDetalhe from "../pages/ProdutoDetalhe";
 import Pedidos from "../pages/Pedidos";
+import Cadastro from "../pages/Cadastro"; // <-- FALTAVA ESTA LINHA
 
 export default function AppRoutes() {
   return (
@@ -28,7 +29,6 @@ export default function AppRoutes() {
       <Route path="/checkout" element={<Checkout />} />
       <Route path="/pedidos" element={<Pedidos />} />
       <Route path="/cadastro" element={<Cadastro />} />
-    
     </Routes>
   );
 }
