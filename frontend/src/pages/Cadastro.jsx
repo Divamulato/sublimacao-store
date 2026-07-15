@@ -15,6 +15,20 @@ export default function Cadastro() {
 
   async function cadastrar(e) {
     e.preventDefault();
+    console.log("Botão clicado");
+    console.log({
+  nome,
+  email,
+  telefone
+});
+
+console.log(response.status);
+
+const dados = await response.json();
+
+console.log(dados);
+
+
 
     if (!nome || !email || !telefone) {
       alert("Preencha todos os campos.");
@@ -39,12 +53,24 @@ export default function Cadastro() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Erro ao cadastrar.");
-      }
+  const erro = await response.json();
 
-      alert("Cadastro realizado com sucesso!");
+  throw new Error(erro.error || "Erro ao cadastrar.");
+}
 
-      navigate("/checkout");
+// salva o usuário para usar no checkout
+localStorage.setItem(
+  "usuario",
+  JSON.stringify({
+    nome,
+    email,
+    telefone,
+  })
+);
+
+alert("Cadastro realizado com sucesso!");
+
+navigate("/checkout");
 
     } catch (error) {
       alert(error.message);
