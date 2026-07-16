@@ -229,35 +229,49 @@ app.delete("/produtos/:id", async (req, res) => {
 
 app.post("/pedidos", async (req, res) => {
   try {
-   const {
-  itens,
-  total,
-  cliente,
-  telefone,
-  endereco,
-  observacao
-} = req.body;
 
-const pedido =
-  await prisma.pedido.create({
-    data: {
+    const {
+      usuarioId,
       itens,
-      total: Number(total),
+      total,
       cliente,
+      email,
       telefone,
       endereco,
-      observacao,
-      status: "pendente",
-    },
-  });
+      observacao
+    } = req.body;
+
+    const pedido = await prisma.pedido.create({
+      data: {
+        usuarioId: usuarioId ? Number(usuarioId) : null,
+
+        itens,
+        total: Number(total),
+
+        cliente,
+        email,
+        telefone,
+        endereco,
+        observacao,
+
+        status: "pendente"
+      },
+
+      include: {
+        usuario: true
+      }
+    });
+
     return res.status(201).json(pedido);
 
   } catch (error) {
+
     console.error("❌ ERRO PEDIDO:", error);
 
     return res.status(500).json({
-      error: error.message,
+      error: error.message
     });
+
   }
 });
 
@@ -437,8 +451,39 @@ app.post("/usuarios", async (req, res) => {
 // =========================
 // START SERVER
 // =========================
+
+
+process.on("uncaughtException", (err) => {
+  console.error("ERRO NÃO TRATADO:");
+  console.error(err);
+});
+
+process.on("unhandledRejection", (err) => {
+  console.error("PROMISE NÃO TRATADA:");
+  console.error(err);
+});
+
+process.on("exit", (code) => {
+  console.log("Processo encerrado. Código:", code);
+});
+
+process.on("uncaughtException", (err) => {
+  console.error("ERRO NÃO TRATADO:");
+  console.error(err);
+});
+
+process.on("unhandledRejection", (err) => {
+  console.error("PROMISE NÃO TRATADA:");
+  console.error(err);
+});
+
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
+});
+
+server.on("error", (err) => {
+  console.error("Erro ao iniciar servidor:");
+  console.error(err);
 });

@@ -60,22 +60,35 @@ export default function Checkout() {
       ==========================
       */
 
-      const usuarioResponse = await fetch(
-        "https://sublimacao-store.onrender.com/usuarios",
-        {
-          method: "POST",
+     const usuarioResponse = await fetch(
+  "https://sublimacao-store.onrender.com/usuarios",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      nome,
+      email,
+      telefone
+    })
+  }
+);
 
-          headers: {
-            "Content-Type": "application/json"
-          },
+let usuarioId = null;
 
-          body: JSON.stringify({
-            nome,
-            email,
-            telefone
-          })
-        }
-      );
+if (usuarioResponse.ok) {
+  const usuario = await usuarioResponse.json();
+  usuarioId = usuario.id;
+} else {
+  const erro = await usuarioResponse.json();
+
+  if (erro.error === "Este e-mail já está cadastrado.") {
+    console.log("Usuário já cadastrado.");
+  } else {
+    throw new Error(erro.error);
+  }
+}
 
 
       if (!usuarioResponse.ok) {
@@ -124,25 +137,20 @@ export default function Checkout() {
       */
 
       const pedidoLocal = {
+  usuarioId,
 
-        itens: carrinho,
+  itens: carrinho,
+  total,
 
-        total,
+  cliente: nome,
+  email,
+  telefone,
+  endereco,
+  observacao,
 
-        cliente: nome,
-
-        telefone,
-
-        endereco,
-
-        observacao,
-
-        status: "pendente",
-
-        data:
-          new Date().toISOString()
-
-      };
+  status: "pendente",
+  data: new Date().toISOString()
+};
 
 
 
@@ -405,22 +413,14 @@ export default function Checkout() {
 
 
       <input
+  type="email"
+  placeholder="E-mail"
+  value={email}
+  onChange={(e) => setEmail(e.target.value)}
+/>
 
-        placeholder="E-mail"
-
-        type="email"
-
-        value={email}
-
-        onChange={(e)=>
-          setEmail(e.target.value)
-        }
-
-      />
-
-
-      <br/>
-      <br/>
+<br />
+<br />
 
 
 
