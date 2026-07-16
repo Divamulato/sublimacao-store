@@ -448,6 +448,24 @@ app.post("/usuarios", async (req, res) => {
   }
 });
 
+app.get("/usuarios", async (req, res) => {
+  try {
+    const usuarios = await prisma.usuario.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    res.json(usuarios);
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      error: "Erro ao buscar usuários",
+    });
+  }
+});
+
 // =========================
 // START SERVER
 // =========================
