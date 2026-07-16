@@ -255,18 +255,16 @@ if (usuarioResponse.ok) {
 
 
       localStorage.setItem(
-
-        "pedidoAtual",
-
-        JSON.stringify({
-
-          id:data.id,
-
-          total
-
-        })
-
-      );
+  "pedidoAtual",
+  JSON.stringify({
+    id: data.id,
+    total,
+    itens: carrinho,
+    cliente: nome,
+    telefone,
+    endereco
+  })
+);
 
 
 
