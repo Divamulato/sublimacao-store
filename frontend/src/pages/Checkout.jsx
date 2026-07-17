@@ -13,6 +13,8 @@ export default function Checkout() {
   const [endereco, setEndereco] = useState("");
   const [observacao, setObservacao] = useState("");
   const [loading, setLoading] = useState(false);
+  
+  
 
 
   async function continuar() {
@@ -410,11 +412,10 @@ if (usuarioResponse.ok) {
 
 
 
-      <input
-  type="email"
-  placeholder="E-mail"
-  value={email}
-  onChange={(e) => setEmail(e.target.value)}
+     <input
+ placeholder="Email"
+ value={email}
+ onChange={(e)=>setEmail(e.target.value)}
 />
 
 <br />
