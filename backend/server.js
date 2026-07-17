@@ -231,7 +231,6 @@ app.post("/pedidos", async (req, res) => {
   try {
 
     const {
-      usuarioId,
       itens,
       total,
       cliente,
@@ -241,11 +240,20 @@ app.post("/pedidos", async (req, res) => {
       observacao
     } = req.body;
 
+
+    // procura o cliente cadastrado
+    const usuario = await prisma.usuario.findUnique({
+      where: {
+        email
+      }
+    });
+
+
     const pedido = await prisma.pedido.create({
       data: {
-        usuarioId: usuarioId ? Number(usuarioId) : null,
 
         itens,
+
         total: Number(total),
 
         cliente,
@@ -254,15 +262,22 @@ app.post("/pedidos", async (req, res) => {
         endereco,
         observacao,
 
-        status: "pendente"
+        status: "pendente",
+
+        // ligação com usuário
+        usuarioId: usuario?.id || null
+
       },
 
       include: {
         usuario: true
       }
+
     });
 
+
     return res.status(201).json(pedido);
+
 
   } catch (error) {
 
@@ -493,6 +508,110 @@ process.on("uncaughtException", (err) => {
 process.on("unhandledRejection", (err) => {
   console.error("PROMISE NÃO TRATADA:");
   console.error(err);
+});
+
+// =========================
+// CLIENTES CRM
+// =========================
+
+app.get("/clientes", async (req, res) => {
+
+  try {
+
+    const clientes = await prisma.usuario.findMany({
+
+      include: {
+
+        pedidos: {
+          orderBy: {
+            createdAt: "desc"
+          }
+        }
+
+      }
+
+    });
+
+
+    const resultado = clientes.map(cliente => {
+
+
+      const totalPedidos = cliente.pedidos.length;
+
+
+      const totalGasto = cliente.pedidos.reduce(
+        (total, pedido) => {
+          return total + pedido.total;
+        },
+        0
+      );
+
+
+      const ultimaCompra =
+        cliente.pedidos.length > 0
+          ? cliente.pedidos[0].createdAt
+          : null;
+
+
+
+      return {
+
+        id: cliente.id,
+
+        nome: cliente.nome,
+
+        email: cliente.email,
+
+        telefone: cliente.telefone,
+
+
+        totalPedidos,
+
+
+        totalGasto,
+
+
+        ultimaCompra,
+
+
+        status:
+
+          totalPedidos >= 5
+            ? "VIP"
+
+            : totalPedidos >= 2
+              ? "Frequente"
+
+              : "Novo"
+
+      };
+
+
+    });
+
+
+    res.json(resultado);
+
+
+  } catch(error) {
+
+
+    console.error(
+      "ERRO CLIENTES CRM:",
+      error
+    );
+
+
+    res.status(500).json({
+
+      error:
+      "Erro ao buscar clientes"
+
+    });
+
+
+  }
+
 });
 
 const PORT = process.env.PORT || 3000;
