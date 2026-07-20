@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const API = "https://sublimacao-store.onrender.com";
 
 export default function Clientes() {
   const [clientes, setClientes] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     carregarClientes();
@@ -39,69 +42,68 @@ export default function Clientes() {
           width: "100%",
         }}
       >
-       <thead>
-<tr>
-<th>ID</th>
-<th>Nome</th>
-<th>Email</th>
-<th>Telefone</th>
-<th>Pedidos</th>
-<th>Total gasto</th>
-<th>Status</th>
-<th>Última compra</th>
-</tr>
-</thead>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Email</th>
+            <th>Telefone</th>
+            <th>Pedidos</th>
+            <th>Total gasto</th>
+            <th>Status</th>
+            <th>Última compra</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
 
         <tbody>
+          {clientes.map((cliente) => (
+            <tr key={cliente.id}>
+              <td>{cliente.id}</td>
 
-{clientes.map((cliente)=>(
+              <td>{cliente.nome}</td>
 
-<tr key={cliente.id}>
+              <td>{cliente.email}</td>
 
-<td>{cliente.id}</td>
+              <td>{cliente.telefone}</td>
 
-<td>{cliente.nome}</td>
+              <td>{cliente.totalPedidos}</td>
 
-<td>{cliente.email}</td>
+              <td>
+                R$ {Number(cliente.totalGasto).toFixed(2)}
+              </td>
 
-<td>{cliente.telefone}</td>
+              <td>{cliente.status}</td>
 
+              <td>
+                {cliente.ultimaCompra
+                  ? new Date(
+                      cliente.ultimaCompra
+                    ).toLocaleDateString("pt-BR")
+                  : "-"}
+              </td>
 
-<td>
-{cliente.totalPedidos}
-</td>
-
-
-<td>
-R$ {cliente.totalGasto.toFixed(2)}
-</td>
-
-
-<td>
-{cliente.status}
-</td>
-
-
-<td>
-
-{
-cliente.ultimaCompra
-?
-new Date(
-cliente.ultimaCompra
-).toLocaleDateString("pt-BR")
-:
-"-"
-}
-
-</td>
-
-
-</tr>
-
-))}
-
-</tbody>
+              <td>
+                <button
+                  onClick={() =>
+                    navigate(`/cliente/${cliente.id}`)
+                  }
+                  style={{
+                    background: "#8e44ad",
+                    color: "#fff",
+                    border: "none",
+                    padding: "8px 14px",
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Ver detalhes
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
       </table>
     </div>
   );

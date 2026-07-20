@@ -14,6 +14,7 @@ import ProdutoDetalhe from "../pages/ProdutoDetalhe";
 import Pedidos from "../pages/Pedidos";
 import Cadastro from "../pages/Cadastro"; // <-- FALTAVA ESTA LINHA
 import Clientes from "../pages/Clientes";
+import Cliente from "../pages/Cliente";
 
 export default function AppRoutes() {
   return (
@@ -31,6 +32,7 @@ export default function AppRoutes() {
       <Route path="/pedidos" element={<Pedidos />} />
       <Route path="/cadastro" element={<Cadastro />} />
       <Route path="/clientes" element={<Clientes />} />
+      <Route path="/cliente/:id" element={<Cliente />} />
     </Routes>
   );
 }

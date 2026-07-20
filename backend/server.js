@@ -624,3 +624,59 @@ server.on("error", (err) => {
   console.error("Erro ao iniciar servidor:");
   console.error(err);
 });
+
+// =========================
+// DETALHES DO CLIENTE
+// =========================
+app.get("/clientes/:id", async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+
+    const cliente = await prisma.usuario.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        pedidos: {
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
+      },
+    });
+
+    if (!cliente) {
+      return res.status(404).json({
+        error: "Cliente não encontrado",
+      });
+    }
+
+    const totalPedidos = cliente.pedidos.length;
+
+    const totalGasto = cliente.pedidos.reduce(
+      (total, pedido) =>
+        total + Number(pedido.total),
+      0
+    );
+
+    res.json({
+      id: cliente.id,
+      nome: cliente.nome,
+      email: cliente.email,
+      telefone: cliente.telefone,
+      createdAt: cliente.createdAt,
+
+      totalPedidos,
+      totalGasto,
+
+      pedidos: cliente.pedidos,
+    });
+
+  } catch (error) {
+    console.error("ERRO CLIENTE:", error);
+
+    res.status(500).json({
+      error: "Erro ao buscar cliente",
+    });
+  }
+});
