@@ -15,6 +15,7 @@ import Pedidos from "../pages/Pedidos";
 import Cadastro from "../pages/Cadastro"; // <-- FALTAVA ESTA LINHA
 import Clientes from "../pages/Clientes";
 import Cliente from "../pages/Cliente";
+import DetalhesPedido from "../pages/DetalhesPedido";
 
 export default function AppRoutes() {
   return (
@@ -33,6 +34,8 @@ export default function AppRoutes() {
       <Route path="/cadastro" element={<Cadastro />} />
       <Route path="/clientes" element={<Clientes />} />
       <Route path="/cliente/:id" element={<Cliente />} />
+      <Route path="/admin/pedido/:id" element={<DetalhesPedido />} />
+
     </Routes>
   );
 }

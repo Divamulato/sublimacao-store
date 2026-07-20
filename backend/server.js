@@ -228,6 +228,9 @@ app.delete("/produtos/:id", async (req, res) => {
 // =========================
 
 app.post("/pedidos", async (req, res) => {
+
+   console.log(">>> BUSCANDO PEDIDO", req.params.id);
+
   try {
 
     const {
@@ -290,6 +293,85 @@ app.post("/pedidos", async (req, res) => {
   }
 });
 
+// ============================
+// LISTAR TODOS OS PEDIDOS
+// ============================
+
+app.get("/pedidos", async (req, res) => {
+  try {
+
+    const pedidos = await prisma.pedido.findMany({
+
+      include: {
+        usuario: true
+      },
+
+      orderBy: {
+        createdAt: "desc"
+      }
+
+    });
+
+    return res.json(pedidos);
+
+  } catch (error) {
+
+    console.error(error);
+
+    return res.status(500).json({
+      error: error.message
+    });
+
+  }
+});
+
+
+// ============================
+// BUSCAR PEDIDO POR ID
+// ============================
+
+console.log(">>> ROTA DETALHES PEDIDO REGISTRADA");
+
+app.get("/pedidos/:id", async (req, res) => {
+
+  try {
+
+    const id = Number(req.params.id);
+
+    const pedido = await prisma.pedido.findUnique({
+
+      where: {
+        id
+      },
+
+      include: {
+        usuario: true
+      }
+
+    });
+
+    if (!pedido) {
+
+      return res.status(404).json({
+        error: "Pedido não encontrado."
+      });
+
+    }
+
+    return res.json(pedido);
+
+  } catch (error) {
+
+    console.error(error);
+
+    return res.status(500).json({
+      error: error.message
+    });
+
+  }
+
+});
+
 app.post("/visitas", async (req, res) => {
   try {
 
@@ -331,28 +413,7 @@ app.get("/visitas", async (req, res) => {
   }
 });
 
-app.get("/pedidos", async (req, res) => {
-  try {
 
-    const pedidos =
-      await prisma.pedido.findMany({
-        orderBy: {
-          createdAt: "desc"
-        }
-      });
-
-    res.json(pedidos);
-
-  } catch (error) {
-
-    console.error(error);
-
-    res.status(500).json({
-      error: "Erro ao buscar pedidos"
-    });
-
-  }
-});
 
 app.delete("/pedidos/:id", async (req, res) => {
   try {
@@ -500,10 +561,7 @@ process.on("exit", (code) => {
   console.log("Processo encerrado. Código:", code);
 });
 
-process.on("uncaughtException", (err) => {
-  console.error("ERRO NÃO TRATADO:");
-  console.error(err);
-});
+
 
 process.on("unhandledRejection", (err) => {
   console.error("PROMISE NÃO TRATADA:");

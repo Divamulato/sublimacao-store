@@ -98,10 +98,12 @@ export default function Pedidos() {
                   />
                 </>
               )}
-              console.log(
-  "fotoCliente:",
-  item.fotoCliente
-);
+              {item.fotoCliente && (
+  <img
+    src={item.fotoCliente}
+    alt="Arte do cliente"
+  />
+)}
 
 console.log(
   "tamanho:",
