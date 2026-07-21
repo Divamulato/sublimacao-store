@@ -8,801 +8,911 @@ export default function Admin() {
 
   const navigate = useNavigate();
 
-  // ============================
-  // STATES
-  // ============================
-
   const [produtos, setProdutos] = useState([]);
   const [pedidos, setPedidos] = useState([]);
-  const [clientes, setClientes] = useState([]);
-
   const [visitas, setVisitas] = useState(0);
+
+  const [imagem, setImagem] = useState(null);
 
   const [nome, setNome] = useState("");
   const [descricao, setDescricao] = useState("");
   const [preco, setPreco] = useState("");
-const [estoque, setEstoque] = useState("");
-const [editando, setEditando] = useState(null);
+  const [estoque, setEstoque] = useState("");
 
-  const [imagemUrl, setImagemUrl] = useState("");
-  const [imagemBase64, setImagemBase64] = useState("");
+  const [editando, setEditando] = useState(null);
 
+const [nomeEdit, setNomeEdit] = useState("");
+const [descricaoEdit, setDescricaoEdit] = useState("");
+const [precoEdit, setPrecoEdit] = useState("");
+const [estoqueEdit, setEstoqueEdit] = useState("");
+
+const [imagemAtual, setImagemAtual] = useState("");
+
+  const [buscaProduto, setBuscaProduto] = useState("");
   const [buscaCliente, setBuscaCliente] = useState("");
-  const [filtroStatus, setFiltroStatus] = useState("todos");
 
-  const [busca, setBusca] = useState("");
-  const [filtro, setFiltro] = useState("todos");
+  
 
-  const faturamento = pedidos.reduce(
-  (total, pedido) =>
-    total + Number(String(pedido.total || 0).replace(",", ".")),
+  function abrirEdicao(produto){
+
+  setEditando(produto.id);
+
+  setNomeEdit(produto.nome);
+
+  setDescricaoEdit(produto.descricao);
+
+  setPrecoEdit(produto.preco);
+
+  setEstoqueEdit(produto.estoque);
+  
+  setImagemAtual(produto.imagem);
+
+
+}
+
+  async function excluirProduto(id){
+
+  const confirmar = window.confirm(
+    "Deseja realmente excluir este produto?"
+  );
+
+  const totalProdutos = produtos.length;
+
+
+const totalEstoque = produtos.reduce(
+  (total,produto)=> total + produto.estoque,
   0
 );
 
 
-const produtosFiltrados = produtos.filter((produto)=>{
 
-  const textoBusca = busca.toLowerCase();
+const faturamento = pedidos.reduce(
+
+  (total,pedido)=>
+
+  total + Number(pedido.valor || 0),
+
+  0
+
+);
 
 
-  const encontrou =
-    produto.nome.toLowerCase().includes(textoBusca) ||
-    produto.descricao.toLowerCase().includes(textoBusca);
-
-
-  if(filtro === "estoque"){
-    return encontrou && produto.estoque <= 5;
+  if(!confirmar){
+    return;
   }
 
 
-  return encontrou;
-
-});
-const estoqueBaixo = produtos.filter(
-  (produto)=>produto.estoque <= 5
-).length;
+  try{
 
 
-  // ============================
-  // LOGOUT
-  // ============================
+    const resposta = await fetch(
+      `${API}/produtos/${id}`,
+      {
+        method:"DELETE"
+      }
+    );
 
-  function sairAdmin() {
 
-    localStorage.removeItem("adminLogado");
+    if(resposta.ok){
 
-    navigate("/admin-login");
+
+      setProdutos(
+        produtos.filter(
+          (produto)=>produto.id !== id
+        )
+      );
+
+
+      alert("Produto excluído com sucesso!");
+
+    }
+
+
+  }catch(error){
+
+    console.log("Erro ao excluir:",error);
 
   }
 
-  // ============================
-  // PRODUTOS
-  // ============================
 
-  async function carregarProdutos() {
+}
+
+
+
+  async function carregarProdutos(){
 
     try {
 
-      const res = await fetch(`${API}/produtos`);
+      const resposta = await fetch(`${API}/produtos`);
 
-      const data = await res.json();
+      const dados = await resposta.json();
 
-      setProdutos(data);
+      setProdutos(dados);
 
-    } catch (err) {
+    } catch(error){
 
-      console.error(err);
+      console.log("Erro produtos:", error);
 
     }
 
   }
 
-  async function cadastrarProduto(e) {
+  async function salvarEdicao(e){
+
+ e.preventDefault();
+
+
+ let novaImagem = null;
+
+
+ if(imagem){
+
+   novaImagem = await enviarImagem();
+
+ }
+
+
+  try{
+
+
+    const resposta = await fetch(
+      `${API}/produtos/${editando}`,
+      {
+        method:"PUT",
+
+        headers:{
+          "Content-Type":"application/json"
+        },
+
+
+        body:JSON.stringify({
+
+ nome:nomeEdit,
+
+ descricao:descricaoEdit,
+
+ preco:Number(precoEdit),
+
+ estoque:Number(estoqueEdit),
+
+ imagem:novaImagem
+
+})
+
+      }
+    );
+
+
+
+    const produtoAtualizado = await resposta.json();
+
+
+
+    setProdutos(
+
+      produtos.map((produto)=>
+
+        produto.id === editando
+
+        ? produtoAtualizado
+
+        : produto
+
+      )
+
+    );
+
+
+
+    setEditando(null);
+
+
+    alert("Produto atualizado!");
+
+
+
+  }catch(error){
+
+    console.log("Erro ao editar:",error);
+
+  }
+
+
+}
+
+
+
+  async function carregarPedidos(){
+
+    try {
+
+      const resposta = await fetch(`${API}/pedidos`);
+
+      const dados = await resposta.json();
+
+      setPedidos(dados);
+
+    } catch(error){
+
+      console.log("Erro pedidos:", error);
+
+    }
+
+  }
+
+
+
+  async function enviarImagem(){
+
+    if(!imagem){
+      return null;
+    }
+
+
+    const formData = new FormData();
+
+    formData.append("imagem", imagem);
+
+
+    try{
+
+      const resposta = await fetch(`${API}/upload`,{
+
+        method:"POST",
+        body:formData
+
+      });
+
+
+      const dados = await resposta.json();
+
+
+      return dados.url;
+
+
+    }catch(error){
+
+      console.log("Erro upload:", error);
+
+      return null;
+
+    }
+
+  }
+
+
+
+
+  async function criarProduto(e){
 
     e.preventDefault();
 
-   const payload = {
 
-  nome,
+    try{
 
-  descricao,
 
-  preco: Number(preco),
+      let urlImagem = null;
 
-  estoque: Number(estoque),
 
-  imagem: imagemBase64 || imagemUrl
+      if(imagem){
 
-};
-    const res = await fetch(`${API}/produtos`, {
+        urlImagem = await enviarImagem();
 
-      method: "POST",
+      }
 
-      headers: {
 
-        "Content-Type": "application/json"
 
-      },
+      const resposta = await fetch(`${API}/produtos`,{
 
-      body: JSON.stringify(payload)
+        method:"POST",
 
-    });
+        headers:{
+          "Content-Type":"application/json"
+        },
 
-    if (res.ok) {
+
+        body:JSON.stringify({
+
+          nome,
+          descricao,
+          preco:Number(preco),
+          estoque:Number(estoque),
+          imagem:urlImagem
+
+        })
+
+      });
+
+
+
+      const novoProduto = await resposta.json();
+
+
+
+      setProdutos([
+        ...produtos,
+        novoProduto
+      ]);
+
+
 
       setNome("");
-
       setDescricao("");
-
       setPreco("");
+      setEstoquе("");
+      setImagem(null);
 
-      setEstoque("");
 
-      setImagemUrl("");
 
-      setImagemBase64("");
+      alert("Produto criado com sucesso!");
 
-      carregarProdutos();
 
-    }
 
-  }
+    }catch(error){
 
-  async function editarProduto(produto) {
-
-    const novoNome =
-      prompt("Novo nome", produto.nome);
-
-    const novaDescricao =
-      prompt("Descrição", produto.descricao);
-
-    const novoPreco =
-      prompt("Preço", produto.preco);
-
-    const novaImagem =
-      prompt("Imagem", produto.imagem);
-
-    if (!novoNome) return;
-
-    await fetch(`${API}/produtos/${produto.id}`, {
-
-      method: "PUT",
-
-      headers: {
-
-        "Content-Type": "application/json"
-
-      },
-
-      body: JSON.stringify({
-
-        nome: novoNome,
-
-        descricao: novaDescricao,
-
-        preco: Number(novoPreco),
-
-        imagem: novaImagem
-
-      })
-
-    });
-
-    carregarProdutos();
-
-  }
-
-  async function deletarProduto(id) {
-
-    if (!window.confirm("Excluir produto?"))
-      return;
-
-    await fetch(`${API}/produtos/${id}`, {
-
-      method: "DELETE"
-
-    });
-
-    carregarProdutos();
-
-  }
-
-  // ============================
-  // PEDIDOS
-  // ============================
-
-  async function carregarPedidos() {
-
-    try {
-
-      const res = await fetch(`${API}/pedidos`);
-
-      const data = await res.json();
-
-      setPedidos(data);
-
-    } catch (err) {
-
-      console.error(err);
+      console.log("Erro criar produto:",error);
 
     }
 
   }
 
-  async function alterarStatus(id, status) {
 
-    await fetch(`${API}/pedidos/${id}/status`, {
 
-      method: "PUT",
 
-      headers: {
 
-        "Content-Type": "application/json"
+  useEffect(()=>{
 
-      },
+  carregarProdutos();
 
-      body: JSON.stringify({
+  carregarPedidos();
 
-        status
+  carregarVisitas();
 
-      })
+},[]);
 
-    });
+async function carregarVisitas(){
 
-    carregarPedidos();
+  try{
 
-  }
+    const resposta = await fetch(`${API}/visitas`);
 
-  async function excluirPedido(id) {
+    const dados = await resposta.json();
 
-    if (!window.confirm("Excluir pedido?"))
-      return;
+    setVisitas(dados.total || 0);
 
-    await fetch(`${API}/pedidos/${id}`, {
+  }catch(error){
 
-      method: "DELETE"
-
-    });
-
-    carregarPedidos();
-
-  }
-
-  // ============================
-  // CLIENTES
-  // ============================
-
-  async function carregarClientes() {
-
-    try {
-
-      const res =
-        await fetch(`${API}/clientes`);
-
-      const data =
-        await res.json();
-
-      setClientes(data);
-
-    } catch (err) {
-
-      console.error(err);
-
-    }
-
-  }
-
-  // ============================
-  // VISITAS
-  // ============================
-
-  async function carregarVisitas() {
-
-    try {
-
-      const res =
-        await fetch(`${API}/visitas`);
-
-      const data =
-        await res.json();
-
-      setVisitas(data.total || 0);
-
-    } catch (err) {
-
-      console.error(err);
-
-    }
-
-  }
-
-  async function zerarVisitas() {
-
-    if (
-      !window.confirm(
-        "Deseja zerar as visitas?"
-      )
-    )
-      return;
-
-    await fetch(`${API}/visitas`, {
-
-      method: "DELETE"
-
-    });
-
-    setVisitas(0);
-
-  }
-
-  // ============================
-  // IMAGEM
-  // ============================
-
-  function handleImageFile(e) {
-
-    const file = e.target.files[0];
-
-    if (!file) return;
-
-    if (file.size > 500000) {
-
-      alert(
-        "Escolha uma imagem menor que 500KB."
-      );
-
-      return;
-
-    }
-
-    const reader = new FileReader();
-
-    reader.onloadend = () => {
-
-      setImagemBase64(reader.result);
-
-    };
-
-    reader.readAsDataURL(file);
-
-  }
-
-  // ============================
-  // INIT
-  // ============================
-
-  useEffect(() => {
-
-    const logado =
-      localStorage.getItem(
-        "adminLogado"
-      );
-
-    if (!logado) {
-
-      navigate("/admin-login");
-
-      return;
-
-    }
-
-    carregarProdutos();
-
-    carregarPedidos();
-
-    carregarClientes();
-
-    carregarVisitas();
-
-  }, []);
-
-  // ============================
-  // ESTATÍSTICAS
-  // ============================
-
-  const totalProdutos = produtos.length;
-
-  const totalPedidos = pedidos.length;
-
-  const totalClientes = clientes.length;
-
-  const hoje = new Date();
-
-  const pedidosFiltrados =
-    pedidos.filter((pedido) => {
-
-      const clienteOk =
-        (pedido.cliente || "")
-          .toLowerCase()
-          .includes(
-            buscaCliente.toLowerCase()
-          );
-
-      const statusOk =
-        filtroStatus === "todos"
-          ? true
-          : pedido.status === filtroStatus;
-
-      return clienteOk && statusOk;
-
-    });
-
-  const totalHoje = pedidos
-    .filter((pedido) => {
-
-      const data =
-        new Date(pedido.createdAt);
-
-      return (
-
-        data.getDate() === hoje.getDate() &&
-
-        data.getMonth() === hoje.getMonth() &&
-
-        data.getFullYear() ===
-          hoje.getFullYear()
-
-      );
-
-    })
-    .reduce(
-      (acc, pedido) =>
-        acc + Number(pedido.total),
-      0
+    console.log(
+      "Erro ao carregar visitas:",
+      error
     );
 
-  const totalMes = pedidos
-    .filter((pedido) => {
+  }
 
-      const data =
-        new Date(pedido.createdAt);
+}
 
-      return (
+function sairAdmin(){
 
-        data.getMonth() ===
-          hoje.getMonth() &&
+  navigate("/");
 
-        data.getFullYear() ===
-          hoje.getFullYear()
+}
 
-      );
+const totalProdutos = produtos.length;
 
-    })
-    .reduce(
-      (acc, pedido) =>
-        acc + Number(pedido.total),
-      0
-    );
+const totalEstoque = produtos.reduce(
+  (total, produto) => total + Number(produto.estoque || 0),
+  0
+);
 
-  const ticketMedio =
-    totalPedidos > 0
-      ? totalMes / totalPedidos
-      : 0;
-
-  // ============================
-  // RETURN
-  // ============================
+const faturamento = pedidos.reduce(
+  (total, pedido) => total + Number(pedido.valor || 0),
+  0
+);
+const produtosEstoqueBaixo = produtos.filter(
+  (produto) => Number(produto.estoque || 0) <= 5
+);
 
   return (
+
+  <div className="admin">
+
+
+    <div className="topo-admin">
+
+      <h1>Painel Administrativo</h1>
+
+
+      <button 
+        className="btn-sair"
+        onClick={sairAdmin}
+      >
+
+        Sair
+
+      </button>
+
+
+    </div>
+
+
+    {/* DASHBOARD */}
+
+    <div className="cardsAdmin">
+
       
-    <div className="admin">
 
-      <h1>🛠️ Painel Administrativo</h1>
+      <div className="cardAdmin">
 
-      {/* RESUMO */}
-      <div className="cardsAdmin">
+  <h3>
+    Estoque baixo
+  </h3>
 
-        <div className="cardAdmin">
-          <h3> 📦 Produtos</h3>
-          <strong>{totalProdutos}</strong>
-        </div>
-
-        <div className="cardAdmin">
-          <h3> 🛒 Pedidos</h3>
-          <strong>{totalPedidos}</strong>
-        </div>
-
-        <div className="cardAdmin">
-          <h3>Visitas</h3>
-          <strong>{visitas}</strong>
-        </div>
-        <div className="cardAdmin">
-  <h3>💰 Faturamento</h3>
   <strong>
-    R$ {faturamento.toFixed(2)}
+    {produtosEstoqueBaixo.length}
   </strong>
-</div>
 
-<div className="cardAdmin">
-<h3>💰 Faturamento</h3>
-<strong>
-R$ {faturamento.toFixed(2)}
-</strong>
 </div>
 
 
-<div className="cardAdmin">
-<h3>⚠️ Estoque baixo</h3>
-<strong>
-{estoqueBaixo}
-</strong>
+
+
+
+
+      <div className="cardAdmin">
+
+        <h3>
+          Produtos
+        </h3>
+
+        <strong>
+          {totalProdutos}
+        </strong>
+
+      </div>
+
+      <div className="cardAdmin">
+
+  <h3>
+    Visitas
+  </h3>
+
+  <strong>
+    {visitas}
+  </strong>
+
 </div>
+
+      
+
+
+
+      <div className="cardAdmin">
+
+        <h3>
+          Estoque
+        </h3>
+
+        <strong>
+          {totalEstoque}
+        </strong>
 
       </div>
 
 
-      {/* CADASTRO PRODUTO */}
-      <section className="boxAdmin">
 
-        <h2>
-          {editando ? "✏️ Editar Produto" : "➕ Novo Produto"}
-        </h2>
+      <div className="cardAdmin">
+
+        <h3>
+          Pedidos
+        </h3>
+
+        <strong>
+          {pedidos.length}
+        </strong>
+
+      </div>
+
+
+
+      <div className="cardAdmin">
+
+        <h3>
+          Faturamento
+        </h3>
+
+        <strong>
+          R$ {faturamento.toFixed(2)}
+        </strong>
+
+      </div>
+
+
+    </div>
+
+    {produtosEstoqueBaixo.length > 0 && (
+
+  <div className="alerta-estoque">
+
+    <h2>
+      ⚠️ Produtos com estoque baixo
+    </h2>
+
+    
+
+
+    <div className="lista-estoque-baixo">
+
+      {produtosEstoqueBaixo.map((produto)=>(
+
+        <div
+          className="item-estoque-baixo"
+          key={produto.id}
+        >
+
+          <img
+            src={produto.imagem}
+            alt={produto.nome}
+          />
+
+
+          <div>
+
+            <strong>
+              {produto.nome}
+            </strong>
+
+            <p>
+              Apenas {produto.estoque} unidades disponíveis
+            </p>
+
+          </div>
+
+        </div>
+
+      ))}
+
+    </div>
+
+  </div>
+
+)}
+
+
+
+
+      <form onSubmit={criarProduto}>
 
 
         <input
-          type="text"
           placeholder="Nome do produto"
           value={nome}
           onChange={(e)=>setNome(e.target.value)}
         />
 
 
+
         <textarea
+
           placeholder="Descrição"
+
           value={descricao}
+
           onChange={(e)=>setDescricao(e.target.value)}
+
         />
 
 
+
         <input
+
           type="number"
+
           placeholder="Preço"
+
           value={preco}
+
           onChange={(e)=>setPreco(e.target.value)}
+
         />
 
 
+
         <input
+
           type="number"
+
           placeholder="Estoque"
+
           value={estoque}
+
           onChange={(e)=>setEstoque(e.target.value)}
+
         />
+
 
 
         <input
+
           type="file"
+
           accept="image/*"
+
           onChange={(e)=>setImagem(e.target.files[0])}
+
         />
 
 
-       <button onClick={cadastrarProduto}>
-          {editando ? "Salvar Alterações" : "Cadastrar Produto"}
+
+        <button type="submit">
+
+          Cadastrar Produto
+
         </button>
 
 
-        {editando && (
-          <button
-            className="cancelar"
-            onClick={()=>{
-              setEditando(null);
-              setNome("");
-              setDescricao("");
-              setPreco("");
-              setEstoque("");
-              setImagem(null);
-            }}
-          >
-            Cancelar
-          </button>
-        )}
+      </form>
 
-      </section>
+     {editando && (
+
+<form 
+className="form-edicao"
+onSubmit={salvarEdicao}
+>
+
+
+<h2>
+Editar Produto
+</h2>
 
 
 
-      {/* LISTA PRODUTOS */}
-     
-<section className="boxAdmin">
-
-<h2>📦 Produtos cadastrados</h2>
-
-
-<div className="filtrosAdmin">
-
+<label>
+Nome do produto
+</label>
 
 <input
-type="text"
-placeholder="🔎 Buscar produto..."
-value={busca}
-onChange={(e)=>setBusca(e.target.value)}
+
+value={nomeEdit}
+
+onChange={(e)=>setNomeEdit(e.target.value)}
+
+placeholder="Digite o nome do produto"
+
 />
 
 
-<select
-value={filtro}
-onChange={(e)=>setFiltro(e.target.value)}
+
+<label>
+Descrição
+</label>
+
+<textarea
+
+value={descricaoEdit}
+
+onChange={(e)=>setDescricaoEdit(e.target.value)}
+
+placeholder="Digite a descrição"
+
+/>
+
+
+
+<label>
+Preço
+</label>
+
+<input
+
+type="number"
+
+value={precoEdit}
+
+onChange={(e)=>setPrecoEdit(e.target.value)}
+
+placeholder="Digite o preço"
+
+/>
+
+
+
+<label>
+Estoque
+</label>
+
+<input
+
+type="number"
+
+value={estoqueEdit}
+
+onChange={(e)=>setEstoqueEdit(e.target.value)}
+
+placeholder="Quantidade disponível"
+
+/>
+<label>
+Imagem atual
+</label>
+
+
+<img
+
+src={imagemAtual}
+
+alt="Imagem atual"
+
+className="imagem-edicao"
+
+/>
+
+
+<label>
+Nova imagem do produto
+</label>
+
+
+<input
+
+type="file"
+
+accept="image/*"
+
+onChange={(e)=>setImagem(e.target.files[0])}
+
+/>
+
+
+
+<button 
+type="submit"
+className="btn-salvar"
 >
 
-<option value="todos">
-Todos
-</option>
+Salvar Alterações
 
-
-<option value="estoque">
-Estoque baixo
-</option>
-
-
-</select>
-
-
-</div>
-
-        {produtosFiltrados.map((produto)=>(
-
-          <div className="itemAdmin" key={produto.id}>
-
-
-            <img
-              src={produto.imagem}
-              alt={produto.nome}
-            />
-
-
-            <div>
-
-              <h3>
-                {produto.nome}
-              </h3>
-
-              <p>
-                {produto.descricao}
-              </p>
-
-
-              <strong>
-                R$ {produto.preco}
-              </strong>
-
-
-              <p>
-                Estoque: {produto.estoque}
-              </p>
-              {
-produto.estoque <= 5 && (
-
-<p className="alertaEstoque">
-⚠️ Estoque baixo
-</p>
-
-)
-}
-
-
-              <button
-                onClick={()=>editarProduto(produto)}
-              >
-                ✏️ Editar
-              </button>
-
-
-              <button
-                className="excluir"
-                onClick={()=>deletarProduto(produto.id)}
-              >
-                🗑️ Excluir
-              </button>
-
-            </div>
-
-
-          </div>
-
-        ))}
-
-      </section>
-
-
-
-
-      {/* PEDIDOS */}
-      <section className="boxAdmin">
-
-        <h2>🛒 Pedidos</h2>
-
-
-        {pedidos.length === 0 && (
-          <p>Nenhum pedido encontrado.</p>
-        )}
-
-
-        {pedidos.map((pedido)=>(
-
-
-          <div 
-            className="pedidoAdmin"
-            key={pedido.id}
-          >
-
-            <h3>
-              Pedido #{pedido.id}
-            </h3>
-
-
-            <p>
-              Cliente: {pedido.nomeCliente}
-            </p>
-
-
-            <p>
-              Total: R$ {pedido.total}
-            </p>
-
-
-            <select
-              value={pedido.status}
-              onChange={(e)=>
-                alterarStatus(
-                  pedido.id,
-                  e.target.value
-                )
-              }
-            >
-
-              <option>
-                Pendente
-              </option>
-
-              <option>
-                Pago
-              </option>
-
-              <option>
-                Produção
-              </option>
-
-              <option>
-                Enviado
-              </option>
-
-              <option>
-                Finalizado
-              </option>
-
-            </select>
-
-
-
-            <button
-              className="excluir"
-              onClick={()=>
-                excluirPedido(pedido.id)
-              }
-            >
-              Excluir pedido
-            </button>
-
-            <button
-onClick={()=>
-navigate(`/admin/pedido/${pedido.id}`)
-}
->
-👁 Ver detalhes
 </button>
 
 
-          </div>
+
+<button
+
+type="button"
+
+className="btn-cancelar"
+
+onClick={()=>{
+
+setEditando(null);
+
+setImagem(null);
+
+setImagemAtual("");
+
+}}
+
+>
+
+Cancelar
+
+</button>
 
 
-        ))}
+
+</form>
+
+)}
 
 
-      </section>
+
+
+      <h2>Produtos</h2>
+
+
+      <input
+
+        placeholder="Buscar produto"
+
+        value={buscaProduto}
+
+        onChange={(e)=>setBuscaProduto(e.target.value)}
+
+      />
+
+
+      <p>Total produtos: {produtos.length}</p>
+
+      <div className="lista-produtos">
+
+  {produtos.map((produto)=>(
+
+    <div className="card-produto" key={produto.id}>
+
+
+      <img
+        src={produto.imagem}
+        alt={produto.nome}
+      />
+
+
+      <h3>
+        {produto.nome}
+      </h3>
+
+
+      <p>
+        {produto.descricao}
+      </p>
+
+
+      <strong>
+        R$ {produto.preco.toFixed(2)}
+      </strong>
+
+
+      <p>
+        Estoque: {produto.estoque}
+      </p>
+
+      <button
+
+  className="btn-editar"
+
+  onClick={()=>abrirEdicao(produto)}
+
+>
+
+Editar
+
+</button>
+
+      <button
+
+  className="btn-excluir"
+
+  onClick={()=>excluirProduto(produto.id)}
+
+>
+
+Excluir
+
+</button>
+
+
+    </div>
+
+  ))}
+
+</div>
+
+
+
+
+
+      <h2>Pedidos</h2>
+
+
+
+      <input
+
+        placeholder="Buscar cliente"
+
+        value={buscaCliente}
+
+        onChange={(e)=>setBuscaCliente(e.target.value)}
+
+      />
+
+
+      <p>Total pedidos: {pedidos.length}</p>
 
 
 
     </div>
+
   );
+
 }
+
+
+
