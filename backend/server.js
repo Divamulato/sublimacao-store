@@ -144,83 +144,244 @@ app.get("/produtos/:id", async (req, res) => {
 // =========================
 // CRIAR PRODUTO
 // =========================
+
+// =========================
+// CRIAR PRODUTO
+// =========================
+
 app.post("/produtos", async (req, res) => {
-  try {
-    const { nome, descricao, preco, imagem } = req.body;
+try {
+  console.log("📦 DADOS RECEBIDOS PARA CRIAR PRODUTO:", req.body);
+const {
+  
+nome,
+descricao,
+preco,
+estoque,
+imagem,
+} = req.body;
 
-    if (!nome || nome.trim() === "" || preco == null) {
-      return res.status(400).json({
-        error: "Nome e preço são obrigatórios",
-      });
-    }
+// =========================
+// VALIDAÇÃO DO NOME
+// =========================
 
-    const precoNumero = Number(preco);
+if (!nome || nome.trim() === "") {
+  return res.status(400).json({
+    error: "Nome do produto é obrigatório",
+  });
+}
 
-    if (isNaN(precoNumero) || precoNumero <= 0) {
-      return res.status(400).json({ error: "Preço inválido" });
-    }
+// =========================
+// CONVERTER PREÇO
+// =========================
 
-    const produto = await prisma.produto.create({
-      data: {
-        nome: nome.trim(),
-        descricao: descricao || null,
-        preco: precoNumero,
-        imagem: imagem || null,
-      },
-    });
+const precoNumero = Number(preco);
 
-    return res.status(201).json(produto);
-  } catch (error) {
-    console.error("PRISMA ERROR:", error);
+if (
+  isNaN(precoNumero) ||
+  precoNumero <= 0
+) {
+  return res.status(400).json({
+    error: "Preço inválido",
+  });
+}
 
-    return res.status(500).json({
-      error: "Erro interno ao criar produto",
-      details: error.message,
-    });
-  }
+// =========================
+// CONVERTER ESTOQUE
+// =========================
+
+const estoqueNumero =
+  estoque === undefined ||
+  estoque === null ||
+  estoque === ""
+    ? 0
+    : Number(estoque);
+
+if (
+  isNaN(estoqueNumero) ||
+  estoqueNumero < 0
+) {
+  return res.status(400).json({
+    error: "Estoque inválido",
+  });
+}
+
+// =========================
+// CRIAR PRODUTO
+// =========================
+
+const produto =
+  await prisma.produto.create({
+    data: {
+      nome: nome.trim(),
+
+      descricao:
+        descricao && descricao.trim() !== ""
+          ? descricao.trim()
+          : null,
+
+      preco: precoNumero,
+
+      estoque: estoqueNumero,
+
+      imagem:
+        imagem && imagem.trim() !== ""
+          ? imagem
+          : null,
+    },
+  });
+
+console.log(
+  "✅ PRODUTO CRIADO:",
+  produto
+);
+
+return res.status(201).json(produto);
+
+} catch (error) {
+
+console.error(
+  "❌ ERRO AO CRIAR PRODUTO:",
+  error
+);
+
+return res.status(500).json({
+  error: "Erro interno ao criar produto",
+  details: error.message,
+});
+
+}
 });
 
 // =========================
 // ATUALIZAR PRODUTO
 // =========================
-app.put("/produtos/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { nome, descricao, preco, imagem } = req.body;
 
-    const produto = await prisma.produto.update({
-      where: { id: Number(id) },
-      data: {
-        nome,
-        descricao,
-        preco: Number(preco),
-        imagem,
-      },
-    });
+app.put("/produtos/", async (req, res) => {
+try {
+const { id } = req.params;
 
-    res.json(produto);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Erro ao atualizar produto" });
-  }
+const {
+  nome,
+  descricao,
+  preco,
+  estoque,
+  imagem,
+} = req.body;
+
+// =========================
+// CONVERTER PREÇO
+// =========================
+
+const precoNumero = Number(preco);
+
+if (
+  isNaN(precoNumero) ||
+  precoNumero <= 0
+) {
+  return res.status(400).json({
+    error: "Preço inválido",
+  });
+}
+
+// =========================
+// CONVERTER ESTOQUE
+// =========================
+
+const estoqueNumero =
+  estoque === undefined ||
+  estoque === null ||
+  estoque === ""
+    ? 0
+    : Number(estoque);
+
+if (
+  isNaN(estoqueNumero) ||
+  estoqueNumero < 0
+) {
+  return res.status(400).json({
+    error: "Estoque inválido",
+  });
+}
+
+// =========================
+// BUSCAR PRODUTO ATUAL
+// =========================
+
+const produtoAtual =
+  await prisma.produto.findUnique({
+    where: {
+      id: Number(id),
+    },
+  });
+
+if (!produtoAtual) {
+  return res.status(404).json({
+    error: "Produto não encontrado",
+  });
+}
+
+// =========================
+// PRESERVAR IMAGEM
+// =========================
+
+const imagemFinal =
+  imagem && imagem.trim() !== ""
+    ? imagem
+    : produtoAtual.imagem;
+
+// =========================
+// ATUALIZAR PRODUTO
+// =========================
+
+const produtoAtualizado =
+  await prisma.produto.update({
+    where: {
+      id: Number(id),
+    },
+
+    data: {
+      nome:
+        nome?.trim() ||
+        produtoAtual.nome,
+
+      descricao:
+        descricao?.trim() ||
+        null,
+
+      preco:
+        precoNumero,
+
+      estoque:
+        estoqueNumero,
+
+      imagem:
+        imagemFinal,
+    },
+  });
+
+console.log(
+  "✅ PRODUTO ATUALIZADO:",
+  produtoAtualizado
+);
+
+return res.json(
+  produtoAtualizado
+);
+
+} catch (error) {
+
+console.error(
+  "❌ ERRO AO ATUALIZAR PRODUTO:",
+  error
+);
+
+return res.status(500).json({
+  error: "Erro ao atualizar produto",
+  details: error.message,
 });
 
-// =========================
-// DELETAR PRODUTO
-// =========================
-app.delete("/produtos/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    await prisma.produto.delete({
-      where: { id: Number(id) },
-    });
-
-    res.json({ message: "Produto deletado com sucesso" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Erro ao deletar produto" });
-  }
+}
 });
 
 // =========================

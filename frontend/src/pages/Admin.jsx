@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Admin.css";
 
-const API = "https://sublimacao-store.onrender.com";
+const API = "http://localhost:3000";
 
 export default function Admin() {
   const navigate = useNavigate();
@@ -140,62 +140,77 @@ export default function Admin() {
   // CRIAR PRODUTO
   // ==============================
 
-  async function criarProduto(e) {
-    e.preventDefault();
+ async function criarProduto(e) {
+e.preventDefault();
 
-    try {
-      let urlImagem = null;
+try {
+let urlImagem = null;
 
-      if (imagem) {
-        urlImagem = await enviarImagem(imagem);
-      }
+// Envia a imagem selecionada para o Cloudinary
+if (imagem) {
+  urlImagem = await enviarImagem(imagem);
+}
 
-      const resposta = await fetch(`${API}/produtos`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          nome: nome,
-          descricao: descricao,
-          preco: Number(preco),
-          estoque: Number(estoque),
-          imagem: urlImagem,
-        }),
-      });
+const resposta = await fetch(`${API}/produtos`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    nome: nome,
+    descricao: descricao,
+    preco: Number(preco),
+    estoque: Number(estoque),
+    imagem: urlImagem,
+  }),
+});
 
-      if (!resposta.ok) {
-        throw new Error("Erro ao criar produto");
-      }
+if (!resposta.ok) {
+  const erro = await resposta.json();
 
-      const novoProduto = await resposta.json();
+  throw new Error(
+    erro.error || "Erro ao cadastrar produto"
+  );
+}
 
-      setProdutos((listaAtual) => [
-        ...listaAtual,
-        novoProduto,
-      ]);
+const novoProduto = await resposta.json();
 
-      setNome("");
-      setDescricao("");
-      setPreco("");
-      setEstoque("");
-      setImagem(null);
+setProdutos((produtosAtuais) => [
+  ...produtosAtuais,
+  novoProduto,
+]);
 
-      const inputImagem =
-        document.getElementById("imagem-produto");
+// Limpar formulário
+setNome("");
+setDescricao("");
+setPreco("");
+setEstoque("");
+setImagem(null);
 
-      if (inputImagem) {
-        inputImagem.value = "";
-      }
+// Limpar input de arquivo
+const inputImagem = document.getElementById(
+  "imagem-produto"
+);
 
-      alert("Produto criado com sucesso!");
-    } catch (error) {
-      console.error("Erro criar produto:", error);
+if (inputImagem) {
+  inputImagem.value = "";
+}
 
-      alert("Não foi possível criar o produto.");
-    }
-  }
+alert("Produto criado com sucesso!");
 
+} catch (error) {
+console.error(
+"Erro ao criar produto:",
+error
+);
+
+alert(
+  error.message ||
+  "Erro ao cadastrar produto"
+);
+
+}
+}
   // ==============================
   // ABRIR EDIÇÃO
   // ==============================
@@ -730,14 +745,13 @@ export default function Admin() {
 
 
         <input
-          type="number"
-          placeholder="Estoque"
-          value={estoque}
-          onChange={(e) =>
-            setEstoque(e.target.value)
-          }
-          required
-        />
+  type="number"
+  min="0"
+  placeholder="Estoque"
+  value={estoque}
+  onChange={(e) => setEstoque(e.target.value)}
+  required
+/>
 
 
         <input
@@ -1235,4 +1249,3 @@ export default function Admin() {
     </div>
   );
 }
-``
