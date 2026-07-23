@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Admin.css";
 
-const API = "http://localhost:3000";
+const API = "https://sublimacao-store.onrender.com";
+
 
 export default function Admin() {
   const navigate = useNavigate();
