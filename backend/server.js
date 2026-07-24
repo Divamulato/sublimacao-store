@@ -257,7 +257,7 @@ return res.status(500).json({
 // ATUALIZAR PRODUTO
 // =========================
 
-app.put("/produtos/", async (req, res) => {
+app.put("/produtos/:id", async (req, res) => {
 try {
 const { id } = req.params;
 
