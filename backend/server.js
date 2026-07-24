@@ -441,11 +441,9 @@ app.delete("/produtos/:id", async (req, res) => {
 // =========================
 
 app.post("/pedidos", async (req, res) => {
-
-   console.log(">>> BUSCANDO PEDIDO", req.params.id);
+  console.log(">>> CRIANDO NOVO PEDIDO");
 
   try {
-
     const {
       itens,
       total,
@@ -453,56 +451,185 @@ app.post("/pedidos", async (req, res) => {
       email,
       telefone,
       endereco,
-      observacao
+      observacao,
     } = req.body;
 
+    console.log("=================================");
+console.log("🛒 ITENS RECEBIDOS NO PEDIDO:");
+console.log(JSON.stringify(itens, null, 2));
+console.log("=================================");
 
-    // procura o cliente cadastrado
+    // =========================================
+    // VALIDAR ITENS
+    // =========================================
+
+    if (!Array.isArray(itens) || itens.length === 0) {
+      return res.status(400).json({
+        error: "O pedido não possui produtos.",
+      });
+    }
+
+    // =========================================
+    // PROCURAR CLIENTE
+    // =========================================
+
     const usuario = await prisma.usuario.findUnique({
       where: {
-        email
-      }
-    });
-
-
-    const pedido = await prisma.pedido.create({
-      data: {
-
-        itens,
-
-        total: Number(total),
-
-        cliente,
         email,
-        telefone,
-        endereco,
-        observacao,
-
-        status: "pendente",
-
-        // ligação com usuário
-        usuarioId: usuario?.id || null
-
       },
-
-      include: {
-        usuario: true
-      }
-
     });
 
+    // =========================================
+    // TRANSAÇÃO
+    // PEDIDO + BAIXA DO ESTOQUE
+    // =========================================
 
-    return res.status(201).json(pedido);
+    const resultado = await prisma.$transaction(async (tx) => {
 
+      // =========================================
+      // VERIFICAR ESTOQUE
+      // =========================================
+
+      for (const item of itens) {
+
+        const produtoId = Number(item.id);
+        const quantidade = Number(item.quantidade || 1);
+
+        if (!produtoId) {
+          throw new Error(
+            `Produto inválido: ${item.nome || "Produto sem ID"}`
+          );
+        }
+
+        if (quantidade <= 0) {
+          throw new Error(
+            `Quantidade inválida para o produto: ${item.nome}`
+          );
+        }
+
+        const produto = await tx.produto.findUnique({
+          where: {
+            id: produtoId,
+          },
+        });
+
+        if (!produto) {
+          throw new Error(
+            `Produto não encontrado: ${item.nome}`
+          );
+        }
+
+        console.log(
+          `📦 ESTOQUE ATUAL: ${produto.nome} = ${produto.estoque}`
+        );
+
+        console.log(
+          `🛒 QUANTIDADE COMPRADA: ${quantidade}`
+        );
+
+        // =========================================
+        // VERIFICAR ESTOQUE DISPONÍVEL
+        // =========================================
+
+        if (produto.estoque < quantidade) {
+          throw new Error(
+            `Estoque insuficiente para ${produto.nome}. Disponível: ${produto.estoque}`
+          );
+        }
+      }
+
+      // =========================================
+      // CRIAR PEDIDO
+      // =========================================
+
+      const pedido = await tx.pedido.create({
+        data: {
+          itens,
+
+          total: Number(total),
+
+          cliente,
+          email,
+          telefone,
+          endereco,
+          observacao,
+
+          status: "pendente",
+
+          usuarioId: usuario?.id || null,
+        },
+
+        include: {
+          usuario: true,
+        },
+      });
+
+      console.log(
+        `✅ PEDIDO CRIADO: #${pedido.id}`
+      );
+
+      // =========================================
+      // BAIXAR ESTOQUE
+      // =========================================
+
+      for (const item of itens) {
+
+        const produtoId = Number(item.id);
+        const quantidade = Number(item.quantidade || 1);
+
+        const produtoAtualizado =
+          await tx.produto.update({
+            where: {
+              id: produtoId,
+            },
+
+            data: {
+              estoque: {
+                decrement: quantidade,
+              },
+            },
+          });
+
+        console.log(
+          `📦 ESTOQUE BAIXADO: ${produtoAtualizado.nome}`
+        );
+
+        console.log(
+          `📉 ESTOQUE ANTES: ${
+            produtoAtualizado.estoque + quantidade
+          }`
+        );
+
+        console.log(
+          `📉 ESTOQUE DEPOIS: ${
+            produtoAtualizado.estoque
+          }`
+        );
+      }
+
+      // =========================================
+      // RETORNAR PEDIDO
+      // =========================================
+
+      return pedido;
+    });
+
+    // =========================================
+    // SUCESSO
+    // =========================================
+
+    return res.status(201).json(resultado);
 
   } catch (error) {
 
-    console.error("❌ ERRO PEDIDO:", error);
+    console.error(
+      "❌ ERRO AO CRIAR PEDIDO:",
+      error
+    );
 
-    return res.status(500).json({
-      error: error.message
+    return res.status(400).json({
+      error: error.message,
     });
-
   }
 });
 
