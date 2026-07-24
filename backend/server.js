@@ -6,6 +6,7 @@ import { v2 as cloudinary } from "cloudinary";
 import dotenv from "dotenv";
 dotenv.config();
 
+
 // =========================
 // CLOUDINARY CONFIG (SEGURO)
 // =========================
@@ -257,7 +258,7 @@ return res.status(500).json({
 // ATUALIZAR PRODUTO
 // =========================
 
-app.put("/produtos/:id", async (req, res) => {
+app.put("/produtos/", async (req, res) => {
 try {
 const { id } = req.params;
 
@@ -384,6 +385,57 @@ return res.status(500).json({
 }
 });
 
+
+app.delete("/produtos/:id", async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+
+    if (isNaN(id)) {
+      return res.status(400).json({
+        error: "ID do produto inválido",
+      });
+    }
+
+    const produto = await prisma.produto.findUnique({
+      where: {
+        id: id,
+      },
+    });
+
+    if (!produto) {
+      return res.status(404).json({
+        error: "Produto não encontrado",
+      });
+    }
+
+    const produtoExcluido = await prisma.produto.delete({
+      where: {
+        id: id,
+      },
+    });
+
+    console.log(
+      "🗑️ PRODUTO EXCLUÍDO:",
+      produtoExcluido
+    );
+
+    return res.status(200).json({
+      message: "Produto excluído com sucesso",
+      produto: produtoExcluido,
+    });
+
+  } catch (error) {
+    console.error(
+      "❌ ERRO AO EXCLUIR PRODUTO:",
+      error
+    );
+
+    return res.status(500).json({
+      error: "Erro ao excluir produto",
+      details: error.message,
+    });
+  }
+});
 // =========================
 // START SERVER
 // =========================
