@@ -1170,17 +1170,58 @@ alert(
                           }
                         >
 
-                          {item.imagem && (
+                         {/* IMAGENS DO PRODUTO E DA ARTE DO CLIENTE */}
 
-                            <img
-                              src={item.imagem}
-                              alt={
-                                item.nome ||
-                                "Produto"
-                              }
-                            />
+<div className="imagens-item-pedido">
 
-                          )}
+  {/* IMAGEM ORIGINAL DO PRODUTO */}
+
+  {item.imagem && (
+    <div className="imagem-pedido-box">
+
+      <p>
+        <strong>
+          Imagem do produto
+        </strong>
+      </p>
+
+      <img
+        src={item.imagem}
+        alt={
+          item.nome ||
+          "Produto"
+        }
+      />
+
+    </div>
+  )}
+
+
+  {/* ARTE PERSONALIZADA DO CLIENTE */}
+
+  {item.fotoCliente && (
+    <div className="imagem-pedido-box">
+
+      <p>
+        <strong>
+          🎨 Arte enviada pelo cliente
+        </strong>
+      </p>
+
+      <img
+        src={item.fotoCliente}
+        alt={
+          `Arte personalizada de ${
+            item.nome ||
+            "Produto"
+          }`
+        }
+      />
+
+    </div>
+  )}
+
+</div>
 
 
                           <div>

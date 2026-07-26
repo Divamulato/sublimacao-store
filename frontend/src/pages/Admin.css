@@ -1370,3 +1370,34 @@ color:#333;
   background: #fee2e2;
   color: #991b1b;
 }
+
+/* =========================================
+   IMAGENS DO PEDIDO
+========================================= */
+
+.imagens-item-pedido {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin: 15px 0;
+}
+
+.imagem-pedido-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.imagem-pedido-box p {
+  margin: 0;
+  font-weight: bold;
+}
+
+.imagem-pedido-box img {
+  width: 180px;
+  height: 180px;
+  object-fit: contain;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  background: #f8f8f8;
+}
