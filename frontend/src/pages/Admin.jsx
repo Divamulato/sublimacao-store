@@ -32,6 +32,19 @@ export default function Admin() {
   const [buscaProduto, setBuscaProduto] = useState("");
   const [buscaCliente, setBuscaCliente] = useState("");
 
+  const token = localStorage.getItem("adminToken");
+
+useEffect(() => {
+  const token =
+    localStorage.getItem("adminToken");
+
+  if (!token) {
+    navigate("/admin-login", {
+      replace: true,
+    });
+  }
+}, [navigate]);
+
   // ==============================
   // CARREGAR PRODUTOS
   // ==============================
