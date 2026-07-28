@@ -218,36 +218,135 @@ async function carregarPedidos() {
   // ==============================
 
   async function enviarImagem(arquivo) {
-    if (!arquivo) {
-      return null;
-    }
+  if (!arquivo) return "";
 
-    const formData = new FormData();
+  const formData = new FormData();
+  formData.append("imagem", arquivo);
 
-    formData.append("imagem", arquivo);
+  const token = localStorage.getItem("adminToken");
 
-    try {
-      const resposta = await fetch(`${API}/upload`, {
-        method: "POST",
-        body: formData,
-      });
+  const resposta = await fetch(`${API}/upload`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: formData,
+  });
 
-      if (!resposta.ok) {
-        throw new Error("Erro no upload da imagem");
-      }
+  const data = await resposta.json();
 
-      const dados = await resposta.json();
-
-      return dados.url || null;
-    } catch (error) {
-      console.error("Erro upload:", error);
-
-      alert("Erro ao enviar imagem.");
-
-      return null;
-    }
+  if (!resposta.ok) {
+    throw new Error(data.erro || "Erro ao enviar imagem");
   }
 
+  return data.url;
+}
+
+async function excluirProduto(id) {
+const confirmar = window.confirm(
+"Deseja realmente excluir este produto?"
+);
+
+if (!confirmar) {
+return;
+}
+
+try {
+// ==============================
+// PEGAR TOKEN DO ADMIN
+// ==============================
+
+const token = localStorage.getItem("adminToken");
+
+if (!token) {
+  alert(
+    "Sessão administrativa expirada. Faça login novamente."
+  );
+
+  navigate("/admin-login");
+
+  return;
+}
+
+// ==============================
+// EXCLUIR PRODUTO
+// ==============================
+
+const resposta = await fetch(
+  `${API}/produtos/${id}`,
+  {
+    method: "DELETE",
+
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
+);
+
+// ==============================
+// LER RESPOSTA
+// ==============================
+
+const dados = await resposta.json();
+
+// ==============================
+// TOKEN INVÁLIDO OU EXPIRADO
+// ==============================
+
+if (resposta.status === 401) {
+  localStorage.removeItem("adminToken");
+  localStorage.removeItem("adminUsuario");
+
+  alert(
+    "Sua sessão expirou. Faça login novamente."
+  );
+
+  navigate("/admin-login");
+
+  return;
+}
+
+// ==============================
+// OUTROS ERROS
+// ==============================
+
+if (!resposta.ok) {
+  throw new Error(
+    dados.error ||
+    dados.erro ||
+    dados.details ||
+    "Erro ao excluir produto"
+  );
+}
+
+// ==============================
+// REMOVER DA LISTA NA TELA
+// ==============================
+
+setProdutos((listaAtual) =>
+  listaAtual.filter(
+    (produto) => produto.id !== id
+  )
+);
+
+alert(
+  "Produto excluído com sucesso!"
+);
+
+} catch (error) {
+
+console.error(
+  "Erro ao excluir:",
+  error
+);
+
+alert(
+  error.message ||
+  "Não foi possível excluir o produto."
+);
+
+}
+}
   // ==============================
   // CRIAR PRODUTO
   // ==============================
@@ -263,18 +362,21 @@ if (imagem) {
   urlImagem = await enviarImagem(imagem);
 }
 
+const token = localStorage.getItem("adminToken");
+
 const resposta = await fetch(`${API}/produtos`, {
   method: "POST",
   headers: {
     "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`
   },
-  body: JSON.stringify({
-    nome: nome,
-    descricao: descricao,
-    preco: Number(preco),
-    estoque: Number(estoque),
-    imagem: urlImagem,
-  }),
+ body: JSON.stringify({
+  nome,
+  descricao,
+  preco: Number(preco),
+  estoque: Number(estoque),
+  imagem: urlImagem
+})
 });
 
 if (!resposta.ok) {
@@ -355,103 +457,143 @@ alert(
     setImagem(null);
   }
 
+  
   // ==============================
   // SALVAR EDIÇÃO
   // ==============================
 
-  async function salvarEdicao(e) {
-    e.preventDefault();
+  async function salvarEdicao(e) {e.preventDefault();
 
-    try {
-      let novaImagem = imagemAtual;
+try {
+// ==============================
+// PEGAR TOKEN DO ADMIN
+// ==============================
 
-      if (imagem) {
-        const imagemEnviada = await enviarImagem(imagem);
+const token = localStorage.getItem("adminToken");
 
-        if (imagemEnviada) {
-          novaImagem = imagemEnviada;
-        }
-      }
+if (!token) {
+  alert("Sessão administrativa expirada. Faça login novamente.");
+  navigate("/admin-login");
+  return;
+}
 
-      const resposta = await fetch(
-        `${API}/produtos/${editando}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            nome: nomeEdit,
-            descricao: descricaoEdit,
-            preco: Number(precoEdit),
-            estoque: Number(estoqueEdit),
-            imagem: novaImagem,
-          }),
-        }
-      );
+// ==============================
+// IMAGEM ATUAL
+// ==============================
 
-      if (!resposta.ok) {
-        throw new Error("Erro ao atualizar produto");
-      }
+let novaImagem = imagemAtual;
 
-      const produtoAtualizado = await resposta.json();
+// ==============================
+// SE ESCOLHEU NOVA IMAGEM
+// ENVIA PARA O CLOUDINARY
+// ==============================
 
-      setProdutos((listaAtual) =>
-        listaAtual.map((produto) =>
-          produto.id === editando
-            ? produtoAtualizado
-            : produto
-        )
-      );
+if (imagem) {
+  const imagemEnviada = await enviarImagem(imagem);
 
-      cancelarEdicao();
-
-      alert("Produto atualizado com sucesso!");
-    } catch (error) {
-      console.error("Erro ao editar:", error);
-
-      alert("Não foi possível atualizar o produto.");
-    }
+  if (imagemEnviada) {
+    novaImagem = imagemEnviada;
   }
+}
 
-  // ==============================
-  // EXCLUIR PRODUTO
-  // ==============================
+// ==============================
+// ATUALIZAR PRODUTO
+// ==============================
 
-  async function excluirProduto(id) {
-    const confirmar = window.confirm(
-      "Deseja realmente excluir este produto?"
-    );
+const resposta = await fetch(
+  `${API}/produtos/${editando}`,
+  {
+    method: "PUT",
 
-    if (!confirmar) {
-      return;
-    }
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
 
-    try {
-      const resposta = await fetch(
-        `${API}/produtos/${id}`,
-        {
-          method: "DELETE",
-        }
-      );
-
-      if (!resposta.ok) {
-        throw new Error("Erro ao excluir produto");
-      }
-
-      setProdutos((listaAtual) =>
-        listaAtual.filter(
-          (produto) => produto.id !== id
-        )
-      );
-
-      alert("Produto excluído com sucesso!");
-    } catch (error) {
-      console.error("Erro ao excluir:", error);
-
-      alert("Não foi possível excluir o produto.");
-    }
+    body: JSON.stringify({
+      nome: nomeEdit.trim(),
+      descricao: descricaoEdit.trim(),
+      preco: Number(precoEdit),
+      estoque: Number(estoqueEdit),
+      imagem: novaImagem,
+    }),
   }
+);
+
+// ==============================
+// LER RESPOSTA
+// ==============================
+
+const dados = await resposta.json();
+
+// ==============================
+// TOKEN INVÁLIDO OU EXPIRADO
+// ==============================
+
+if (resposta.status === 401) {
+  localStorage.removeItem("adminToken");
+  localStorage.removeItem("adminUsuario");
+
+  alert("Sua sessão expirou. Faça login novamente.");
+
+  navigate("/admin-login");
+
+  return;
+}
+
+// ==============================
+// OUTROS ERROS
+// ==============================
+
+if (!resposta.ok) {
+  throw new Error(
+    dados.error ||
+    dados.erro ||
+    dados.details ||
+    "Erro ao atualizar produto"
+  );
+}
+
+// ==============================
+// ATUALIZAR PRODUTO NA TELA
+// ==============================
+
+const produtoAtualizado = dados;
+
+setProdutos((listaAtual) =>
+  listaAtual.map((produto) =>
+    produto.id === editando
+      ? produtoAtualizado
+      : produto
+  )
+);
+
+// ==============================
+// FECHAR EDIÇÃO
+// ==============================
+
+cancelarEdicao();
+
+alert("Produto atualizado com sucesso!");
+
+
+} catch (error) {
+
+```
+console.error(
+  "Erro ao editar:",
+  error
+);
+
+alert(
+  error.message ||
+  "Não foi possível atualizar o produto."
+);
+```
+
+}
+}
+
 
   // ==============================
   // ALTERAR STATUS DO PEDIDO
