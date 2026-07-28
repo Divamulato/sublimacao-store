@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
 import multer from "multer";
 import { v2 as cloudinary } from "cloudinary";
@@ -13,7 +14,7 @@ dotenv.config();
 const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
 const apiKey = process.env.CLOUDINARY_API_KEY;
 const apiSecret = process.env.CLOUDINARY_API_SECRET;
-const jwt = require("jsonwebtoken");
+
 
 console.log("🔥 CLOUDINARY CHECK:", {
   cloud: cloudName,
