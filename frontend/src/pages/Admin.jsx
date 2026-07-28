@@ -600,56 +600,86 @@ alert(
   // ==============================
 
   async function alterarStatusPedido(id, novoStatus) {
-    try {
-      const resposta = await fetch(
-        `${API}/pedidos/${id}/status`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            status: novoStatus,
-          }),
-        }
-      );
+try {
+const token = localStorage.getItem("adminToken");
 
-      if (!resposta.ok) {
-        throw new Error(
-          "Erro ao atualizar status"
-        );
-      }
 
-      const pedidoAtualizado =
-        await resposta.json();
+if (!token) {
+  alert("Sessão administrativa expirada. Faça login novamente.");
+  navigate("/admin-login");
+  return;
+}
 
-      setPedidos((listaAtual) =>
-        listaAtual.map((pedido) =>
-          pedido.id === id
-            ? {
-                ...pedido,
-                status:
-                  pedidoAtualizado.status ||
-                  novoStatus,
-              }
-            : pedido
-        )
-      );
+const resposta = await fetch(
+  `${API}/pedidos/${id}/status`,
+  {
+    method: "PUT",
 
-      alert(
-        "Status do pedido atualizado com sucesso!"
-      );
-    } catch (error) {
-      console.error(
-        "Erro ao atualizar status:",
-        error
-      );
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
 
-      alert(
-        "Não foi possível atualizar o status."
-      );
-    }
+    body: JSON.stringify({
+      status: novoStatus,
+    }),
   }
+);
+
+if (resposta.status === 401) {
+  localStorage.removeItem("adminToken");
+  localStorage.removeItem("adminUsuario");
+
+  alert("Sua sessão expirou. Faça login novamente.");
+
+  navigate("/admin-login");
+
+  return;
+}
+
+if (!resposta.ok) {
+  throw new Error(
+    `Erro ao atualizar status: ${resposta.status}`
+  );
+}
+
+const pedidoAtualizado =
+  await resposta.json();
+
+setPedidos((listaAtual) =>
+  listaAtual.map((pedido) =>
+    pedido.id === id
+      ? {
+          ...pedido,
+          status:
+            pedidoAtualizado.status ||
+            novoStatus,
+        }
+      : pedido
+  )
+);
+
+alert(
+  "Status do pedido atualizado com sucesso!"
+);
+
+
+} catch (error) {
+console.error(
+"Erro ao atualizar status:",
+error
+);
+
+```
+alert(
+  error.message ||
+  "Não foi possível atualizar o status."
+);
+```
+
+}
+}
+
 
   // ==============================
   // SAIR
