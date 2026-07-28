@@ -13,6 +13,7 @@ dotenv.config();
 const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
 const apiKey = process.env.CLOUDINARY_API_KEY;
 const apiSecret = process.env.CLOUDINARY_API_SECRET;
+const jwt = require("jsonwebtoken");
 
 console.log("🔥 CLOUDINARY CHECK:", {
   cloud: cloudName,
@@ -29,6 +30,8 @@ if (!cloudName || !apiKey || !apiSecret) {
     api_secret: apiSecret,
   });
 }
+
+
 
 // =========================
 // MULTER CONFIG
@@ -52,6 +55,116 @@ app.use(cors());
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
+// ==========================================
+// LOGIN ADMIN
+// ==========================================
+
+app.post("/admin/login", async (req, res) => {
+  try {
+    const { usuario, senha } = req.body;
+
+    if (!usuario || !senha) {
+      return res.status(400).json({
+        error: "Usuário e senha são obrigatórios",
+      });
+    }
+
+    if (
+      usuario !== process.env.ADMIN_USUARIO ||
+      senha !== process.env.ADMIN_SENHA
+    ) {
+      return res.status(401).json({
+        error: "Usuário ou senha inválidos",
+      });
+    }
+
+    const token = jwt.sign(
+      {
+        usuario,
+        tipo: "admin",
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "2h",
+      }
+    );
+
+    console.log(
+      "✅ LOGIN ADMIN REALIZADO:",
+      usuario
+    );
+
+    return res.json({
+      success: true,
+      token,
+      usuario,
+    });
+
+  } catch (error) {
+    console.error(
+      "❌ ERRO LOGIN ADMIN:",
+      error
+    );
+
+    return res.status(500).json({
+      error: "Erro interno no login",
+    });
+  }
+});
+
+// ==========================================
+// MIDDLEWARE DE AUTENTICAÇÃO ADMIN
+// ==========================================
+
+function autenticarAdmin(req, res, next) {
+  try {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader) {
+      return res.status(401).json({
+        error: "Token não informado",
+      });
+    }
+
+    const partes = authHeader.split(" ");
+
+    if (
+      partes.length !== 2 ||
+      partes[0] !== "Bearer"
+    ) {
+      return res.status(401).json({
+        error: "Formato de token inválido",
+      });
+    }
+
+    const token = partes[1];
+
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET
+    );
+
+    if (decoded.tipo !== "admin") {
+      return res.status(403).json({
+        error: "Acesso negado",
+      });
+    }
+
+    req.admin = decoded;
+
+    next();
+
+  } catch (error) {
+    console.error(
+      "❌ TOKEN ADMIN INVÁLIDO:",
+      error.message
+    );
+
+    return res.status(401).json({
+      error: "Sessão inválida ou expirada",
+    });
+  }
+}
 // =========================
 // UPLOAD IMAGEM (DEBUG TOTAL)
 // =========================
