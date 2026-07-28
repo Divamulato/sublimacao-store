@@ -110,10 +110,17 @@ useEffect(() => {
   // ==============================
 
   useEffect(() => {
-    carregarProdutos();
-    carregarPedidos();
-    carregarVisitas();
-  }, []);
+  const token = localStorage.getItem("adminToken");
+
+  if (!token) {
+    navigate("/admin-login");
+    return;
+  }
+
+  carregarProdutos();
+  carregarPedidos();
+  carregarVisitas();
+}, [navigate]);
 
   // ==============================
   // UPLOAD DE IMAGEM
@@ -416,8 +423,10 @@ alert(
   // ==============================
 
   function sairAdmin() {
-    navigate("/");
-  }
+  localStorage.removeItem("adminToken");
+  localStorage.removeItem("adminUsuario");
+  navigate("/admin-login");
+}
 
   // ==============================
   // FILTRO DE PRODUTOS
