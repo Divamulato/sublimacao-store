@@ -513,9 +513,16 @@ alert(
   // SAIR
   // ==============================
 
-  function sairAdmin() {
-    navigate("/");
-  }
+ 
+function sairAdmin() {
+  // Remove a sessão do administrador
+  localStorage.removeItem("adminToken");
+  localStorage.removeItem("adminUsuario");
+
+  // Volta para a tela de login
+  navigate("/admin-login");
+}
+
 
   // ==============================
   // FILTRO DE PRODUTOS
