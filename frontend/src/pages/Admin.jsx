@@ -69,21 +69,112 @@ useEffect(() => {
   // CARREGAR PEDIDOS
   // ==============================
 
-  async function carregarPedidos() {
-    try {
-      const resposta = await fetch(`${API}/pedidos`);
+async function carregarPedidos() {
+  try {
+    const token = localStorage.getItem("adminToken");
 
-      if (!resposta.ok) {
-        throw new Error("Erro ao buscar pedidos");
-      }
+    console.log("🔐 TOKEN EXISTE?", !!token);
 
-      const dados = await resposta.json();
+    if (!token) {
+      console.error("❌ Token não encontrado");
 
-      setPedidos(Array.isArray(dados) ? dados : []);
-    } catch (error) {
-      console.error("Erro pedidos:", error);
+      navigate("/admin-login");
+
+      return;
     }
+
+    const resposta = await fetch(
+      `${API}/pedidos`,
+      {
+        method: "GET",
+
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    console.log(
+      "📡 STATUS /pedidos:",
+      resposta.status
+    );
+
+    const texto =
+      await resposta.text();
+
+    console.log(
+      "📡 RESPOSTA /pedidos:",
+      texto
+    );
+
+    if (resposta.status === 401) {
+      console.error(
+        "❌ Sessão inválida ou expirada"
+      );
+
+      localStorage.removeItem(
+        "adminToken"
+      );
+
+      localStorage.removeItem(
+        "adminUsuario"
+      );
+
+      navigate("/admin-login");
+
+      return;
+    }
+
+    if (!resposta.ok) {
+      throw new Error(
+        `Erro ao buscar pedidos: ${resposta.status}`
+      );
+    }
+
+    let dados;
+
+    try {
+      dados = JSON.parse(texto);
+    } catch (error) {
+      console.error(
+        "❌ Resposta não é JSON:",
+        texto
+      );
+
+      throw new Error(
+        "Resposta inválida do servidor"
+      );
+    }
+
+    console.log(
+      "✅ PEDIDOS RECEBIDOS:",
+      dados
+    );
+
+    setPedidos(
+      Array.isArray(dados)
+        ? dados
+        : []
+    );
+
+  } catch (error) {
+
+    console.error(
+      "❌ ERRO PEDIDOS:",
+      error
+    );
+
   }
+}
+
+
+  
+
+
+
+
+
 
   // ==============================
   // CARREGAR VISITAS
@@ -423,10 +514,8 @@ alert(
   // ==============================
 
   function sairAdmin() {
-  localStorage.removeItem("adminToken");
-  localStorage.removeItem("adminUsuario");
-  navigate("/admin-login");
-}
+    navigate("/");
+  }
 
   // ==============================
   // FILTRO DE PRODUTOS
