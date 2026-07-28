@@ -80,15 +80,15 @@ app.post("/admin/login", async (req, res) => {
     }
 
     const token = jwt.sign(
-      {
-        usuario,
-        tipo: "admin",
-      },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: "2h",
-      }
-    );
+  {
+    tipo: "admin",
+    usuario: usuario,
+  },
+  process.env.JWT_SECRET,
+  {
+    expiresIn: "8h",
+  }
+);
 
     console.log(
       "✅ LOGIN ADMIN REALIZADO:",
@@ -117,22 +117,33 @@ app.post("/admin/login", async (req, res) => {
 // MIDDLEWARE DE AUTENTICAÇÃO ADMIN
 // ==========================================
 
+
 function autenticarAdmin(req, res, next) {
   try {
-    const authHeader = req.headers.authorization;
+    const authHeader =
+      req.headers.authorization;
 
     if (!authHeader) {
+      console.error(
+        "❌ ADMIN: Token não informado"
+      );
+
       return res.status(401).json({
         error: "Token não informado",
       });
     }
 
-    const partes = authHeader.split(" ");
+    const partes =
+      authHeader.split(" ");
 
     if (
       partes.length !== 2 ||
       partes[0] !== "Bearer"
     ) {
+      console.error(
+        "❌ ADMIN: Formato do token inválido"
+      );
+
       return res.status(401).json({
         error: "Formato de token inválido",
       });
@@ -140,12 +151,34 @@ function autenticarAdmin(req, res, next) {
 
     const token = partes[1];
 
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET
+    console.log(
+      "🔐 ADMIN: Token recebido"
     );
 
-    if (decoded.tipo !== "admin") {
+    console.log(
+      "🔑 JWT_SECRET existe?",
+      !!process.env.JWT_SECRET
+    );
+
+    const decoded =
+      jwt.verify(
+        token,
+        process.env.JWT_SECRET
+      );
+
+    console.log(
+      "✅ TOKEN ADMIN VALIDADO:",
+      decoded
+    );
+
+    if (
+      decoded.tipo !== "admin"
+    ) {
+      console.error(
+        "❌ ADMIN: Tipo de token inválido:",
+        decoded.tipo
+      );
+
       return res.status(403).json({
         error: "Acesso negado",
       });
@@ -156,16 +189,24 @@ function autenticarAdmin(req, res, next) {
     next();
 
   } catch (error) {
+
     console.error(
       "❌ TOKEN ADMIN INVÁLIDO:",
+      error.name
+    );
+
+    console.error(
+      "❌ DETALHE:",
       error.message
     );
 
     return res.status(401).json({
-      error: "Sessão inválida ou expirada",
+      error:
+        "Sessão inválida ou expirada",
     });
   }
 }
+
 
 
 // =========================
@@ -266,10 +307,7 @@ app.get("/produtos/:id", async (req, res) => {
 // CRIAR PRODUTO
 // =========================
 
-app.post(
-  "/produtos",
-  autenticarAdmin,
-  async (req, res) => {
+app.post( "/produtos", autenticarAdmin, async (req, res) => {
 try {
   console.log("📦 DADOS RECEBIDOS PARA CRIAR PRODUTO:", req.body);
 const {
