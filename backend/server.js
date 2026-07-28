@@ -166,6 +166,8 @@ function autenticarAdmin(req, res, next) {
     });
   }
 }
+
+
 // =========================
 // UPLOAD IMAGEM (DEBUG TOTAL)
 // =========================
@@ -264,7 +266,10 @@ app.get("/produtos/:id", async (req, res) => {
 // CRIAR PRODUTO
 // =========================
 
-app.post("/produtos", async (req, res) => {
+app.post(
+  "/produtos",
+  autenticarAdmin,
+  async (req, res) => {
 try {
   console.log("📦 DADOS RECEBIDOS PARA CRIAR PRODUTO:", req.body);
 const {
@@ -372,7 +377,7 @@ return res.status(500).json({
 // ATUALIZAR PRODUTO
 // =========================
 
-app.put("/produtos/:id", async (req, res) => {
+app.put(  "/produtos/:id", autenticarAdmin, async (req, res) => {
 try {
 const { id } = req.params;
 
@@ -500,7 +505,10 @@ return res.status(500).json({
 });
 
 
-app.delete("/produtos/:id", async (req, res) => {
+app.delete(
+  "/produtos/:id",
+  autenticarAdmin,
+  async (req, res) => {
   try {
     const id = Number(req.params.id);
 
@@ -751,7 +759,7 @@ console.log("=================================");
 // LISTAR TODOS OS PEDIDOS
 // ============================
 
-app.get("/pedidos", async (req, res) => {
+app.get( "/pedidos",autenticarAdmin,async (req, res) => {
   try {
 
     const pedidos = await prisma.pedido.findMany({
@@ -786,7 +794,7 @@ app.get("/pedidos", async (req, res) => {
 
 console.log(">>> ROTA DETALHES PEDIDO REGISTRADA");
 
-app.get("/pedidos/:id", async (req, res) => {
+app.get("/pedidos/:id",autenticarAdmin,async (req, res) => {
 
   try {
 
@@ -869,7 +877,10 @@ app.get("/visitas", async (req, res) => {
 
 
 
-app.delete("/pedidos/:id", async (req, res) => {
+app.delete(
+  "/pedidos/:id",
+  autenticarAdmin,
+  async (req, res) => {
   try {
 
     await prisma.pedido.delete({
@@ -893,7 +904,7 @@ app.delete("/pedidos/:id", async (req, res) => {
   }
 });
 
-app.put("/pedidos/:id/status", async (req, res) => {
+app.put("/pedidos/:id/status",autenticarAdmin,async (req, res) => {
   try {
 
     const { status } = req.body;
