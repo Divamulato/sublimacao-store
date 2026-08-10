@@ -1401,3 +1401,19 @@ color:#333;
   border: 1px solid #ddd;
   background: #f8f8f8;
 }
+
+.btn-excluir-pedido {
+  margin-top: 15px;
+  width: 100%;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 8px;
+  background: #dc2626;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-excluir-pedido:hover {
+  background: #b91c1c;
+}

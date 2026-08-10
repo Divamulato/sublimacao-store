@@ -871,6 +871,66 @@ app.get("/pedidos/:id",autenticarAdmin,async (req, res) => {
   }
 
 });
+app.delete(
+  "/pedidos/:id",
+  autenticarAdmin,
+  async (req, res) => {
+
+    try {
+
+      const id = Number(req.params.id);
+
+      if (isNaN(id)) {
+        return res.status(400).json({
+          error: "ID do pedido inválido",
+        });
+      }
+
+      const pedido = await prisma.pedido.findUnique({
+        where: {
+          id: id,
+        },
+      });
+
+      if (!pedido) {
+        return res.status(404).json({
+          error: "Pedido não encontrado",
+        });
+      }
+
+      const pedidoExcluido =
+        await prisma.pedido.delete({
+          where: {
+            id: id,
+          },
+        });
+
+      console.log(
+        "🗑️ PEDIDO EXCLUÍDO:",
+        pedidoExcluido
+      );
+
+      return res.status(200).json({
+        message: "Pedido excluído com sucesso",
+        pedido: pedidoExcluido,
+      });
+
+    } catch (error) {
+
+      console.error(
+        "❌ ERRO AO EXCLUIR PEDIDO:",
+        error
+      );
+
+      return res.status(500).json({
+        error: "Erro ao excluir pedido",
+        details: error.message,
+      });
+
+    }
+  }
+);
+
 
 app.post("/visitas", async (req, res) => {
   try {

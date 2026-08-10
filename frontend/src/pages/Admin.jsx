@@ -168,6 +168,103 @@ async function carregarPedidos() {
   }
 }
 
+async function excluirPedido(id) {
+
+  const confirmar = window.confirm(
+    "Deseja realmente excluir este pedido?"
+  );
+
+  if (!confirmar) {
+    return;
+  }
+
+  try {
+
+    const token =
+      localStorage.getItem("adminToken");
+
+    if (!token) {
+
+      alert(
+        "Sessão administrativa expirada. Faça login novamente."
+      );
+
+      navigate("/admin-login");
+
+      return;
+    }
+
+    const resposta = await fetch(
+      `${API}/pedidos/${id}`,
+      {
+        method: "DELETE",
+
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const dados =
+      await resposta.json();
+
+    if (resposta.status === 401) {
+
+      localStorage.removeItem(
+        "adminToken"
+      );
+
+      localStorage.removeItem(
+        "adminUsuario"
+      );
+
+      alert(
+        "Sua sessão expirou. Faça login novamente."
+      );
+
+      navigate("/admin-login");
+
+      return;
+    }
+
+    if (!resposta.ok) {
+
+      throw new Error(
+        dados.error ||
+        dados.erro ||
+        dados.details ||
+        "Erro ao excluir pedido"
+      );
+
+    }
+
+    setPedidos(
+      (listaAtual) =>
+        listaAtual.filter(
+          (pedido) =>
+            pedido.id !== id
+        )
+    );
+
+    alert(
+      "Pedido excluído com sucesso!"
+    );
+
+  } catch (error) {
+
+    console.error(
+      "Erro ao excluir pedido:",
+      error
+    );
+
+    alert(
+      error.message ||
+      "Não foi possível excluir o pedido."
+    );
+
+  }
+}
+
 
   
 
@@ -1567,7 +1664,18 @@ function sairAdmin() {
                       : "Data não informada"}
                   </small>
 
+                  
+
                 </div>
+                <button
+  type="button"
+  className="btn-excluir-pedido"
+  onClick={() =>
+    excluirPedido(pedido.id)
+  }
+>
+  Excluir Pedido
+</button>
 
               </div>
 
