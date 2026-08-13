@@ -96,6 +96,12 @@ export default function Home() {
         >
           👁️ {visitas} visitas
         </p>
+
+        <p> A IMAGEM, FOTO, O QUE VOCÊ QUISER! SE PREFERIR ENVIE UMA
+          CÓPIA, OU ARQUIVO DIGITAL, QUE NÓS FAZEMOS A ARTE PARA VOCÊ!
+        </p>
+
+        
       </section>
 
       <section className="categorias">

@@ -249,9 +249,9 @@
 
     margin-top:40px;
 
-    background:#d4af37;
+    background:#1eb6c1;
 
-    color:black;
+    color:rgb(11, 21, 211);
 
     padding:14px 30px;
 
@@ -272,7 +272,7 @@
 }
 
 .tituloDestaques{
-    color:#d4af37;
+    color:#0d23a2;
     font-size:2rem;
     margin-bottom:40px;
     font-weight:bold;
