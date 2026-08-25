@@ -918,20 +918,35 @@ function sairAdmin() {
   return (
     <div className="admin">
 
-      <div className="topo-admin">
+     <div className="topo-admin">
 
-        <h1>
-          Painel Administrativo Diva Atelier de Sublimação
-        </h1>
+  <h1>
+    Painel Administrativo Diva Atelier de Sublimação
+  </h1>
 
-        <button
-          className="btn-sair"
-          onClick={sairAdmin}
-        >
-          Sair
-        </button>
+  <div className="acoes-admin">
 
-      </div>
+    <button
+      type="button"
+      className="btn-relatorio"
+      onClick={() =>
+        navigate("/admin/relatorio")
+      }
+    >
+      📊 Relatório
+    </button>
+
+    <button
+      type="button"
+      className="btn-sair"
+      onClick={sairAdmin}
+    >
+      Sair
+    </button>
+
+  </div>
+
+</div>
 
 
       {/* DASHBOARD */}

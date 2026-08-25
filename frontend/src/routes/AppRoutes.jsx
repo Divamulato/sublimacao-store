@@ -10,12 +10,12 @@ import Confirmacao from "../pages/Confirmacao";
 import Admin from "../pages/Admin";
 import AdminLogin from "../pages/AdminLogin";
 import Preview from "../pages/Preview";
-import ProdutoDetalhe from "../pages/ProdutoDetalhe";
 import Pedidos from "../pages/Pedidos";
 import Cadastro from "../pages/Cadastro"; // <-- FALTAVA ESTA LINHA
 import Clientes from "../pages/Clientes";
 import Cliente from "../pages/Cliente";
 import DetalhesPedido from "../pages/DetalhesPedido";
+import Relatorio from "../pages/Relatorio";
 
 export default function AppRoutes() {
   return (
@@ -35,6 +35,7 @@ export default function AppRoutes() {
       <Route path="/clientes" element={<Clientes />} />
       <Route path="/cliente/:id" element={<Cliente />} />
       <Route path="/admin/pedido/:id" element={<DetalhesPedido />} />
+      <Route path="/admin/relatorio"element={<Relatorio />}/>
 
     </Routes>
   );
