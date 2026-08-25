@@ -97,8 +97,7 @@ export default function Home() {
           👁️ {visitas} visitas
         </p>
 
-        <p> A IMAGEM, FOTO, O QUE VOCÊ QUISER! SE PREFERIR ENVIE UMA
-          CÓPIA, OU ARQUIVO DIGITAL, QUE NÓS FAZEMOS A ARTE PARA VOCÊ!
+        <p> Nesse dia das Crianças a IMAGEM, FOTO, que voce quiser, pode enviar por aqui ou pelo Whats. Pode ser uma cópia da foto, ou arquivo digital. 
         </p>
 
         

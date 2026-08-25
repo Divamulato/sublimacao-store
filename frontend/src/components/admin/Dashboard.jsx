@@ -46,7 +46,7 @@ export default function Dashboard({
 
     <div className="dashboard">
 
-      <h1>Painel Administrativo</h1>
+      <h1>Painel Administrative</h1>
 
       <p className="subtitulo">
         Bem-vindo ao gerenciamento da Diva Sublimação.

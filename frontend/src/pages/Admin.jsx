@@ -921,7 +921,7 @@ function sairAdmin() {
       <div className="topo-admin">
 
         <h1>
-          Painel Administrativo
+          Painel Administrativo Diva Atelier de Sublimação
         </h1>
 
         <button

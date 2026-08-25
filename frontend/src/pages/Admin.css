@@ -24,7 +24,7 @@
 
   margin-bottom: 35px;
 
-  color: #222;
+  color: #5d07a4;
 
 }
 
@@ -32,7 +32,7 @@
 
 .admin h2 {
 
-  color: #333;
+  color: #c20909;
 
   margin-bottom: 20px;
 
@@ -62,7 +62,7 @@
 
 .cardAdmin {
 
-  background: white;
+  background: rgb(232, 204, 216);
 
   padding: 25px;
 
@@ -623,7 +623,7 @@
   background:#2563eb;
   color:white;
   border:none;
-  padding:12px 25px;
+  padding:1px 25px;
   border-radius:8px;
   cursor:pointer;
   font-size:16px;
@@ -710,7 +710,7 @@
   margin-top:15px;
   padding:10px;
 
-  background:#ef4444;
+  background:#d4caca;
 
   color:white;
 
@@ -1405,7 +1405,7 @@ color:#333;
 .btn-excluir-pedido {
   margin-top: 15px;
   width: 100%;
-  padding: 10px 15px;
+  padding: 1px 15px;
   border: none;
   border-radius: 8px;
   background: #dc2626;

@@ -4,7 +4,7 @@ export default function Footer() {
   return (
     <footer className="footer">
 
-      <h3>Diva Sublimação</h3>
+      <h3>Diva Atelier de Sublimação</h3>
 
       <p>
         Produtos personalizados com qualidade premium.
