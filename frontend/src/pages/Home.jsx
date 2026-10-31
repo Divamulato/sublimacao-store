@@ -97,7 +97,8 @@ export default function Home() {
           👁️ {visitas} visitas
         </p>
 
-        <p> Nesse dia das Crianças a IMAGEM, FOTO, que voce quiser, pode enviar por aqui ou pelo Whats. Pode ser uma cópia da foto, ou arquivo digital. 
+        <p>
+          O Natal está chegando, aproveite nossas promoções e garanta seus produtos personalizados para presentear quem você ama!
         </p>
 
         
